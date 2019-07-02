@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
-import { Map, View } from 'ol';
+import {Map, View} from 'ol';
 import * as source from 'ol/source';
 import * as format from 'ol/format';
 import * as layer from 'ol/layer';
 import * as style from 'ol/style';
 import GeoJSON from 'ol/format/GeoJSON.js';
 
-import { fromLonLat, toLonLat } from 'ol/proj';
-import { optionsFromCapabilities } from 'ol/source/WMTS';
+import {fromLonLat, toLonLat} from 'ol/proj';
+import {optionsFromCapabilities} from 'ol/source/WMTS';
 
 import {Image as ImageLayer} from 'ol/layer.js'
 import {ImageCanvas as ImageCanvasSource} from 'ol/source.js';
@@ -19,6 +19,7 @@ import * as ConditionEvent from 'ol/events/condition';
 
 import * as geohashpoly from 'geohash-poly';
 
+import RootCatalogue from './RootCatalogue';
 //import * as moment from 'moment';
 import * as _ from 'lodash';
 
@@ -62,34 +63,31 @@ export default class CatalogueMap extends Component {
       visibleDates: [],
       visibleFeatures: [],
       visibleGeohashes: []
-    }
+    };
     this.itemLoadCounter = 0
   }
 
   async componentDidMount() {
-    var tmp = await fetch(this.props.datasetCatalogue, CACHE_POLICY);
-    this.setState({ catalogue: await tmp.json() });
-
     var catalogueFeatureLayerSource = new source.Vector({});
     var catalogueFeatureLayer = new layer.Vector({
-        source: catalogueFeatureLayerSource,
-        style: feature => new style.Style({
-          stroke: new style.Stroke({
-            color: 'rgba(0, 0, 0, 0.5)',
-            width: 1.5,
+      source: catalogueFeatureLayerSource,
+      style: feature => new style.Style({
+        stroke: new style.Stroke({
+          color: 'rgba(0, 0, 0, 0.5)',
+          width: 1.5,
 
-          }),
-          //text: new style.Text({ text: feature.get('name') }),
-          fill: new style.Fill({
-            color: 'rgba(0, 0, 0, 0)'
-          })
+        }),
+        //text: new style.Text({ text: feature.get('name') }),
+        fill: new style.Fill({
+          color: 'rgba(0, 0, 0, 0)'
         })
+      })
     });
 
     var map = new Map({
       target: this.refs.mapContainer,
       layers: [
-          catalogueFeatureLayer
+        catalogueFeatureLayer
       ],
       overlays: [],
       view: new View({
@@ -106,12 +104,12 @@ export default class CatalogueMap extends Component {
     var parser = new format.WMTSCapabilities();
     var capabilities = parser.read(await capabilitiesResponse.text());
     var opts = optionsFromCapabilities(capabilities, {
-        layer: 'taustakartta',
-        matrixSet: 'WGS84_Pseudo-Mercator',
-        requestEncoding: 'REST'
+      layer: 'taustakartta',
+      matrixSet: 'WGS84_Pseudo-Mercator',
+      requestEncoding: 'REST'
     });
     var wmtsLayer = new layer.Tile({
-        source: new source.WMTS(opts)
+      source: new source.WMTS(opts)
     });
     wmtsLayer.setZIndex(-1);
     map.addLayer(wmtsLayer);
@@ -136,13 +134,13 @@ export default class CatalogueMap extends Component {
       })
     });
     map.addInteraction(selectionInteraction);
-    selectionInteraction.on('select', function(e) {
+    selectionInteraction.on('select', function (e) {
       var selectedFeatures = e.target.getFeatures().getArray();
 
       var layersBefore = _.keys(cogLayersPerId);
       var selectedKeys = _.map(selectedFeatures, f => f.getId());
       var layersToAdd = _.difference(selectedKeys, layersBefore);
-      var layersToRemove = _.difference(_.keys(cogLayersPerId), selectedKeys);
+      var layersToRemove = _.difference(layersBefore, selectedKeys);
 
       _.each(layersToRemove, s => {
         if (cogLayersPerId[s] !== 'pending') {
@@ -158,14 +156,14 @@ export default class CatalogueMap extends Component {
         var stac = feature.get('stac_item');
 
         that.createCogLayer(stac).then(layer => {
-          if (cogLayersPerId[s] !== 'pending') return
+          if (cogLayersPerId[s] !== 'pending') return;
           map.addLayer(layer);
           cogLayersPerId[s] = layer;
         });
       })
     });
 
-    this.setState({ map, catalogueFeatureLayerSource, catalogueFeatureLayer, selectionInteraction, cogLayersPerId });
+    this.setState({map, catalogueFeatureLayerSource, catalogueFeatureLayer, selectionInteraction, cogLayersPerId});
   }
 
 
@@ -176,14 +174,14 @@ export default class CatalogueMap extends Component {
 
     var tiff = await GeoTIFF.fromUrl(url);
     var canvasLayer;
-    
+
     var retrievedData = {
       forCounter: null,
       data: null
     };
 
-    var drawRetrievedData = function(extent, resolution, pixelRatio, size, projection) {
-      var params = { width: Math.floor(size[0]), height: Math.floor(size[1]) };
+    var drawRetrievedData = function (extent, resolution, pixelRatio, size, projection) {
+      var params = {width: Math.floor(size[0]), height: Math.floor(size[1])};
 
       let canvas = document.createElement('canvas');
       canvas.width = params.width;
@@ -194,39 +192,39 @@ export default class CatalogueMap extends Component {
 
       var data = retrievedData.data[0];
 
-      
+
       /** Dynamic min/max values, downside: fluctuations
-      var min = _.min(data);
-      var max = _.max(data);
-      if (min === max) { max = min + 1; }
-      console.log('min, max = ',min, max)
-      */
+       var min = _.min(data);
+       var max = _.max(data);
+       if (min === max) { max = min + 1; }
+       console.log('min, max = ',min, max)
+       */
 
       var min = -25;
       var max = 10;
 
       for (var x = 0; x < params.width; x++) {
         for (var y = 0; y < params.height; y++) {
-          var d = Math.min(Math.max(data[x + y*params.width], min), max);
+          var d = Math.min(Math.max(data[x + y * params.width], min), max);
           var opacity = 255;
-          var val = (d-min)/(max-min)*255;
-          
-          if (data[x + y*params.width] === 0) {
+          var val = (d - min) / (max - min) * 255;
+
+          if (data[x + y * params.width] === 0) {
             opacity = 0;
           }
-          
-          imagedata.data[(x + y * params.width)*4 + 0] = val;
-          imagedata.data[(x + y * params.width)*4 + 1] = val;
-          imagedata.data[(x + y * params.width)*4 + 2] = val;
-          imagedata.data[(x + y * params.width)*4 + 3] = opacity;
+
+          imagedata.data[(x + y * params.width) * 4 + 0] = val;
+          imagedata.data[(x + y * params.width) * 4 + 1] = val;
+          imagedata.data[(x + y * params.width) * 4 + 2] = val;
+          imagedata.data[(x + y * params.width) * 4 + 3] = opacity;
         }
       }
       context.putImageData(imagedata, 0, 0);
       return canvas;
-    }
+    };
 
     var counter = 0;
-    var canvasFunction = function(extent, resolution, pixelRatio, size, projection) {
+    var canvasFunction = function (extent, resolution, pixelRatio, size, projection) {
       var thisCounter = ++counter;
 
       if (retrievedData.forCounter === thisCounter) {
@@ -241,7 +239,7 @@ export default class CatalogueMap extends Component {
             // Stale call, ignore
             return;
           }
-          retrievedData.forCounter = thisCounter+1;
+          retrievedData.forCounter = thisCounter + 1;
           retrievedData.data = data;
           canvasLayer.getSource().changed();
         });
@@ -251,7 +249,7 @@ export default class CatalogueMap extends Component {
       // This fixes some redraw issues (but not all), but then the layer vanishes when pannin/zooming before new data is available
       //return document.createElement('canvas');
       return null;
-    }
+    };
 
     canvasLayer = new ImageLayer({
       source: new ImageCanvasSource({
@@ -273,7 +271,7 @@ export default class CatalogueMap extends Component {
     var latLonMax = toLonLat([extent[2], extent[3]], MAP_PROJECTION);
 
     var polygon = [[
-      [latLonMin[0], latLonMin[1]], 
+      [latLonMin[0], latLonMin[1]],
       [latLonMin[0], latLonMax[1]],
       [latLonMax[0], latLonMax[1]],
       [latLonMax[0], latLonMin[1]],
@@ -284,55 +282,61 @@ export default class CatalogueMap extends Component {
 
     // We really need just a percision of 2, but the library does not work with precision < 4
     geohashpoly({coords: polygon, precision: 4}, function (err, hashes) {
-        if (err) throw err;
+      if (err) throw err;
 
-        hashes = _.sortBy(_.uniq(_.map(hashes, h => h.substring(0,2))));
-        
-        if (!_.isEqual(hashes, that.state.visibleGeohashes)) {
-            that.setState({ visibleGeohashes: hashes });
-            that.loadGeohashCatalogues(hashes);
+      hashes = _.sortBy(_.uniq(_.map(hashes, h => h.substring(0, 2))));
+
+      if (!_.isEqual(hashes, that.state.visibleGeohashes)) {
+        that.setState({visibleGeohashes: hashes});
+        if (that.state.catalogue != null) {
+          that.loadGeohashCatalogues(hashes);
         }
+      }
     });
   }
 
   loadGeohashCatalogues(hashes) {
     var that = this;
-
     var promises = _.map(hashes, h => {
+      if (that.state.catalogue != null) {
         var catalogueLink = _.find(that.state.catalogue.links,
             l => (l.rel === 'child' && _.isObject(l.dimension) && l.dimension.axis === 'geohash' && l.dimension.value === h));
         var url;
 
         if (!catalogueLink) {
-            //console.error('No catalogue link for hash '+h);
-            return;
+          //console.error('No catalogue link for hash '+h);
+          return;
         }
 
-        url = catalogueLink.href.substr('http://fmi.stac.fi'.length)
+        url = catalogueLink.href.substr('http://fmi.stac.fi'.length);
         return fetch(url, CACHE_POLICY).then(response => response.json());
+      }
     });
 
-    function showItemBboxes(values) {
-        var dateCatalogs = _.reduce(values, (memo, v) => { _.each(v.links, l => memo.push(l)); return memo; }, []);
 
-        var visibleDates = that.state.visibleDates;
-        var selectedDate = that.state.selectedDate;
-        visibleDates.splice(0);
-        _.each(dateCatalogs, c => {
-            if (c.rel === 'child' && _.isObject(c.dimension) && c.dimension.axis === 'time') {
-                if (visibleDates.indexOf(c.dimension.value) === -1) {
-                    visibleDates.push(c.dimension.value);
-                }
-            }
-        });
-        visibleDates.sort();
-        if (visibleDates.indexOf(selectedDate) === -1) {
-            selectedDate = null;
+    function showItemBboxes(values) {
+      var dateCatalogs = _.reduce(values, (memo, v) => {
+        _.each(v.links, l => memo.push(l));
+        return memo;
+      }, []);
+      var visibleDates = that.state.visibleDates;
+      var selectedDate = that.state.selectedDate;
+      visibleDates.splice(0);
+      _.each(dateCatalogs, c => {
+        if (c.rel === 'child' && _.isObject(c.dimension) && c.dimension.axis === 'time') {
+          if (visibleDates.indexOf(c.dimension.value) === -1) {
+            visibleDates.push(c.dimension.value);
+          }
         }
-        that.setState({ visibleDates, selectedDate, dateCatalogs });
-        if (selectedDate !== null) {
-            that.retrieveAndShowItems(selectedDate);
-        }
+      });
+      visibleDates.sort();
+      if (visibleDates.indexOf(selectedDate) === -1) {
+        selectedDate = null;
+      }
+      that.setState({visibleDates, selectedDate, dateCatalogs});
+      if (selectedDate !== null) {
+        that.retrieveAndShowItems(selectedDate);
+      }
     }
 
     Promise.all(_.filter(promises, p => !!p)).then(showItemBboxes);
@@ -349,40 +353,44 @@ export default class CatalogueMap extends Component {
         c.dimension.axis === 'time' && c.dimension.value === selectedDate);
 
     var promises = _.map(dateCatalogs, link => {
-        var url = link.href.substr('http://fmi.stac.fi'.length)
-        return fetch(url, CACHE_POLICY).then(response => response.json());
+      var url = link.href.substr('http://fmi.stac.fi'.length);
+      return fetch(url, CACHE_POLICY).then(response => response.json());
     });
 
     Promise.all(promises).then(values => {
+      if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
+
+      that.clearFeatures();
+
+      var itemLinks = _.reduce(values, (memo, v) => {
+        _.each(v.links, l => memo.push(l));
+        return memo;
+      }, []);
+      itemLinks = _.filter(itemLinks, l => l.rel === 'item');
+
+      var uniqueItemLinks = _.uniqBy(itemLinks, 'href');
+
+      _.each(uniqueItemLinks, async link => {
+        // TODO: generalize!
+        var url = link.href.substr('http://fmi.stac.fi'.length).replace(/.json$/, '.dim.json');
+        var response = await fetch(url, CACHE_POLICY);
+        var json = await response.json();
         if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
-
-        that.clearFeatures();
-        
-        var itemLinks = _.reduce(values, (memo, v) => { _.each(v.links, l => memo.push(l)); return memo; }, []);
-        itemLinks = _.filter(itemLinks, l => l.rel === 'item');
-
-        var uniqueItemLinks = _.uniqBy(itemLinks, 'href');
-
-        _.each(uniqueItemLinks, async link => {
-            var url = link.href.substr('http://fmi.stac.fi'.length).replace(/.json$/, '.dim.json');
-            var response = await fetch(url, CACHE_POLICY);
-            var json = await response.json();
-            if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
-            var feature = new GeoJSON().readFeatureFromObject(json, {
-                dataProjection: 'EPSG:4326',
-                featureProjection: MAP_PROJECTION
-            });
-            
-            that.addFeature(feature, json);
+        var feature = new GeoJSON().readFeatureFromObject(json, {
+          dataProjection: 'EPSG:4326',
+          featureProjection: MAP_PROJECTION
         });
+
+        that.addFeature(feature, json);
+      });
     });
   }
 
   clearFeatures() {
     var visibleFeatures = this.state.visibleFeatures;
     this.state.catalogueFeatureLayerSource.clear();
-    visibleFeatures.splice(0)
-    this.setState({ visibleFeatures });
+    visibleFeatures.splice(0);
+    this.setState({visibleFeatures});
   }
 
   addFeature(feature, stacJson) {
@@ -393,7 +401,7 @@ export default class CatalogueMap extends Component {
     this.state.catalogueFeatureLayerSource.addFeature(feature);
 
     visibleFeatures.push(feature);
-    this.setState({ visibleFeatures });
+    this.setState({visibleFeatures});
   }
 
   selectDate(selectedDate) {
@@ -403,7 +411,7 @@ export default class CatalogueMap extends Component {
     }
 
     // Clear selection
-    this.state.selectionInteraction.getFeatures().clear()
+    this.state.selectionInteraction.getFeatures().clear();
 
     // Remove cog layers
     _.each(this.state.cogLayersPerId, (v, k) => {
@@ -413,44 +421,58 @@ export default class CatalogueMap extends Component {
       delete this.state.cogLayersPerId[k];
     });
 
-    this.setState({ selectedDate });
+    this.setState({selectedDate});
     this.retrieveAndShowItems(selectedDate);
   }
 
-  render () {
+  async selectCatalogue(catalogue) {
+    if (catalogue != null) {
+      var tmp = await fetch(catalogue, CACHE_POLICY);
+      catalogue = await tmp.json();
+    }
+    this.setState({catalogue: catalogue},
+        () => this.loadGeohashCatalogues(this.state.visibleGeohashes));
+  }
+
+  render() {
     return (
-      <div className="CatalogueMap">
-        <h1>{this.state.catalogue ? this.state.catalogue.description : '...'} {this.state.selectedDate ? 'at '+this.state.selectedDate : ''}</h1>
-        <div className="CatalogueMapContainer" ref="mapContainer">
-        </div>
-        <div className="Controls">
-          <div>
-              <p>Click on dates below to show bounding boxes of sentinel imagery take on that day. Selecting the bounding boxes shows the radar imagery on the map.</p>
+        <div className="CatalogueMap">
+          <h1>{this.state.catalogue ? this.state.catalogue.description : '...'} {this.state.selectedDate ? 'at ' + this.state.selectedDate : ''}</h1>
+          <div className="CatalogueMapContainer" ref="mapContainer">
           </div>
-          <div>
-              <p className="VisibleGeohashes">Geohashes in view: 
-              {this.state.visibleGeohashes.map((hash,i) => (<span key={i}>{hash}</span>))}
+          <div className="Controls">
+            <div>
+              <RootCatalogue root={this.props.root} selectCatalogue={this.selectCatalogue.bind(this)}/>
+            </div>
+            <div>
+              <p>Click on dates below to show bounding boxes of sentinel imagery take on that day. Selecting
+                the bounding boxes shows the radar imagery on the map.</p>
+            </div>
+            <div>
+              <p className="VisibleGeohashes">Geohashes in view:
+                {this.state.visibleGeohashes.map((hash, i) => (<span key={i}>{hash}</span>))}
               </p>
-          </div>
-          <div>
-              <p className="VisibleTimes">Times available in view: 
-              {this.state.visibleDates.map(
-                  (date,i) => (
-                      <span
-                          key={i} 
-                          onClick={() => this.selectDate(date)}
-                          className={'Time'+(this.state.selectedDate === date ? ' SelectedDate' : '')}>{date}</span>
-                  )
-              )}
+            </div>
+            <div>
+              <p className="VisibleTimes">Times available in view:
+                {this.state.visibleDates.map(
+                    (date, i) => (
+                        <span
+                            key={i}
+                            onClick={() => this.selectDate(date)}
+                            className={'Time' + (this.state.selectedDate === date ? ' SelectedDate' : '')}>{date}</span>
+                    )
+                )}
               </p>
+            </div>
+
+            <div>
+              <p>Number of STAC items
+                visible: {this.state.selectedDate === null ? 'choose a date above' : this.state.visibleFeatures.length}</p>
+            </div>
           </div>
 
-          <div>
-              <p>Number of STAC items visible: {this.state.selectedDate === null ? 'choose a date above' : this.state.visibleFeatures.length}</p>
-          </div>
         </div>
-
-      </div>
     );
   }
 

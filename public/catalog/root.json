@@ -6,7 +6,11 @@
             "rel": "self"
         }, 
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1.json",
+            "href": "catalog/dataset-S1.json",
+            "rel": "child"
+        },
+        {
+            "href": "catalog/dataset-S2.json",
             "rel": "child"
         }
     ], 
