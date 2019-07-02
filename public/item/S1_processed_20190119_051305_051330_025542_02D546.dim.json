@@ -1,0 +1,61 @@
+{
+    "assets": {
+        "band-0": {
+            "href": "https://pta.data.lit.fmi.fi/sen1/s1_grd_vh_prep/S1_processed_20190119_051305_051330_025542_02D546_VH.tif", 
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true", 
+            "title": "Band 0"
+        }, 
+        "band-1": {
+            "href": "https://pta.data.lit.fmi.fi/sen1/s1_grd_vv_prep/S1_processed_20190119_051305_051330_025542_02D546_VV.tif", 
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true", 
+            "title": "Band 1"
+        }
+    }, 
+    "links": [
+        {
+            "href": "https://stac.fmi.fi/stac/catalog/S1_processed_20190119_051305_051330_025542_02D546.dim.json", 
+            "rel": "self"
+        }
+    ], 
+    "geometry": {
+        "type": "Polygon", 
+        "coordinates": [
+            [
+                [
+                    15.817645, 
+                    67.417913
+                ], 
+                [
+                    16.753652, 
+                    65.24763
+                ], 
+                [
+                    23.162044, 
+                    65.547949
+                ], 
+                [
+                    22.803993, 
+                    67.751158
+                ], 
+                [
+                    15.817645, 
+                    67.417913
+                ]
+            ]
+        ]
+    }, 
+    "id": "S1_processed_20190119_051305_051330_025542_02D546", 
+    "bbox": [
+        15.81764419139886, 
+        65.24763147377698, 
+        23.162043579650703, 
+        67.75115914232957
+    ], 
+    "type": "Feature", 
+    "properties": {
+        "dtr:start_datetime": "2019-01-19T05:13:05.828478Z", 
+        "title": "BEAM-PRODUCT", 
+        "dtr:end_datetime": "2019-01-19T05:13:30.826965Z", 
+        "datetime": "2019-01-19T05:13:05.828478Z"
+    }
+}

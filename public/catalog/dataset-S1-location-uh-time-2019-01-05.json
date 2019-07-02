@@ -1,0 +1,37 @@
+{
+    "description": "FMI Sentinel catalog - dataset-S1-location-uh-time-2019-01-05", 
+    "links": [
+        {
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uh-time-2019-01-05.json", 
+            "rel": "self"
+        }, 
+        {
+            "href": "http://fmi.stac.fi/catalog/root.json", 
+            "rel": "root"
+        }, 
+        {
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uh.json", 
+            "rel": "parent"
+        }, 
+        {
+            "href": "http://fmi.stac.fi/item/S1_processed_20190105_052837_052952_025338_02CDE5.json", 
+            "rel": "item"
+        }
+    ], 
+    "id": "dataset-S1-location-uh-time-2019-01-05", 
+    "stac_version": "0.7.0", 
+    "bbox": [
+        9.356901660926741, 
+        65.33757604225877, 
+        22.351489541712933, 
+        71.24330908782566
+    ], 
+    "properties": {
+        "dtr:start_datetime": "2019-01-05T05:28:37.793227Z", 
+        "dtr:end_datetime": "2019-01-05T05:29:52.792464Z", 
+        "dimension": {
+            "value": "2019-01-05", 
+            "axis": "time"
+        }
+    }
+}
