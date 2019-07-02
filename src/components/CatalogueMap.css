@@ -1,0 +1,42 @@
+.CatalogueMap .CatalogueMapContainer {
+    width: 750px;
+    height: 500px;
+    margin: auto;
+}
+
+.CatalogueMap .VisibleGeohashes span {
+    padding-left: .3em;
+}
+
+.CatalogueMap .VisibleTimes {
+    line-height: 150%;
+}
+
+.CatalogueMap .VisibleTimes span {
+    margin-left: .3em;
+}
+
+.CatalogueMap .VisibleTimes span.Time {
+    display: inline-block;
+    cursor: pointer;
+    white-space: nowrap;
+    background: #567;
+    padding: .15em;
+    border-radius: .2em;
+    line-height: 1;
+}
+
+.CatalogueMap .VisibleTimes span.Time:hover {
+    background: #789;
+}
+
+.CatalogueMap .VisibleTimes span.SelectedDate {
+    background: #9ab;
+}
+
+.CatalogueMap .Controls {
+  text-align: left;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
