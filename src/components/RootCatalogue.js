@@ -20,7 +20,7 @@ export default class RootCatalogue extends Component {
         fetch(this.props.root)
             .then(response => response.json())
             .then((catalog) => {
-                var datasets = _.map(_.filter(catalog.links, l => l.rel === 'child'), l => l.href);
+                const datasets = _.map(_.filter(catalog.links, l => l.rel === 'child'), l => l.href);
                 this.setState({ catalog, datasets });
             });
     }

@@ -95,8 +95,8 @@ export default class CatalogueMap extends Component {
   }
 
   async componentDidMount() {
-    var catalogueFeatureLayerSource = new source.Vector({});
-    var catalogueFeatureLayer = new layer.Vector({
+    const catalogueFeatureLayerSource = new source.Vector({});
+    const catalogueFeatureLayer = new layer.Vector({
       source: catalogueFeatureLayerSource,
       style: feature => new style.Style({
         stroke: new style.Stroke({
@@ -111,7 +111,7 @@ export default class CatalogueMap extends Component {
       })
     });
 
-    var map = new Map({
+    const map = new Map({
       target: this.refs.mapContainer,
       layers: [
         catalogueFeatureLayer
@@ -127,15 +127,15 @@ export default class CatalogueMap extends Component {
 
     map.on('moveend', this.mapMoved.bind(this));
     //var capabilitiesResponse = await fetch('https://avoin-karttakuva.maanmittauslaitos.fi/avoin/wmts/1.0.0/WMTSCapabilities.xml', CACHE_POLICY);
-    var capabilitiesResponse = await fetch('/WMTSCapabilities.xml', CACHE_POLICY);
-    var parser = new format.WMTSCapabilities();
-    var capabilities = parser.read(await capabilitiesResponse.text());
-    var opts = optionsFromCapabilities(capabilities, {
+    const capabilitiesResponse = await fetch('/WMTSCapabilities.xml', CACHE_POLICY);
+    const parser = new format.WMTSCapabilities();
+    const capabilities = parser.read(await capabilitiesResponse.text());
+    const opts = optionsFromCapabilities(capabilities, {
       layer: 'taustakartta',
       matrixSet: 'WGS84_Pseudo-Mercator',
       requestEncoding: 'REST'
     });
-    var wmtsLayer = new layer.Tile({
+    const wmtsLayer = new layer.Tile({
       source: new source.WMTS(opts)
     });
     wmtsLayer.setZIndex(-1);
@@ -143,11 +143,11 @@ export default class CatalogueMap extends Component {
 
 
     // Map layer selection to adding cog layers
-    var that = this;
+    const that = this;
 
-    var cogLayersPerId = {};
+    const cogLayersPerId = {};
 
-    var selectionInteraction = new SelectInteraction({
+    const selectionInteraction = new SelectInteraction({
       condition: ConditionEvent.click,
       style: feature => new style.Style({
         stroke: new style.Stroke({
@@ -162,12 +162,12 @@ export default class CatalogueMap extends Component {
     });
     map.addInteraction(selectionInteraction);
     selectionInteraction.on('select', function (e) {
-      var selectedFeatures = e.target.getFeatures().getArray();
+      const selectedFeatures = e.target.getFeatures().getArray();
 
-      var layersBefore = _.keys(cogLayersPerId);
-      var selectedKeys = _.map(selectedFeatures, f => f.getId());
-      var layersToAdd = _.difference(selectedKeys, layersBefore);
-      var layersToRemove = _.difference(layersBefore, selectedKeys);
+      const layersBefore = _.keys(cogLayersPerId);
+      const selectedKeys = _.map(selectedFeatures, f => f.getId());
+      const layersToAdd = _.difference(selectedKeys, layersBefore);
+      const layersToRemove = _.difference(layersBefore, selectedKeys);
 
       that.removeLayersFromMap(layersToRemove, cogLayersPerId);
 
@@ -191,8 +191,8 @@ export default class CatalogueMap extends Component {
     _.each(layersToAdd, s => {
       cogLayersPerId[s] = 'pending';
 
-      var feature = _.find(selectedFeatures, f => f.getId() === s);
-      var stac = feature.get('stac_item');
+      const feature = _.find(selectedFeatures, f => f.getId() === s);
+      const stac = feature.get('stac_item');
 
       this.createCogLayer(stac).then(layer => {
         if (cogLayersPerId[s] !== 'pending') return;
@@ -203,18 +203,18 @@ export default class CatalogueMap extends Component {
   }
 
   async createCogLayer(stacJson) {
-    var asset = stacJson.assets[this.state.selectedBand] || stacJson.assets[_.keys(stacJson.assets)[0]];
-    var url = asset.href;
+    const asset = stacJson.assets[this.state.selectedBand] || stacJson.assets[_.keys(stacJson.assets)[0]];
+    const url = asset.href;
 
-    var tiff = await GeoTIFF.fromUrl(url);
-    var canvasLayer;
+    const tiff = await GeoTIFF.fromUrl(url);
+    let canvasLayer;
 
-    var retrievedData = {
+    const retrievedData = {
       forCounter: null,
       data: null
     };
 
-    var drawRetrievedData = function (extent, resolution, pixelRatio, size, projection) {
+    const drawRetrievedData = function (extent, resolution, pixelRatio, size, projection) {
       var params = {width: Math.floor(size[0]), height: Math.floor(size[1])};
 
       let canvas = document.createElement('canvas');
@@ -257,8 +257,8 @@ export default class CatalogueMap extends Component {
       return canvas;
     };
 
-    var counter = 0;
-    var canvasFunction = function (extent, resolution, pixelRatio, size, projection) {
+    let counter = 0;
+    const canvasFunction = function (extent, resolution, pixelRatio, size, projection) {
       var thisCounter = ++counter;
 
       if (retrievedData.forCounter === thisCounter) {
@@ -298,13 +298,13 @@ export default class CatalogueMap extends Component {
   }
 
   mapMoved(evt) {
-    var map = evt.map;
-    var extent = map.getView().calculateExtent(map.getSize());
+    const map = evt.map;
+    const extent = map.getView().calculateExtent(map.getSize());
 
-    var latLonMin = toLonLat([extent[0], extent[1]], MAP_PROJECTION);
-    var latLonMax = toLonLat([extent[2], extent[3]], MAP_PROJECTION);
+    const latLonMin = toLonLat([extent[0], extent[1]], MAP_PROJECTION);
+    const latLonMax = toLonLat([extent[2], extent[3]], MAP_PROJECTION);
 
-    var polygon = [[
+    const polygon = [[
       [latLonMin[0], latLonMin[1]],
       [latLonMin[0], latLonMax[1]],
       [latLonMax[0], latLonMax[1]],
@@ -312,7 +312,7 @@ export default class CatalogueMap extends Component {
       [latLonMin[0], latLonMin[1]]
     ]];
 
-    var that = this;
+    const that = this;
 
     // We really need just a percision of 2, but the library does not work with precision < 4
     geohashpoly({coords: polygon, precision: 4}, function (err, hashes) {
@@ -330,8 +330,8 @@ export default class CatalogueMap extends Component {
   }
 
   loadGeohashCatalogues(hashes) {
-    var that = this;
-    var promises = _.map(hashes, h => {
+    const that = this;
+    const promises = _.map(hashes, h => {
       if (that.state.catalogue != null) {
         var catalogueLink = _.find(that.state.catalogue.links,
             l => (l.rel === 'child' && _.isObject(l.dimension) && l.dimension.axis === 'geohash' && l.dimension.value === h));
@@ -348,12 +348,12 @@ export default class CatalogueMap extends Component {
     });
 
     function showItemBboxes(values) {
-      var dateCatalogs = _.reduce(values, (memo, v) => {
+      const dateCatalogs = _.reduce(values, (memo, v) => {
         _.each(v.links, l => memo.push(l));
         return memo;
       }, []);
-      var visibleDates = that.state.visibleDates;
-      var selectedDate = that.state.selectedDate;
+      const visibleDates = that.state.visibleDates;
+      let selectedDate = that.state.selectedDate;
       visibleDates.splice(0);
       _.each(dateCatalogs, c => {
         if (c.rel === 'child' && _.isObject(c.dimension) && c.dimension.axis === 'time') {
@@ -376,16 +376,16 @@ export default class CatalogueMap extends Component {
   }
 
   retrieveAndShowItems(selectedDate) {
-    var that = this;
-    var dateCatalogs = this.state.dateCatalogs;
+    const that = this;
+    let dateCatalogs = this.state.dateCatalogs;
 
-    var thisCounter = ++that.itemLoadCounter;
+    const thisCounter = ++that.itemLoadCounter;
 
     dateCatalogs = _.filter(dateCatalogs, c =>
         c.rel === 'child' && _.isObject(c.dimension) &&
         c.dimension.axis === 'time' && c.dimension.value === selectedDate);
 
-    var promises = _.map(dateCatalogs, link => {
+    const promises = _.map(dateCatalogs, link => {
       var url = link.href.substr('http://fmi.stac.fi'.length);
       return fetch(url, CACHE_POLICY).then(response => response.json());
     });
@@ -395,19 +395,19 @@ export default class CatalogueMap extends Component {
 
       that.clearFeatures();
 
-      var itemLinks = _.reduce(values, (memo, v) => {
+      let itemLinks = _.reduce(values, (memo, v) => {
         _.each(v.links, l => memo.push(l));
         return memo;
       }, []);
       itemLinks = _.filter(itemLinks, l => l.rel === 'item');
 
-      var uniqueItemLinks = _.uniqBy(itemLinks, 'href');
+      const uniqueItemLinks = _.uniqBy(itemLinks, 'href');
 
       _.each(uniqueItemLinks, async link => {
         // TODO: generalize!
-        var url = link.href.substr('http://fmi.stac.fi'.length).replace(/.json$/, '.dim.json');
-        var response = await fetch(url, CACHE_POLICY);
-        var json = await response.json();
+        const url = link.href.substr('http://fmi.stac.fi'.length).replace(/.json$/, '.dim.json');
+        const response = await fetch(url, CACHE_POLICY);
+        const json = await response.json();
 
         if (_.isEmpty(that.state.datasetBands)) {
           let datasetBands = _.sortBy(_.keys(json.assets));
@@ -416,7 +416,7 @@ export default class CatalogueMap extends Component {
         }
 
         if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
-        var feature = new GeoJSON().readFeatureFromObject(json, {
+        const feature = new GeoJSON().readFeatureFromObject(json, {
           dataProjection: 'EPSG:4326',
           featureProjection: MAP_PROJECTION
         });
@@ -427,14 +427,14 @@ export default class CatalogueMap extends Component {
   }
 
   clearFeatures() {
-    var visibleFeatures = this.state.visibleFeatures;
+    const visibleFeatures = this.state.visibleFeatures;
     this.state.catalogueFeatureLayerSource.clear();
     visibleFeatures.splice(0);
     this.setState({visibleFeatures});
   }
 
   addFeature(feature, stacJson) {
-    var visibleFeatures = this.state.visibleFeatures;
+    const visibleFeatures = this.state.visibleFeatures;
 
     feature.set('stac_item', stacJson);
 
@@ -467,7 +467,7 @@ export default class CatalogueMap extends Component {
 
   async selectCatalogue(catalogue) {
     if (catalogue != null) {
-      var tmp = await fetch(catalogue, CACHE_POLICY);
+      const tmp = await fetch(catalogue, CACHE_POLICY);
       catalogue = await tmp.json();
     }
 
