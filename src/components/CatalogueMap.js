@@ -9,6 +9,7 @@ import GeoJSON from 'ol/format/GeoJSON.js';
 
 import {fromLonLat, toLonLat} from 'ol/proj';
 import {optionsFromCapabilities} from 'ol/source/WMTS';
+import {DropdownButton, MenuItem} from 'react-bootstrap';
 
 import {Image as ImageLayer} from 'ol/layer.js'
 import {ImageCanvas as ImageCanvasSource} from 'ol/source.js';
@@ -44,6 +45,30 @@ register(proj4);
 const CACHE_POLICY = {};
 const MAP_PROJECTION = 'EPSG:3857';
 
+
+function BandDropDown(props) {
+  let bandDict = {
+    "band-0": "VH",
+    "band-1": "VV"
+  };
+
+  return (
+      <div>
+        <DropdownButton
+            bsize="small"
+            title={(bandDict[props.selectedBand] || props.selectedBand) || "No dataset or date selected"}
+            id="asd"
+        >
+          {props.bands.map(band =>
+              <MenuItem key={band}
+                        onSelect={() => props.onBandSelected(band)}>{bandDict[band] || band}</MenuItem>)
+          }
+        </DropdownButton>
+      </div>
+  )
+}
+
+
 export default class CatalogueMap extends Component {
 
   constructor(props) {
@@ -57,14 +82,16 @@ export default class CatalogueMap extends Component {
 
       catalogue: null,
       selectedDate: null,
+      selectedBand: null,
 
       dateCatalogs: [],
+      datasetBands: [],
 
       visibleDates: [],
       visibleFeatures: [],
       visibleGeohashes: []
     };
-    this.itemLoadCounter = 0
+    this.itemLoadCounter = 0;
   }
 
   async componentDidMount() {
@@ -142,34 +169,41 @@ export default class CatalogueMap extends Component {
       var layersToAdd = _.difference(selectedKeys, layersBefore);
       var layersToRemove = _.difference(layersBefore, selectedKeys);
 
-      _.each(layersToRemove, s => {
-        if (cogLayersPerId[s] !== 'pending') {
-          map.removeLayer(cogLayersPerId[s]);
-        }
-        delete cogLayersPerId[s];
-      });
+      that.removeLayersFromMap(layersToRemove, cogLayersPerId);
 
-      _.each(layersToAdd, s => {
-        cogLayersPerId[s] = 'pending';
-
-        var feature = _.find(selectedFeatures, f => f.getId() === s);
-        var stac = feature.get('stac_item');
-
-        that.createCogLayer(stac).then(layer => {
-          if (cogLayersPerId[s] !== 'pending') return;
-          map.addLayer(layer);
-          cogLayersPerId[s] = layer;
-        });
-      })
+      that.addLayersToMap(layersToAdd, cogLayersPerId, selectedFeatures);
     });
 
     this.setState({map, catalogueFeatureLayerSource, catalogueFeatureLayer, selectionInteraction, cogLayersPerId});
   }
 
 
+  removeLayersFromMap(layersToRemove, cogLayersPerId) {
+    _.each(layersToRemove, s => {
+      if (cogLayersPerId[s] !== 'pending') {
+        this.state.map.removeLayer(cogLayersPerId[s]);
+      }
+      delete cogLayersPerId[s];
+    });
+  }
+
+  addLayersToMap(layersToAdd, cogLayersPerId, selectedFeatures) {
+    _.each(layersToAdd, s => {
+      cogLayersPerId[s] = 'pending';
+
+      var feature = _.find(selectedFeatures, f => f.getId() === s);
+      var stac = feature.get('stac_item');
+
+      this.createCogLayer(stac).then(layer => {
+        if (cogLayersPerId[s] !== 'pending') return;
+        this.state.map.addLayer(layer);
+        cogLayersPerId[s] = layer;
+      });
+    })
+  }
+
   async createCogLayer(stacJson) {
-    // Just load the first asset
-    var asset = stacJson.assets['band-0'] || stacJson.assets[_.keys(stacJson.assets)[0]];
+    var asset = stacJson.assets[this.state.selectedBand] || stacJson.assets[_.keys(stacJson.assets)[0]];
     var url = asset.href;
 
     var tiff = await GeoTIFF.fromUrl(url);
@@ -313,7 +347,6 @@ export default class CatalogueMap extends Component {
       }
     });
 
-
     function showItemBboxes(values) {
       var dateCatalogs = _.reduce(values, (memo, v) => {
         _.each(v.links, l => memo.push(l));
@@ -375,6 +408,13 @@ export default class CatalogueMap extends Component {
         var url = link.href.substr('http://fmi.stac.fi'.length).replace(/.json$/, '.dim.json');
         var response = await fetch(url, CACHE_POLICY);
         var json = await response.json();
+
+        if (_.isEmpty(that.state.datasetBands)) {
+          let datasetBands = _.sortBy(_.keys(json.assets));
+          let selectedBand = datasetBands[0]; // Just take the first band initially
+          that.setState({datasetBands, selectedBand});
+        }
+
         if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
         var feature = new GeoJSON().readFeatureFromObject(json, {
           dataProjection: 'EPSG:4326',
@@ -430,9 +470,26 @@ export default class CatalogueMap extends Component {
       var tmp = await fetch(catalogue, CACHE_POLICY);
       catalogue = await tmp.json();
     }
-    this.setState({catalogue: catalogue},
+
+    if (!_.isEqual(catalogue, this.state.catalogue)) {
+      let datasetBands = this.state.datasetBands;
+      datasetBands.splice(0);
+      this.setState({selectedBand: null, datasetBands});
+    }
+    this.setState({catalogue},
         () => this.loadGeohashCatalogues(this.state.visibleGeohashes));
   }
+
+  selectBand(selectedBand) {
+    this.setState({selectedBand}, () => {
+      let cogLayersPerId = this.state.cogLayersPerId;
+      let layerKeys = _.keys(cogLayersPerId);
+      this.removeLayersFromMap(layerKeys, cogLayersPerId);
+      this.addLayersToMap(layerKeys, cogLayersPerId, this.state.selectionInteraction.getFeatures().getArray());
+      this.setState({cogLayersPerId});
+    });
+  }
+
 
   render() {
     return (
@@ -442,7 +499,7 @@ export default class CatalogueMap extends Component {
           </div>
           <div className="Controls">
             <div>
-              <RootCatalogue root={this.props.root} selectCatalogue={this.selectCatalogue.bind(this)}/>
+              <RootCatalogue root={this.props.root} selectCatalogue={catalogue => this.selectCatalogue(catalogue)}/>
             </div>
             <div>
               <p>Click on dates below to show bounding boxes of sentinel imagery take on that day. Selecting
@@ -469,6 +526,11 @@ export default class CatalogueMap extends Component {
             <div>
               <p>Number of STAC items
                 visible: {this.state.selectedDate === null ? 'choose a date above' : this.state.visibleFeatures.length}</p>
+            </div>
+            <div>
+              <h3>Choose band</h3>
+              <BandDropDown selectedBand={this.state.selectedBand} bands={this.state.datasetBands}
+                            onBandSelected={selectedBand => this.selectBand(selectedBand)}/>
             </div>
           </div>
 
