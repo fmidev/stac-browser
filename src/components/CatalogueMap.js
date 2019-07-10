@@ -11,6 +11,12 @@ import {fromLonLat, toLonLat} from 'ol/proj';
 import {optionsFromCapabilities} from 'ol/source/WMTS';
 import {DropdownButton, MenuItem} from 'react-bootstrap';
 
+import 'react-dates/initialize';
+import 'react-dates/lib/css/_datepicker.css';
+import {DateRangePicker} from 'react-dates';
+
+import moment from 'moment';
+
 import {Image as ImageLayer} from 'ol/layer.js'
 import {ImageCanvas as ImageCanvasSource} from 'ol/source.js';
 
@@ -44,6 +50,8 @@ register(proj4);
 //const CACHE_POLICY = {cache: "force-cache"};
 const CACHE_POLICY = {};
 const MAP_PROJECTION = 'EPSG:3857';
+const DATE_FORMAT = "YYYY-MM-DD";
+moment.defaultFormat = DATE_FORMAT;
 
 
 function BandDropDown(props) {
@@ -89,7 +97,11 @@ export default class CatalogueMap extends Component {
 
       visibleDates: [],
       visibleFeatures: [],
-      visibleGeohashes: []
+      visibleGeohashes: [],
+
+      startDate: null,
+      endDate: null,
+      focusedInput: null,
     };
     this.itemLoadCounter = 0;
   }
@@ -352,13 +364,13 @@ export default class CatalogueMap extends Component {
         _.each(v.links, l => memo.push(l));
         return memo;
       }, []);
-      const visibleDates = that.state.visibleDates;
+      let visibleDates = that.state.visibleDates;
       let selectedDate = that.state.selectedDate;
       visibleDates.splice(0);
       _.each(dateCatalogs, c => {
         if (c.rel === 'child' && _.isObject(c.dimension) && c.dimension.axis === 'time') {
-          if (visibleDates.indexOf(c.dimension.value) === -1) {
-            visibleDates.push(c.dimension.value);
+          if (visibleDates.map(date => date.format()).indexOf(c.dimension.value) === -1) {
+            visibleDates.push(moment(c.dimension.value).startOf('day'));
           }
         }
       });
@@ -450,6 +462,14 @@ export default class CatalogueMap extends Component {
       selectedDate = null;
     }
 
+    this.clearDatasetFeatures();
+
+    this.setState({selectedDate});
+    let selectedDateString = selectedDate != null ? selectedDate.format() : null;
+    this.retrieveAndShowItems(selectedDateString);
+  }
+
+  clearDatasetFeatures() {
     // Clear selection
     this.state.selectionInteraction.getFeatures().clear();
 
@@ -460,9 +480,14 @@ export default class CatalogueMap extends Component {
       }
       delete this.state.cogLayersPerId[k];
     });
+  }
 
-    this.setState({selectedDate});
-    this.retrieveAndShowItems(selectedDate);
+  selectDateRange(startDate, endDate) {
+    // moment("2019-06-20", DATE_FORMAT)
+    this.setState({startDate, endDate});
+    if (this.state.selectedDate < startDate || this.state.selectedDate > endDate) {
+      this.setState({selectedDate: null}, () => this.selectDate(null));
+    }
   }
 
   async selectCatalogue(catalogue) {
@@ -472,6 +497,8 @@ export default class CatalogueMap extends Component {
     }
 
     if (!_.isEqual(catalogue, this.state.catalogue)) {
+      this.clearDatasetFeatures();
+      this.clearFeatures();
       let datasetBands = this.state.datasetBands;
       datasetBands.splice(0);
       this.setState({selectedBand: null, datasetBands});
@@ -494,7 +521,7 @@ export default class CatalogueMap extends Component {
   render() {
     return (
         <div className="CatalogueMap">
-          <h1>{this.state.catalogue ? this.state.catalogue.description : '...'} {this.state.selectedDate ? 'at ' + this.state.selectedDate : ''}</h1>
+          <h1>{this.state.catalogue ? this.state.catalogue.description : '...'} {this.state.selectedDate ? 'at ' + this.state.selectedDate.format() : ''}</h1>
           <div className="CatalogueMapContainer" ref="mapContainer">
           </div>
           <div className="Controls">
@@ -511,13 +538,31 @@ export default class CatalogueMap extends Component {
               </p>
             </div>
             <div>
+              <p className="VisibleTimes">Dates within:</p>
+              <DateRangePicker
+                  startDateId="startDate"
+                  endDateId="endDate"
+                  displayFormat={DATE_FORMAT}
+                  startDate={this.state.startDate}
+                  endDate={this.state.endDate}
+                  onDatesChange={({startDate, endDate}) => {
+                    this.selectDateRange(startDate, endDate)
+                  }}
+                  focusedInput={this.state.focusedInput}
+                  onFocusChange={(focusedInput) => this.setState({focusedInput})}
+                  initialVisibleMonth={() => moment.min(this.state.visibleDates)}
+                  isOutsideRange={date => date < moment.min(this.state.visibleDates) || date > moment.max(this.state.visibleDates)}
+              />
               <p className="VisibleTimes">Times available in view:
-                {this.state.visibleDates.map(
+
+                {this.state.visibleDates
+                    .filter(date => date >= this.state.startDate && date <= this.state.endDate)
+                    .map(
                     (date, i) => (
                         <span
                             key={i}
                             onClick={() => this.selectDate(date)}
-                            className={'Time' + (this.state.selectedDate === date ? ' SelectedDate' : '')}>{date}</span>
+                            className={'Time' + (this.state.selectedDate === date ? ' SelectedDate' : '')}>{date.format()}</span>
                     )
                 )}
               </p>
