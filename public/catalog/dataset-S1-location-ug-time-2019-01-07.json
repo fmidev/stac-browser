@@ -1,41 +1,41 @@
 {
-    "description": "FMI Sentinel catalog - dataset-S1-location-ug-time-2019-01-07", 
-    "links": [
-        {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ug-time-2019-01-07.json", 
-            "rel": "self"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/catalog/root.json", 
-            "rel": "root"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ug.json", 
-            "rel": "parent"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/item/S1_processed_20190107_042216_042331_014383_01AC44.json", 
-            "rel": "item"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/item/S1_processed_20190107_042331_042413_014383_01AC44.json", 
-            "rel": "item"
-        }
-    ], 
-    "id": "dataset-S1-location-ug-time-2019-01-07", 
-    "stac_version": "0.7.0", 
-    "bbox": [
-        27.937775398110027, 
-        62.78031650013515, 
-        39.22594133317882, 
-        70.42846617034954
-    ], 
-    "properties": {
-        "dtr:start_datetime": "2019-01-07T04:22:16.727665Z", 
-        "dtr:end_datetime": "2019-01-07T04:24:11.511650Z", 
-        "dimension": {
-            "value": "2019-01-07", 
-            "axis": "time"
-        }
+  "stac_version": "0.7.0",
+  "id": "dataset-S1-location-ug-time-2019-01-07",
+  "links": [
+    {
+      "rel": "self",
+      "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ug-time-2019-01-07.json"
+    },
+    {
+      "rel": "root",
+      "href": "http://fmi.stac.fi/catalog/root.json"
+    },
+    {
+      "rel": "parent",
+      "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ug.json"
+    },
+    {
+      "rel": "item",
+      "href": "http://fmi.stac.fi/item/S1_processed_20190107_042216_042331_014383_01AC44.json"
+    },
+    {
+      "rel": "item",
+      "href": "http://fmi.stac.fi/item/S1_processed_20190107_042331_042413_014383_01AC44.json"
     }
+  ],
+    "bbox": [
+      27.937775398110027,
+      62.78031650013515,
+      39.22594133317882,
+        70.42846617034954
+    ],
+    "properties": {
+      "dtr:start_datetime": "2019-01-07T04:22:16.727665Z",
+      "dtr:end_datetime": "2019-01-07T04:24:11.511650Z",
+        "dimension": {
+          "axis": "time",
+          "value": "2019-01-07"
+        }
+    },
+  "description": "FMI Sentinel catalog - dataset-S1-location-ug-time-2019-01-07"
 }

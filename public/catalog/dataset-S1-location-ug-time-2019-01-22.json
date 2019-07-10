@@ -1,37 +1,37 @@
 {
-    "description": "FMI Sentinel catalog - dataset-S1-location-ug-time-2019-01-22", 
-    "links": [
-        {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ug-time-2019-01-22.json", 
-            "rel": "self"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/catalog/root.json", 
-            "rel": "root"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ug.json", 
-            "rel": "parent"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/item/S1_processed_20190122_151641_151756_025592_02D721.json", 
-            "rel": "item"
-        }
-    ], 
-    "id": "dataset-S1-location-ug-time-2019-01-22", 
-    "stac_version": "0.7.0", 
-    "bbox": [
-        29.183029622778207, 
-        62.97901165880305, 
-        38.97833801780411, 
-        68.43903106010116
-    ], 
-    "properties": {
-        "dtr:start_datetime": "2019-01-22T15:16:41.859170Z", 
-        "dtr:end_datetime": "2019-01-22T15:17:56.857630Z", 
-        "dimension": {
-            "value": "2019-01-22", 
-            "axis": "time"
-        }
+  "stac_version": "0.7.0",
+  "id": "dataset-S1-location-ug-time-2019-01-22",
+  "links": [
+    {
+      "rel": "self",
+      "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ug-time-2019-01-22.json"
+    },
+    {
+      "rel": "root",
+      "href": "http://fmi.stac.fi/catalog/root.json"
+    },
+    {
+      "rel": "parent",
+      "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ug.json"
+    },
+    {
+      "rel": "item",
+      "href": "http://fmi.stac.fi/item/S1_processed_20190122_151641_151756_025592_02D721.json"
     }
+  ],
+    "bbox": [
+      29.183029622778207,
+      62.97901165880305,
+      38.97833801780411,
+        68.43903106010116
+    ],
+    "properties": {
+      "dtr:start_datetime": "2019-01-22T15:16:41.859170Z",
+      "dtr:end_datetime": "2019-01-22T15:17:56.857630Z",
+        "dimension": {
+          "axis": "time",
+          "value": "2019-01-22"
+        }
+    },
+  "description": "FMI Sentinel catalog - dataset-S1-location-ug-time-2019-01-22"
 }

@@ -1,41 +1,41 @@
 {
-    "description": "FMI Sentinel catalog - dataset-S1-location-uk-time-2019-01-08", 
-    "links": [
-        {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uk-time-2019-01-08.json", 
-            "rel": "self"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/catalog/root.json", 
-            "rel": "root"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uk.json", 
-            "rel": "parent"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/item/S1_processed_20190108_050253_050412_014398_01ACC1.json", 
-            "rel": "item"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/item/S1_processed_20190108_162204_162258_014405_01AD00.json", 
-            "rel": "item"
-        }
-    ], 
-    "id": "dataset-S1-location-uk-time-2019-01-08", 
-    "stac_version": "0.7.0", 
-    "bbox": [
-        11.550443553967892, 
-        63.75868615449068, 
-        28.573459102613015, 
-        72.10916564371615
-    ], 
-    "properties": {
-        "dtr:start_datetime": "2019-01-08T05:02:54.826555Z", 
-        "dtr:end_datetime": "2019-01-08T16:22:58.182477Z", 
-        "dimension": {
-            "value": "2019-01-08", 
-            "axis": "time"
-        }
+  "stac_version": "0.7.0",
+  "id": "dataset-S1-location-uk-time-2019-01-08",
+  "links": [
+    {
+      "rel": "self",
+      "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uk-time-2019-01-08.json"
+    },
+    {
+      "rel": "root",
+      "href": "http://fmi.stac.fi/catalog/root.json"
+    },
+    {
+      "rel": "parent",
+      "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uk.json"
+    },
+    {
+      "rel": "item",
+      "href": "http://fmi.stac.fi/item/S1_processed_20190108_162204_162258_014405_01AD00.json"
+    },
+    {
+      "rel": "item",
+      "href": "http://fmi.stac.fi/item/S1_processed_20190108_050253_050412_014398_01ACC1.json"
     }
+  ],
+    "bbox": [
+      11.550443553967892,
+      63.75868615449068,
+      28.573459102613015,
+        72.10916564371615
+    ],
+    "properties": {
+      "dtr:start_datetime": "2019-01-08T05:02:54.826555Z",
+      "dtr:end_datetime": "2019-01-08T16:22:58.182477Z",
+        "dimension": {
+          "axis": "time",
+          "value": "2019-01-08"
+        }
+    },
+  "description": "FMI Sentinel catalog - dataset-S1-location-uk-time-2019-01-08"
 }

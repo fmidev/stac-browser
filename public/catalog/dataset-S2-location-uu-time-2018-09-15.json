@@ -1,0 +1,37 @@
+{
+  "stac_version": "0.7.0",
+  "id": "dataset-S2-location-uu-time-2018-09-15",
+  "links": [
+    {
+      "rel": "self",
+      "href": "http://fmi.stac.fi/catalog/dataset-S2-location-uu-time-2018-09-15.json"
+    },
+    {
+      "rel": "root",
+      "href": "http://fmi.stac.fi/catalog/root.json"
+    },
+    {
+      "rel": "parent",
+      "href": "http://fmi.stac.fi/catalog/dataset-S2-location-uu.json"
+    },
+    {
+      "rel": "item",
+      "href": "http://fmi.stac.fi/item/S2_20180915_20181015.json"
+    }
+  ],
+  "bbox": [
+    15.200105674617218,
+    59.39904634524875,
+    37.37243307918897,
+    70.46558981691138
+  ],
+  "properties": {
+    "dtr:start_datetime": "2018-09-15T00:00:00.000000Z",
+    "dtr:end_datetime": "2018-10-15T00:00:00.000000Z",
+    "dimension": {
+      "axis": "time",
+      "value": "2018-09-15"
+    }
+  },
+  "description": "FMI Sentinel catalog - dataset-S2-location-uu-time-2018-09-15"
+}

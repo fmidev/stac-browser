@@ -1,29 +1,29 @@
 {
-    "description": "FMI Sentinel catalog", 
+    "stac_version": "0.7.0",
+    "id": "root",
     "links": [
         {
-            "href": "http://fmi.stac.fi/catalog/root.json", 
-            "rel": "self"
-        }, 
-        {
-            "href": "catalog/dataset-S1.json",
-            "rel": "child"
+            "rel": "self",
+            "href": "catalog/root.json"
         },
         {
-            "href": "catalog/dataset-S2.json",
-            "rel": "child"
+            "rel": "child",
+            "href": "catalog/dataset-S1.json"
+        },
+        {
+            "rel": "child",
+            "href": "catalog/dataset-S2.json"
         }
-    ], 
-    "id": "root", 
-    "stac_version": "0.7.0", 
+    ],
     "bbox": [
-        8.815496693966173, 
-        56.92981001305378, 
-        40.38761684054702, 
+        8.815496693966173,
+        56.92981001305378,
+        40.38761684054702,
         72.53513206067946
-    ], 
+    ],
     "properties": {
-        "dtr:start_datetime": "2019-01-01T04:22:42.013300Z", 
-        "dtr:end_datetime": "2019-01-31T05:15:10.453590Z"
-    }
+        "dtr:start_datetime": "2018-04-01T00:00:00.000000Z",
+        "dtr:end_datetime": "2019-06-30T16:29:59.024862Z"
+    },
+    "description": "FMI Sentinel catalog"
 }

@@ -1,0 +1,37 @@
+{
+  "stac_version": "0.7.0",
+  "id": "dataset-S1-location-u6-time-2019-06-30",
+  "links": [
+    {
+      "rel": "self",
+      "href": "http://fmi.stac.fi/catalog/dataset-S1-location-u6-time-2019-06-30.json"
+    },
+    {
+      "rel": "root",
+      "href": "http://fmi.stac.fi/catalog/root.json"
+    },
+    {
+      "rel": "parent",
+      "href": "http://fmi.stac.fi/catalog/dataset-S1-location-u6.json"
+    },
+    {
+      "rel": "item",
+      "href": "http://fmi.stac.fi/item/S1_processed_20190630_162929_162959_016928_01FDB8.json"
+    }
+  ],
+  "bbox": [
+    13.18971039175697,
+    60.769488740609326,
+    19.687100428410247,
+    63.57014201061214
+  ],
+  "properties": {
+    "dtr:start_datetime": "2019-06-30T16:29:31.223718Z",
+    "dtr:end_datetime": "2019-06-30T16:29:59.024862Z",
+    "dimension": {
+      "axis": "time",
+      "value": "2019-06-30"
+    }
+  },
+  "description": "FMI Sentinel catalog - dataset-S1-location-u6-time-2019-06-30"
+}

@@ -1,105 +1,105 @@
 {
-    "description": "FMI Sentinel catalog - dataset-S1", 
+    "stac_version": "0.7.0",
+    "id": "dataset-S1",
     "links": [
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1.json", 
-            "rel": "self"
-        }, 
+            "rel": "self",
+            "href": "http://fmi.stac.fi/catalog/dataset-S1.json"
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/root.json", 
-            "rel": "root"
-        }, 
+            "rel": "root",
+            "href": "http://fmi.stac.fi/catalog/root.json"
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uh.json", 
+            "rel": "child",
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uu.json",
             "dimension": {
-                "value": "uh", 
-                "axis": "geohash"
-            }, 
-            "rel": "child"
-        }, 
+                "axis": "geohash",
+                "value": "uu"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uk.json", 
+            "rel": "child",
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-us.json",
             "dimension": {
-                "value": "uk", 
-                "axis": "geohash"
-            }, 
-            "rel": "child"
-        }, 
+                "axis": "geohash",
+                "value": "us"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ue.json", 
+            "rel": "child",
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ud.json",
             "dimension": {
-                "value": "ue", 
-                "axis": "geohash"
-            }, 
-            "rel": "child"
-        }, 
+                "axis": "geohash",
+                "value": "ud"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ud.json", 
+            "rel": "child",
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ue.json",
             "dimension": {
-                "value": "ud", 
-                "axis": "geohash"
-            }, 
-            "rel": "child"
-        }, 
+                "axis": "geohash",
+                "value": "ue"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ug.json", 
+            "rel": "child",
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-ug.json",
             "dimension": {
-                "value": "ug", 
-                "axis": "geohash"
-            }, 
-            "rel": "child"
-        }, 
+                "axis": "geohash",
+                "value": "ug"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf.json", 
+            "rel": "child",
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf.json",
             "dimension": {
-                "value": "uf", 
-                "axis": "geohash"
-            }, 
-            "rel": "child"
-        }, 
+                "axis": "geohash",
+                "value": "uf"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-us.json", 
+            "rel": "child",
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-u7.json",
             "dimension": {
-                "value": "us", 
-                "axis": "geohash"
-            }, 
-            "rel": "child"
-        }, 
+                "axis": "geohash",
+                "value": "u7"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uu.json", 
+            "rel": "child",
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uk.json",
             "dimension": {
-                "value": "uu", 
-                "axis": "geohash"
-            }, 
-            "rel": "child"
-        }, 
+                "axis": "geohash",
+                "value": "uk"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-u7.json", 
+            "rel": "child",
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-u6.json",
             "dimension": {
-                "value": "u7", 
-                "axis": "geohash"
-            }, 
-            "rel": "child"
-        }, 
+                "axis": "geohash",
+                "value": "u6"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-u6.json", 
+            "rel": "child",
+            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uh.json",
             "dimension": {
-                "value": "u6", 
-                "axis": "geohash"
-            }, 
-            "rel": "child"
+                "axis": "geohash",
+                "value": "uh"
+            }
         }
-    ], 
-    "id": "dataset-S1", 
-    "stac_version": "0.7.0", 
+    ],
     "bbox": [
-        8.815496693966173, 
-        56.92981001305378, 
-        40.38761684054702, 
+        8.815496693966173,
+        56.92981001305378,
+        40.38761684054702,
         72.53513206067946
-    ], 
+    ],
     "properties": {
-        "dtr:start_datetime": "2019-01-01T04:22:42.013300Z", 
-        "dtr:end_datetime": "2019-01-31T05:15:10.453590Z"
-    }
+        "dtr:start_datetime": "2019-01-01T04:22:42.013300Z",
+        "dtr:end_datetime": "2019-06-30T16:29:59.024862Z"
+    },
+    "description": "FMI Sentinel catalog - dataset-S1"
 }

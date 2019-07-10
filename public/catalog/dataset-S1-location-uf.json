@@ -1,105 +1,105 @@
 {
-    "description": "FMI Sentinel catalog - dataset-S1-location-uf", 
+  "stac_version": "0.7.0",
+  "id": "dataset-S1-location-uf",
     "links": [
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf.json", 
-            "rel": "self"
-        }, 
+          "rel": "self",
+          "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf.json"
+        },
+      {
+        "rel": "root",
+        "href": "http://fmi.stac.fi/catalog/root.json"
+      },
         {
-            "href": "http://fmi.stac.fi/catalog/root.json", 
-            "rel": "root"
-        }, 
+          "rel": "parent",
+          "href": "http://fmi.stac.fi/catalog/dataset-S1.json"
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1.json", 
-            "rel": "parent"
-        }, 
+          "rel": "child",
+          "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-09.json",
+          "dimension": {
+            "axis": "time",
+            "value": "2019-01-09"
+          }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-14.json", 
+          "rel": "child",
+          "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-02.json",
             "dimension": {
-                "value": "2019-01-14", 
-                "axis": "time"
-            }, 
-            "rel": "child"
-        }, 
+              "axis": "time",
+              "value": "2019-01-02"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-15.json", 
+          "rel": "child",
+          "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-27.json",
             "dimension": {
-                "value": "2019-01-15", 
-                "axis": "time"
-            }, 
-            "rel": "child"
-        }, 
+              "axis": "time",
+              "value": "2019-01-27"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-03.json", 
+          "rel": "child",
+          "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-03.json",
             "dimension": {
-                "value": "2019-01-03", 
-                "axis": "time"
-            }, 
-            "rel": "child"
-        }, 
+              "axis": "time",
+              "value": "2019-01-03"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-02.json", 
+          "rel": "child",
+          "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-21.json",
             "dimension": {
-                "value": "2019-01-02", 
-                "axis": "time"
-            }, 
-            "rel": "child"
-        }, 
+              "axis": "time",
+              "value": "2019-01-21"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-27.json", 
+          "rel": "child",
+          "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-15.json",
             "dimension": {
-                "value": "2019-01-27", 
-                "axis": "time"
-            }, 
-            "rel": "child"
-        }, 
+              "axis": "time",
+              "value": "2019-01-15"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-09.json", 
+          "rel": "child",
+          "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-14.json",
             "dimension": {
-                "value": "2019-01-09", 
-                "axis": "time"
-            }, 
-            "rel": "child"
-        }, 
+              "axis": "time",
+              "value": "2019-01-14"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-08.json", 
+          "rel": "child",
+          "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-08.json",
             "dimension": {
-                "value": "2019-01-08", 
-                "axis": "time"
-            }, 
-            "rel": "child"
-        }, 
+              "axis": "time",
+              "value": "2019-01-08"
+            }
+        },
         {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-21.json", 
+          "rel": "child",
+          "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-20.json",
             "dimension": {
-                "value": "2019-01-21", 
-                "axis": "time"
-            }, 
-            "rel": "child"
-        }, 
-        {
-            "href": "http://fmi.stac.fi/catalog/dataset-S1-location-uf-time-2019-01-20.json", 
-            "dimension": {
-                "value": "2019-01-20", 
-                "axis": "time"
-            }, 
-            "rel": "child"
+              "axis": "time",
+              "value": "2019-01-20"
+            }
         }
-    ], 
-    "id": "dataset-S1-location-uf", 
-    "stac_version": "0.7.0", 
+    ],
     "bbox": [
-        28.16172317157686, 
-        57.061784626189315, 
-        38.49959395958468, 
+      28.16172317157686,
+      57.061784626189315,
+      38.49959395958468,
         64.58202980886102
-    ], 
+    ],
     "properties": {
-        "dtr:start_datetime": "2019-01-02T15:30:53.978434Z", 
-        "dtr:end_datetime": "2019-01-27T15:24:54.647177Z", 
+      "dtr:start_datetime": "2019-01-02T15:30:53.978434Z",
+      "dtr:end_datetime": "2019-01-27T15:24:54.647177Z",
         "dimension": {
-            "value": "uf", 
-            "axis": "geohash"
+          "axis": "geohash",
+          "value": "uf"
         }
-    }
+    },
+  "description": "FMI Sentinel catalog - dataset-S1-location-uf"
 }

@@ -303,7 +303,7 @@ export default class CatalogueMap extends Component {
         projection: 'EPSG:3067'
       }),
       // TODO: bbox?
-      opacity: 0.8
+      opacity: 0.85
     });
 
     return canvasLayer;
@@ -417,7 +417,7 @@ export default class CatalogueMap extends Component {
 
       _.each(uniqueItemLinks, async link => {
         // TODO: generalize!
-        const url = link.href.substr('http://fmi.stac.fi'.length).replace(/.json$/, '.dim.json');
+        const url = link.href.substr('http://fmi.stac.fi'.length);
         const response = await fetch(url, CACHE_POLICY);
         const json = await response.json();
 

@@ -1,0 +1,37 @@
+{
+  "stac_version": "0.7.0",
+  "id": "dataset-S2-location-u6-time-2018-05-01",
+  "links": [
+    {
+      "rel": "self",
+      "href": "http://fmi.stac.fi/catalog/dataset-S2-location-u6-time-2018-05-01.json"
+    },
+    {
+      "rel": "root",
+      "href": "http://fmi.stac.fi/catalog/root.json"
+    },
+    {
+      "rel": "parent",
+      "href": "http://fmi.stac.fi/catalog/dataset-S2-location-u6.json"
+    },
+    {
+      "rel": "item",
+      "href": "http://fmi.stac.fi/item/S2_20180501_20180531.json"
+    }
+  ],
+  "bbox": [
+    15.19974718106031,
+    59.39912471357986,
+    37.37252253264812,
+    70.46576933756984
+  ],
+  "properties": {
+    "dtr:start_datetime": "2018-05-01T00:00:00.000000Z",
+    "dtr:end_datetime": "2018-05-31T00:00:00.000000Z",
+    "dimension": {
+      "axis": "time",
+      "value": "2018-05-01"
+    }
+  },
+  "description": "FMI Sentinel catalog - dataset-S2-location-u6-time-2018-05-01"
+}
