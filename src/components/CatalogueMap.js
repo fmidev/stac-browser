@@ -189,6 +189,12 @@ export default class CatalogueMap extends Component {
     this.setState({map, catalogueFeatureLayerSource, catalogueFeatureLayer, selectionInteraction, cogLayersPerId});
   }
 
+  processLink(link) {
+    if (window.location.href.startsWith('http://localhost:3000/') && link.startsWith('https://pta.data.lit.fmi.fi/stac/')) {
+      link = link.substring('https://pta.data.lit.fmi.fi/stac'.length);
+    }
+    return link;
+  }
 
   removeLayersFromMap(layersToRemove, cogLayersPerId) {
     _.each(layersToRemove, s => {
@@ -354,7 +360,7 @@ export default class CatalogueMap extends Component {
           return;
         }
 
-        url = catalogueLink.href.substr('http://fmi.stac.fi'.length);
+        url = that.processLink(catalogueLink.href);
         return fetch(url, CACHE_POLICY).then(response => response.json());
       }
     });
@@ -398,7 +404,7 @@ export default class CatalogueMap extends Component {
         c.dimension.axis === 'time' && c.dimension.value === selectedDate);
 
     const promises = _.map(dateCatalogs, link => {
-      var url = link.href.substr('http://fmi.stac.fi'.length);
+      var url = that.processLink(link.href);
       return fetch(url, CACHE_POLICY).then(response => response.json());
     });
 
@@ -416,8 +422,7 @@ export default class CatalogueMap extends Component {
       const uniqueItemLinks = _.uniqBy(itemLinks, 'href');
 
       _.each(uniqueItemLinks, async link => {
-        // TODO: generalize!
-        const url = link.href.substr('http://fmi.stac.fi'.length);
+        const url = that.processLink(link.href);
         const response = await fetch(url, CACHE_POLICY);
         const json = await response.json();
 
@@ -492,7 +497,7 @@ export default class CatalogueMap extends Component {
 
   async selectCatalogue(catalogue) {
     if (catalogue != null) {
-      const tmp = await fetch(catalogue, CACHE_POLICY);
+      const tmp = await fetch(this.processLink(catalogue), CACHE_POLICY);
       catalogue = await tmp.json();
     }
 
