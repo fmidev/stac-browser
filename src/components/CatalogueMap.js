@@ -244,16 +244,24 @@ export default class CatalogueMap extends Component {
 
       var data = retrievedData.data[0];
 
+      var datasetClass = stacJson.id.substring(0,2);
 
-      /** Dynamic min/max values, downside: fluctuations
-       var min = _.min(data);
-       var max = _.max(data);
-       if (min === max) { max = min + 1; }
-       console.log('min, max = ',min, max)
-       */
-
-      var min = -25;
-      var max = 10;
+      var min, max;
+      switch(datasetClass) {
+      case 'S1':
+        min = -25;
+        max = 10;
+        break;
+      case 'S2':
+        min = 0;
+        max = 255;
+        break;
+      default:
+        min = _.min(data);
+        max = _.max(data);
+        if (min === max) { max = min + 1; }
+        break;
+      }
 
       for (var x = 0; x < params.width; x++) {
         for (var y = 0; y < params.height; y++) {
