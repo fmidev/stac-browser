@@ -34,7 +34,7 @@ export default class RootCatalogue extends Component {
     render() {
         return (
             <div className="RootCatalogue">
-                <h1>Choose your dataset</h1>
+                <h1>Choose the dataset</h1>
                 <div className="AvailableDatasets">
                     {this.state.datasets.map((dataset, index) => (
                         <span className={'Dataset'+ (this.state.selectedDataset === dataset ? ' SelectedDataset' : '')} key={index} onClick={() => this.selectDataset(dataset)}>{dataset}</span>
