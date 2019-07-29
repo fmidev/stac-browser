@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import DatasetCatalogue from './DatasetCatalogue';
-
 import * as _ from 'lodash';
 
 import './RootCatalogue.css';
@@ -41,7 +39,6 @@ export default class RootCatalogue extends Component {
                     {this.state.datasets.map((dataset, index) => (
                         <span className={'Dataset'+ (this.state.selectedDataset === dataset ? ' SelectedDataset' : '')} key={index} onClick={() => this.selectDataset(dataset)}>{dataset}</span>
                     ))}
-                    <DatasetCatalogue dataset={this.state.selectedDataset} />
                 </div>
             </div>
         );
