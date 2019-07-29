@@ -229,6 +229,7 @@ export default class CatalogueMap extends Component {
 
     const retrievedData = {
       forCounter: null,
+      forChecksum: null,
       data: null
     };
 
@@ -283,11 +284,24 @@ export default class CatalogueMap extends Component {
       return canvas;
     };
 
+    function calculateChecksum(obj) {
+      var tmp = JSON.stringify(obj);
+      var hash = 0, i, chr;
+      if (tmp.length === 0) return hash;
+      for (i = 0; i < tmp.length; i++) {
+        chr   = tmp.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+      }
+      return hash;
+    }
+
     let counter = 0;
     const canvasFunction = function (extent, resolution, pixelRatio, size, projection) {
       var thisCounter = ++counter;
+      var thisChecksum = calculateChecksum({extent, resolution, pixelRatio, size, projection});
 
-      if (retrievedData.forCounter === thisCounter) {
+      if (retrievedData.forCounter === thisCounter && retrievedData.forChecksum === thisChecksum) {
         return drawRetrievedData(extent, resolution, pixelRatio, size, projection);
 
       } else {
@@ -300,6 +314,7 @@ export default class CatalogueMap extends Component {
             return;
           }
           retrievedData.forCounter = thisCounter + 1;
+          retrievedData.forChecksum = thisChecksum;
           retrievedData.data = data;
           canvasLayer.getSource().changed();
         });
