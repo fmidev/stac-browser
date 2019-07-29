@@ -541,57 +541,63 @@ export default class CatalogueMap extends Component {
             <div>
               <RootCatalogue root={this.props.root} selectCatalogue={catalogue => this.selectCatalogue(catalogue)}/>
             </div>
-            <div>
-              <p>Click on dates below to show bounding boxes of sentinel imagery take on that day. Selecting
-                the bounding boxes shows the radar imagery on the map.</p>
-            </div>
-            <div>
-              <p className="VisibleGeohashes">Geohashes in view:
-                {this.state.visibleGeohashes.map((hash, i) => (<span key={i}>{hash}</span>))}
-              </p>
-            </div>
-            <div>
-              <p className="VisibleTimes">Dates within:</p>
-              <DateRangePicker
-                  startDateId="startDate"
-                  endDateId="endDate"
-                  displayFormat={DATE_FORMAT}
-                  startDate={this.state.startDate}
-                  endDate={this.state.endDate}
-                  onDatesChange={({startDate, endDate}) => {
-                    this.selectDateRange(startDate, endDate)
-                  }}
-                  focusedInput={this.state.focusedInput}
-                  onFocusChange={(focusedInput) => this.setState({focusedInput})}
-                  initialVisibleMonth={() => moment.min(this.state.visibleDates)}
-                  isOutsideRange={date => date < moment.min(this.state.visibleDates) || date > moment.max(this.state.visibleDates)}
-              />
-              <p className="VisibleTimes">Times available in view:
+            {this.state.catalogue ? 
+              <div>
+              <div>
+                <h2>Selected catalog {this.state.catalogue.description}</h2>
+                <p>The catalogue spans {this.state.catalogue.properties['dtr:start_datetime']} - {this.state.catalogue.properties['dtr:end_datetime']}</p>
+              </div>
+              <div>
+                <p>Click on dates below to show bounding boxes of sentinel imagery take on that day. Selecting
+                  the bounding boxes shows the radar imagery on the map.</p>
+              </div>
+              <div>
+                <p className="VisibleGeohashes">Geohashes in view:
+                  {this.state.visibleGeohashes.map((hash, i) => (<span key={i}>{hash}</span>))}
+                </p>
+              </div>
+              <div>
+                <p className="VisibleTimes">Dates within:</p>
+                <DateRangePicker
+                    startDateId="startDate"
+                    endDateId="endDate"
+                    displayFormat={DATE_FORMAT}
+                    startDate={this.state.startDate}
+                    endDate={this.state.endDate}
+                    onDatesChange={({startDate, endDate}) => {
+                      this.selectDateRange(startDate, endDate)
+                    }}
+                    focusedInput={this.state.focusedInput}
+                    onFocusChange={(focusedInput) => this.setState({focusedInput})}
+                    initialVisibleMonth={() => moment.min(this.state.visibleDates)}
+                    isOutsideRange={date => date < moment.min(this.state.visibleDates) || date > moment.max(this.state.visibleDates)}
+                />
+                <p className="VisibleTimes">Times available in view:
 
-                {this.state.visibleDates
-                    .filter(date => date >= this.state.startDate && date <= this.state.endDate)
-                    .map(
-                    (date, i) => (
-                        <span
-                            key={i}
-                            onClick={() => this.selectDate(date)}
-                            className={'Time' + (this.state.selectedDate === date ? ' SelectedDate' : '')}>{date.format()}</span>
-                    )
-                )}
-              </p>
-            </div>
+                  {this.state.visibleDates
+                      .filter(date => date >= this.state.startDate && date <= this.state.endDate)
+                      .map(
+                      (date, i) => (
+                          <span
+                              key={i}
+                              onClick={() => this.selectDate(date)}
+                              className={'Time' + (this.state.selectedDate === date ? ' SelectedDate' : '')}>{date.format()}</span>
+                      )
+                  )}
+                </p>
+              </div>
 
-            <div>
-              <p>Number of STAC items
-                visible: {this.state.selectedDate === null ? 'choose a date above' : this.state.visibleFeatures.length}</p>
-            </div>
-            <div>
-              <h3>Choose band</h3>
-              <BandDropDown selectedBand={this.state.selectedBand} bands={this.state.datasetBands}
-                            onBandSelected={selectedBand => this.selectBand(selectedBand)}/>
-            </div>
+              <div>
+                <p>Number of STAC items
+                  visible: {this.state.selectedDate === null ? 'choose a date above' : this.state.visibleFeatures.length}</p>
+              </div>
+              <div>
+                <h3>Choose band</h3>
+                <BandDropDown selectedBand={this.state.selectedBand} bands={this.state.datasetBands}
+                              onBandSelected={selectedBand => this.selectBand(selectedBand)}/>
+              </div>
+            </div> : <div></div>}
           </div>
-
         </div>
     );
   }
