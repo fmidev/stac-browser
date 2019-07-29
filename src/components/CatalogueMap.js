@@ -191,6 +191,8 @@ export default class CatalogueMap extends Component {
   processLink(link) {
     if (window.location.href.startsWith('http://localhost:3000/') && link.startsWith('https://pta.data.lit.fmi.fi/stac/')) {
       link = link.substring('https://pta.data.lit.fmi.fi/stac'.length);
+    } else if (window.location.href.startsWith('https://stac-proto.spatineo-devops.com/') && link.startsWith('https://pta.data.lit.fmi.fi/stac/')) {
+      link = link.substring('https://pta.data.lit.fmi.fi/stac'.length);
     }
     return link;
   }
