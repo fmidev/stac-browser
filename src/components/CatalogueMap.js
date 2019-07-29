@@ -394,17 +394,22 @@ export default class CatalogueMap extends Component {
       }, []);
       let visibleDates = that.state.visibleDates;
       let selectedDate = that.state.selectedDate;
+
+      let dateCache = {};
+
       visibleDates.splice(0);
       _.each(dateCatalogs, c => {
         if (c.rel === 'child' && _.isObject(c.dimension) && c.dimension.axis === 'time') {
-          if (visibleDates.map(date => date.format()).indexOf(c.dimension.value) === -1) {
-            visibleDates.push(moment(c.dimension.value).startOf('day'));
+          if (!dateCache[c.dimension.value]) {
+            var startOfDay = moment(c.dimension.value).startOf('day');
+            visibleDates.push(startOfDay);
+            dateCache[c.dimension.value] = 1;
           }
         }
       });
       visibleDates.sort((a,b) => a.diff(b));
       
-      if (visibleDates.indexOf(selectedDate) === -1) {
+      if (!_.find(visibleDates, d => d.isSame(selectedDate, 'day'))) {
         selectedDate = null;
       }
       that.setState({visibleDates, selectedDate, dateCatalogs});
@@ -422,9 +427,15 @@ export default class CatalogueMap extends Component {
 
     const thisCounter = ++that.itemLoadCounter;
 
+    var momentSelectedDate = null;
+    if (selectedDate) {
+      momentSelectedDate = moment(selectedDate);
+    }
+
     dateCatalogs = _.filter(dateCatalogs, c =>
         c.rel === 'child' && _.isObject(c.dimension) &&
-        c.dimension.axis === 'time' && c.dimension.value === selectedDate);
+        c.dimension.axis === 'time' &&
+        (selectedDate && momentSelectedDate.isSame(c.dimension.value, 'day')));
 
     const promises = _.map(dateCatalogs, link => {
       var url = that.processLink(link.href);
@@ -545,7 +556,6 @@ export default class CatalogueMap extends Component {
     });
   }
 
-
   render() {
     return (
         <div className="CatalogueMap">
@@ -582,7 +592,6 @@ export default class CatalogueMap extends Component {
                     isOutsideRange={date => date < moment.min(this.state.visibleDates) || date > moment.max(this.state.visibleDates)}
                 />
                 <p className="VisibleTimes">Times available in view:
-
                   {this.state.visibleDates
                       .filter(date => date.isBetween(this.state.startDate, this.state.endDate, 'day', '[]'))
                       .map(
@@ -590,7 +599,7 @@ export default class CatalogueMap extends Component {
                           <span
                               key={i}
                               onClick={() => this.selectDate(date)}
-                              className={'Time' + (this.state.selectedDate === date ? ' SelectedDate' : '')}>{date.format()}</span>
+                              className={'Time' + (date.isSame(this.state.selectedDate, 'day') ? ' SelectedDate' : '')}>{date.format()}</span>
                       )
                   )}
                 </p>
