@@ -27,7 +27,6 @@ import * as ConditionEvent from 'ol/events/condition';
 import * as geohashpoly from 'geohash-poly';
 
 import RootCatalogue from './RootCatalogue';
-//import * as moment from 'moment';
 import * as _ from 'lodash';
 
 import 'ol/ol.css';
@@ -133,7 +132,7 @@ export default class CatalogueMap extends Component {
         center: fromLonLat([24.95, 65.23]),
         zoom: 6,
         minZoom: 4,
-        maxZoom: 20
+        maxZoom: 10
       })
     });
 
@@ -403,7 +402,8 @@ export default class CatalogueMap extends Component {
           }
         }
       });
-      visibleDates.sort();
+      visibleDates.sort((a,b) => a.diff(b));
+      
       if (visibleDates.indexOf(selectedDate) === -1) {
         selectedDate = null;
       }
@@ -559,17 +559,11 @@ export default class CatalogueMap extends Component {
             {this.state.catalogue ? 
               <div>
               <div>
-                <h2>Selected catalog {this.state.catalogue.description}</h2>
-                <p>The catalogue spans {this.state.catalogue.properties['dtr:start_datetime']} - {this.state.catalogue.properties['dtr:end_datetime']}</p>
+                <h2>Catalog "{this.state.catalogue.description}"</h2>
               </div>
               <div>
-                <p>Click on dates below to show bounding boxes of sentinel imagery take on that day. Selecting
-                  the bounding boxes shows the radar imagery on the map.</p>
-              </div>
-              <div>
-                <p className="VisibleGeohashes">Geohashes in view:
-                  {this.state.visibleGeohashes.map((hash, i) => (<span key={i}>{hash}</span>))}
-                </p>
+                <p>Choose a time span and then click on dates below to show bounding boxes of sentinel imagery take on that day. Selecting
+                  the bounding boxes shows the satellite sensor data on the map.</p>
               </div>
               <div>
                 <p className="VisibleTimes">Dates within:</p>
@@ -590,7 +584,7 @@ export default class CatalogueMap extends Component {
                 <p className="VisibleTimes">Times available in view:
 
                   {this.state.visibleDates
-                      .filter(date => date >= this.state.startDate && date <= this.state.endDate)
+                      .filter(date => date.isBetween(this.state.startDate, this.state.endDate, 'day', '[]'))
                       .map(
                       (date, i) => (
                           <span
@@ -610,6 +604,13 @@ export default class CatalogueMap extends Component {
                 <h3>Choose band</h3>
                 <BandDropDown selectedBand={this.state.selectedBand} bands={this.state.datasetBands}
                               onBandSelected={selectedBand => this.selectBand(selectedBand)}/>
+              </div>
+              <h3>Debug information</h3>
+              <div>
+                <p>Data from {moment(this.state.catalogue.properties['dtr:start_datetime']).format('LL')} to {moment(this.state.catalogue.properties['dtr:end_datetime']).format('LL')}</p>
+                <p className="VisibleGeohashes">Visible geohashes:
+                  {this.state.visibleGeohashes.map((hash, i) => (<span key={i}>{hash}</span>))}
+                </p>
               </div>
             </div> : <div></div>}
           </div>
