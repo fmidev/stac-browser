@@ -13,6 +13,7 @@ export default class App extends Component {
         <div className="App">
           <header className="App-header">
             <CatalogueMap datasetCatalogue="catalog/dataset-S1.json" root="catalog/root.json" />
+            <hr/>
             <div className="Explanation">
               <h1>What is this?</h1>
               <p>
