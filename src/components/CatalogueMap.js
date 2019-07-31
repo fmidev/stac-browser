@@ -132,7 +132,7 @@ export default class CatalogueMap extends Component {
         center: fromLonLat([24.95, 65.23]),
         zoom: 6,
         minZoom: 4,
-        maxZoom: 10
+        maxZoom: 14
       })
     });
 
@@ -382,11 +382,10 @@ export default class CatalogueMap extends Component {
 
     const that = this;
 
-    // We really need just a percision of 2, but the library does not work with precision < 4
-    geohashpoly({coords: polygon, precision: 4}, function (err, hashes) {
+    geohashpoly({coords: polygon, precision: 2, hashMode: 'intersect' }, function (err, hashes) {
       if (err) throw err;
 
-      hashes = _.sortBy(_.uniq(_.map(hashes, h => h.substring(0, 2))));
+      hashes = _.sortBy(_.uniq(_.map(hashes, h => h.substring(0, 2)))); // substring ensures precision 2 geohashes
 
       if (!_.isEqual(hashes, that.state.visibleGeohashes)) {
         that.setState({visibleGeohashes: hashes});
