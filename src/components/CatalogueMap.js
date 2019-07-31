@@ -267,7 +267,7 @@ export default class CatalogueMap extends Component {
       case 'S2':
         colorFn = (() => {
           var min = 0;
-          var max = 255;
+          var max = 225; // real data looks to be between 0 and 200, this seems like a good compromise
 
           return function(d) {
             var opacity = d === 0 ? 0 : 255;
