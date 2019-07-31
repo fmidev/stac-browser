@@ -632,7 +632,7 @@ export default class CatalogueMap extends Component {
                       selectsEnd
                       showMonthDropdown
                       showYearDropdown
-                      openToDate={this.state.endDate || this.state.maxAvailableDate}
+                      openToDate={this.state.endDate || this.state.startDate|| this.state.maxAvailableDate}
                       startDate={this.state.startDate}
                       endDate={this.state.endDate}
                       minDate={this.state.minAvailableDate}
