@@ -248,39 +248,65 @@ export default class CatalogueMap extends Component {
 
       var datasetClass = stacJson.id.substring(0,2);
 
-      var min, max;
+      var colorFn;
+
+      
       switch(datasetClass) {
       case 'S1':
-        min = -25;
-        max = 10;
+        colorFn = (() => {
+          return function(d) {
+            var min = -25, max = 10;
+            var opacity = d === 0 ? 0 : 255;
+            d = Math.min(Math.max(d, min), max);
+            var val = (d - min) / (max - min) * 255;
+
+            return [val, val, val, opacity];
+          }
+        })();
         break;
       case 'S2':
-        min = 0;
-        max = 255;
+        colorFn = (() => {
+          var min = 0;
+          var max = 255;
+
+          return function(d) {
+            var opacity = d === 0 ? 0 : 255;
+            d = Math.min(Math.max(d, min), max);
+            var val = (d - min) / (max - min);
+            var r = val < .5 ? 1         : 1-(val-.5)*2;
+            var g = val < .5 ? 0+(val)*2 : 1;
+
+            return [r * 255, g * 255, 0, opacity];
+          }
+        })();
         break;
       default:
-        min = _.min(data);
-        max = _.max(data);
-        if (min === max) { max = min + 1; }
+        // Auto-detect min and max and draw a black-white gradient
+        colorFn = (() => {
+          var min = _.min(data);
+          var max = _.max(data);
+          if (min === max) { max = min + 1; }
+          return function(d) {
+            var opacity = d === 0 ? 0 : 255;
+            d = Math.min(Math.max(d, min), max);
+            var val = (d - min) / (max - min) * 255;
+
+            return [val, val, val, opacity];
+          }
+        })();
         break;
       }
 
       for (var x = 0; x < params.width; x++) {
         for (var y = 0; y < params.height; y++) {
-          var d = Math.min(Math.max(data[x + y * params.width], min), max);
-          var opacity = 255;
-          var val = (d - min) / (max - min) * 255;
-
-          if (data[x + y * params.width] === 0) {
-            opacity = 0;
-          }
-
-          imagedata.data[(x + y * params.width) * 4 + 0] = val;
-          imagedata.data[(x + y * params.width) * 4 + 1] = val;
-          imagedata.data[(x + y * params.width) * 4 + 2] = val;
-          imagedata.data[(x + y * params.width) * 4 + 3] = opacity;
+          var tmp = colorFn(data[x + y * params.width]);
+          imagedata.data[(x + y * params.width) * 4 + 0] = tmp[0];
+          imagedata.data[(x + y * params.width) * 4 + 1] = tmp[1];
+          imagedata.data[(x + y * params.width) * 4 + 2] = tmp[2];
+          imagedata.data[(x + y * params.width) * 4 + 3] = tmp[3];
         }
       }
+
       context.putImageData(imagedata, 0, 0);
       return canvas;
     };
