@@ -616,6 +616,7 @@ export default class CatalogueMap extends Component {
                       selectsStart
                       showMonthDropdown
                       showYearDropdown
+                      openToDate={this.state.startDate || this.state.minAvailableDate}
                       startDate={this.state.startDate}
                       endDate={this.state.endDate}
                       minDate={this.state.minAvailableDate}
@@ -631,6 +632,7 @@ export default class CatalogueMap extends Component {
                       selectsEnd
                       showMonthDropdown
                       showYearDropdown
+                      openToDate={this.state.endDate || this.state.maxAvailableDate}
                       startDate={this.state.startDate}
                       endDate={this.state.endDate}
                       minDate={this.state.minAvailableDate}
