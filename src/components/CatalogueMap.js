@@ -11,9 +11,8 @@ import {fromLonLat, toLonLat} from 'ol/proj';
 import {optionsFromCapabilities} from 'ol/source/WMTS';
 import {DropdownButton, MenuItem} from 'react-bootstrap';
 
-import 'react-dates/initialize';
-import 'react-dates/lib/css/_datepicker.css';
-import {DateRangePicker} from 'react-dates';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import moment from 'moment';
 
@@ -90,6 +89,9 @@ export default class CatalogueMap extends Component {
       catalogue: null,
       selectedDate: null,
       selectedBand: null,
+
+      minAvailableDate: null,
+      maxAvailableDate: null,
 
       dateCatalogs: [],
       datasetBands: [],
@@ -439,7 +441,11 @@ export default class CatalogueMap extends Component {
       if (!_.find(visibleDates, d => d.isSame(selectedDate, 'day'))) {
         selectedDate = null;
       }
-      that.setState({visibleDates, selectedDate, dateCatalogs});
+
+      let minAvailableDate = moment.min(visibleDates).toDate();
+      let maxAvailableDate = moment.max(visibleDates).toDate();
+
+      that.setState({visibleDates, selectedDate, dateCatalogs, minAvailableDate, maxAvailableDate});
       if (selectedDate !== null) {
         that.retrieveAndShowItems(selectedDate);
       }
@@ -604,20 +610,37 @@ export default class CatalogueMap extends Component {
               </div>
               <div>
                 <p className="VisibleTimes">Dates within:</p>
-                <DateRangePicker
-                    startDateId="startDate"
-                    endDateId="endDate"
-                    displayFormat={DATE_FORMAT}
-                    startDate={this.state.startDate}
-                    endDate={this.state.endDate}
-                    onDatesChange={({startDate, endDate}) => {
-                      this.selectDateRange(startDate, endDate)
-                    }}
-                    focusedInput={this.state.focusedInput}
-                    onFocusChange={(focusedInput) => this.setState({focusedInput})}
-                    initialVisibleMonth={() => moment.min(this.state.visibleDates)}
-                    isOutsideRange={date => date < moment.min(this.state.visibleDates) || date > moment.max(this.state.visibleDates)}
-                />
+                <div className="DatePickers">
+                  <DatePicker
+                      selected={this.state.startDate}
+                      selectsStart
+                      showMonthDropdown
+                      showYearDropdown
+                      startDate={this.state.startDate}
+                      endDate={this.state.endDate}
+                      minDate={this.state.minAvailableDate}
+                      maxDate={this.state.maxAvailableDate}
+                      onChange={(startDate) => {
+                        this.selectDateRange(startDate, this.state.endDate)
+                      }}
+                      placeholderText="Start date"
+                  />
+
+                  <DatePicker
+                      selected={this.state.endDate}
+                      selectsEnd
+                      showMonthDropdown
+                      showYearDropdown
+                      startDate={this.state.startDate}
+                      endDate={this.state.endDate}
+                      minDate={this.state.minAvailableDate}
+                      maxDate={this.state.maxAvailableDate}
+                      onChange={(endDate) => {
+                        this.selectDateRange(this.state.startDate, endDate)
+                      }}
+                      placeholderText="End date"
+                  />
+                </div>
                 <p className="VisibleTimes">Times available in view:
                   {this.state.visibleDates
                       .filter(date => date.isBetween(this.state.startDate, this.state.endDate, 'day', '[]'))
