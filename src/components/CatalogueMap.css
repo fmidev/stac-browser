@@ -4,6 +4,10 @@
     margin: auto;
 }
 
+.CatalogueMap .LoadingGeotiff {
+    cursor: wait;
+}
+
 .CatalogueMap .VisibleGeohashes span {
     padding-left: .3em;
 }

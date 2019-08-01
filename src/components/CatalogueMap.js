@@ -100,6 +100,8 @@ export default class CatalogueMap extends Component {
       visibleFeatures: [],
       visibleGeohashes: [],
 
+      loading: {},
+
       startDate: null,
       endDate: null,
       focusedInput: null,
@@ -134,7 +136,7 @@ export default class CatalogueMap extends Component {
         center: fromLonLat([24.95, 65.23]),
         zoom: 6,
         minZoom: 4,
-        maxZoom: 14
+        maxZoom: 11
       })
     });
 
@@ -224,6 +226,7 @@ export default class CatalogueMap extends Component {
   }
 
   async createCogLayer(stacJson) {
+    const that = this;
     const asset = stacJson.assets[this.state.selectedBand] || stacJson.assets[_.keys(stacJson.assets)[0]];
     const url = asset.href;
 
@@ -334,10 +337,13 @@ export default class CatalogueMap extends Component {
         return drawRetrievedData(extent, resolution, pixelRatio, size, projection);
 
       } else {
+        that.state.loading[stacJson.id] = true; that.setState({ loading: that.state.loading });
+
         tiff.readRasters({
           bbox: extent,
           width: Math.floor(size[0]), height: Math.floor(size[1])
         }).then(data => {
+          delete that.state.loading[stacJson.id]; that.setState({ loading: that.state.loading });
           if (thisCounter !== counter) {
             // Stale call, ignore
             return;
@@ -593,7 +599,7 @@ export default class CatalogueMap extends Component {
     return (
         <div className="CatalogueMap">
           <h1>{this.state.catalogue ? this.state.catalogue.description : '...'} {this.state.selectedDate ? 'at ' + this.state.selectedDate.format() : ''}</h1>
-          <div className="CatalogueMapContainer" ref="mapContainer">
+          <div className={"CatalogueMapContainer "+(_.size(this.state.loading) > 0 ? "LoadingGeotiff" : "")} ref="mapContainer">
           </div>
           <div className="Controls">
             <div>
