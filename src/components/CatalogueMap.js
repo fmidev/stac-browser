@@ -100,7 +100,7 @@ export default class CatalogueMap extends Component {
       visibleFeatures: [],
       visibleGeohashes: [],
 
-      loading: {},
+      loading: 0,
 
       startDate: null,
       endDate: null,
@@ -337,13 +337,13 @@ export default class CatalogueMap extends Component {
         return drawRetrievedData(extent, resolution, pixelRatio, size, projection);
 
       } else {
-        that.state.loading[stacJson.id] = true; that.setState({ loading: that.state.loading });
+        that.state.loading++; that.setState({ loading: that.state.loading });
 
         tiff.readRasters({
           bbox: extent,
           width: Math.floor(size[0]), height: Math.floor(size[1])
         }).then(data => {
-          delete that.state.loading[stacJson.id]; that.setState({ loading: that.state.loading });
+          that.state.loading--; that.setState({ loading: that.state.loading });
           if (thisCounter !== counter) {
             // Stale call, ignore
             return;
@@ -599,7 +599,7 @@ export default class CatalogueMap extends Component {
     return (
         <div className="CatalogueMap">
           <h1>{this.state.catalogue ? this.state.catalogue.description : '...'} {this.state.selectedDate ? 'at ' + this.state.selectedDate.format() : ''}</h1>
-          <div className={"CatalogueMapContainer "+(_.size(this.state.loading) > 0 ? "LoadingGeotiff" : "")} ref="mapContainer">
+          <div className={"CatalogueMapContainer "+(this.state.loading > 0 ? "LoadingGeotiff" : "")} ref="mapContainer">
           </div>
           <div className="Controls">
             <div>
