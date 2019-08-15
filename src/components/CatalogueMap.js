@@ -465,8 +465,8 @@ export default class CatalogueMap extends Component {
         selectedDate = null;
       }
 
-      let minAvailableDate = moment.min(visibleDates).toDate();
-      let maxAvailableDate = moment.max(visibleDates).toDate();
+      let minAvailableDate = new Date(that.state.catalogue.properties['dtr:start_datetime']);
+      let maxAvailableDate = new Date(that.state.catalogue.properties['dtr:end_datetime']);
 
       that.setState({visibleDates, selectedDate, dateCatalogs, minAvailableDate, maxAvailableDate});
       if (selectedDate !== null) {
