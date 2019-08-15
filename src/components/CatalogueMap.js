@@ -183,21 +183,9 @@ export default class CatalogueMap extends Component {
   }
 
   updateFeaturesOnMap(selectEvent) {
-
     const cogLayersPerId = this.state.cogLayersPerId;
-    const catalogueFeatureLayerSource = this.state.catalogueFeatureLayerSource;
-    const showAllVisibleItems = this.state.showAllVisibleItems;
 
-    var selectedFeatures;
-    if (showAllVisibleItems) {
-      selectedFeatures = catalogueFeatureLayerSource.getFeatures();
-    } else {
-      if (selectEvent) {
-        selectedFeatures = selectEvent.target.getFeatures().getArray();
-      } else {
-        selectedFeatures = this.state.selectionInteraction.getFeatures().getArray();
-      }
-    }
+    var selectedFeatures = this.getVisibleFeatures(selectEvent);
 
     const layersBefore = _.keys(cogLayersPerId);
     const selectedKeys = _.map(selectedFeatures, f => f.getId());
@@ -207,6 +195,22 @@ export default class CatalogueMap extends Component {
     this.removeLayersFromMap(layersToRemove, cogLayersPerId);
 
     this.addLayersToMap(layersToAdd, cogLayersPerId, selectedFeatures);
+  }
+
+  getVisibleFeatures(selectEvent) {
+    const catalogueFeatureLayerSource = this.state.catalogueFeatureLayerSource;
+    const showAllVisibleItems = this.state.showAllVisibleItems;
+    var ret;
+    if (showAllVisibleItems) {
+      ret = catalogueFeatureLayerSource.getFeatures();
+    } else {
+      if (selectEvent) {
+        ret = selectEvent.target.getFeatures().getArray();
+      } else {
+        ret = this.state.selectionInteraction.getFeatures().getArray();
+      }
+    }
+    return ret;
   }
 
   processLink(link) {
@@ -609,7 +613,7 @@ export default class CatalogueMap extends Component {
       let cogLayersPerId = this.state.cogLayersPerId;
       let layerKeys = _.keys(cogLayersPerId);
       this.removeLayersFromMap(layerKeys, cogLayersPerId);
-      this.addLayersToMap(layerKeys, cogLayersPerId, this.state.selectionInteraction.getFeatures().getArray());
+      this.addLayersToMap(layerKeys, cogLayersPerId, this.getVisibleFeatures());
       this.setState({cogLayersPerId});
     });
   }
