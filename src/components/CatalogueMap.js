@@ -496,7 +496,6 @@ export default class CatalogueMap extends Component {
 
   retrieveAndShowItems(selectedDates) {
     const that = this;
-console.log('retrieveAndShowItems', selectedDates);
     that.clearFeatures();
 
     _.each(selectedDates, date => that.retrieveAndShowSingleDate(date));
@@ -580,15 +579,15 @@ console.log('retrieveAndShowItems', selectedDates);
   selectDate(selectedDate) {
     var selectedDates = this.state.selectedDates;
     if (selectedDate) {
-      if (selectedDates.indexOf(selectedDate) === -1) {
+      var previousSelection = _.find(selectedDates, d => d.isSame(selectedDate));
+      if (previousSelection) {
+        // Unselect
+        selectedDates = _.without(selectedDates, previousSelection);
+      } else {
         // Select
         selectedDates.push(selectedDate);
-      } else {
-        // Unselect
-        selectedDates = _.without(selectedDates, selectedDate);
       }
     }
-    console.log('selectedDates => ', selectedDates);
 
     this.clearDatasetFeatures();
 
@@ -612,7 +611,6 @@ console.log('retrieveAndShowItems', selectedDates);
   }
 
   selectDateRange(startDate, endDate) {
-    console.log('selectDateRange',startDate,endDate,this);
     var selectedDates = this.state.selectedDates.splice(0);
     // moment("2019-06-20", DATE_FORMAT)
     this.setState({startDate, endDate, selectedDates}, () => {
