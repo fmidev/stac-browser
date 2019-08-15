@@ -86,6 +86,7 @@ export default class CatalogueMap extends Component {
       selectionInteraction: null,
       cogLayersPerId: {},
 
+      showAllVisibleItems: false,
       catalogue: null,
       selectedDate: null,
       selectedBand: null,
@@ -176,20 +177,40 @@ export default class CatalogueMap extends Component {
       })
     });
     map.addInteraction(selectionInteraction);
-    selectionInteraction.on('select', function (e) {
-      const selectedFeatures = e.target.getFeatures().getArray();
-
-      const layersBefore = _.keys(cogLayersPerId);
-      const selectedKeys = _.map(selectedFeatures, f => f.getId());
-      const layersToAdd = _.difference(selectedKeys, layersBefore);
-      const layersToRemove = _.difference(layersBefore, selectedKeys);
-
-      that.removeLayersFromMap(layersToRemove, cogLayersPerId);
-
-      that.addLayersToMap(layersToAdd, cogLayersPerId, selectedFeatures);
-    });
+    selectionInteraction.on('select', that.updateFeaturesOnMap.bind(that));
 
     this.setState({map, catalogueFeatureLayerSource, catalogueFeatureLayer, selectionInteraction, cogLayersPerId});
+  }
+
+  updateFeaturesOnMap(selectEvent) {
+
+    const cogLayersPerId = this.state.cogLayersPerId;
+    const catalogueFeatureLayerSource = this.state.catalogueFeatureLayerSource;
+    const showAllVisibleItems = this.state.showAllVisibleItems;
+console.log('updateFeaturesOnMap(',selectEvent,'), showAllVisibleItems = '+showAllVisibleItems);
+    var selectedFeatures;
+    if (showAllVisibleItems) {
+      console.log(' => A');
+      selectedFeatures = catalogueFeatureLayerSource.getFeatures();
+    } else {
+      if (selectEvent) {
+        console.log(' => B');
+        selectedFeatures = selectEvent.target.getFeatures().getArray();
+      } else {
+        console.log(' => C');
+        selectedFeatures = this.state.selectionInteraction.getFeatures().getArray();
+      }
+    }
+    console.log(' => selectedFeatures', selectedFeatures);
+
+    const layersBefore = _.keys(cogLayersPerId);
+    const selectedKeys = _.map(selectedFeatures, f => f.getId());
+    const layersToAdd = _.difference(selectedKeys, layersBefore);
+    const layersToRemove = _.difference(layersBefore, selectedKeys);
+
+    this.removeLayersFromMap(layersToRemove, cogLayersPerId);
+
+    this.addLayersToMap(layersToAdd, cogLayersPerId, selectedFeatures);
   }
 
   processLink(link) {
@@ -512,7 +533,9 @@ export default class CatalogueMap extends Component {
         });
 
         that.addFeature(feature, json);
+        that.updateFeaturesOnMap();
       });
+      
     });
   }
 
@@ -595,6 +618,11 @@ export default class CatalogueMap extends Component {
     });
   }
 
+  toggleShowAllVisibleItems() {
+    const showAllVisibleItems = !this.state.showAllVisibleItems;
+    this.setState({ showAllVisibleItems }, this.updateFeaturesOnMap.bind(this));
+  }
+
   render() {
     return (
         <div className="CatalogueMap">
@@ -649,6 +677,9 @@ export default class CatalogueMap extends Component {
                       placeholderText="End date"
                   />
                 </div>
+                <p className="showAllVisibleItems">
+                  <label>Show all visible items on map<input type="checkbox" checked={this.state.showAllVisibleItems} onChange={this.toggleShowAllVisibleItems.bind(this)}/></label>
+                </p>
                 <p className="VisibleTimes">Times available in view:
                   {this.state.visibleDates
                       .filter(date => date.isBetween(this.state.startDate, this.state.endDate, 'day', '[]'))
@@ -662,7 +693,6 @@ export default class CatalogueMap extends Component {
                   )}
                 </p>
               </div>
-
               <div>
                 <p>Number of STAC items
                   visible: {this.state.selectedDate === null ? 'choose a date above' : this.state.visibleFeatures.length}</p>

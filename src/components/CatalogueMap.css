@@ -54,6 +54,15 @@
     margin: 0 0 10px;
 }
 
+.CatalogueMap .showAllVisibleItems label {
+  font-weight: normal;
+  display: flex;
+  flex-direction: row;
+}
+
+.CatalogueMap .showAllVisibleItems input {
+  margin-left: .5em;
+}
 
 .react-datepicker {
   font-size: 1em;
