@@ -45,7 +45,7 @@ export default class App extends Component {
                 The map above is created with <a href="https://openlayers.org/">OpenLayers</a>, cloud optimized geotiffs are processed fully in browser using <a href="https://geotiffjs.github.io/geotiff.js/">geotiff.js</a>, background maps by <a href="https://www.maanmittauslaitos.fi/en/maps-and-spatial-data">National Land Survey Finland</a> and the web application is built with <a href="https://reactjs.org/">React</a>.
               </p>
               <p>
-                Prototype developed by <a href="https://fmi.fi" target="_blank" rel="noopener noreferrer"><img alt="Finnish Meteorological Institute" src="/il-logo-fmi-rgb-229x115px.png" className="Logo FMI"/></a> <a href="https://www.spatineo.com" target="_blank" rel="noopener noreferrer"><img alt="Spatineo" src="/SpatineoLogo_Reverse.png" className="Logo"/></a>
+                Prototype developed by <a href="https://fmi.fi" target="_blank" rel="noopener noreferrer"><img alt="Finnish Meteorological Institute" src="./il-logo-fmi-rgb-229x115px.png" className="Logo FMI"/></a> <a href="https://www.spatineo.com" target="_blank" rel="noopener noreferrer"><img alt="Spatineo" src="./SpatineoLogo_Reverse.png" className="Logo"/></a>
               </p>
             </div>
           </header>
