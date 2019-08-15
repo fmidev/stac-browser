@@ -143,7 +143,7 @@ export default class CatalogueMap extends Component {
 
     map.on('moveend', this.mapMoved.bind(this));
     //var capabilitiesResponse = await fetch('https://avoin-karttakuva.maanmittauslaitos.fi/avoin/wmts/1.0.0/WMTSCapabilities.xml', CACHE_POLICY);
-    const capabilitiesResponse = await fetch('/WMTSCapabilities.xml', CACHE_POLICY);
+    const capabilitiesResponse = await fetch('./WMTSCapabilities.xml', CACHE_POLICY);
     const parser = new format.WMTSCapabilities();
     const capabilities = parser.read(await capabilitiesResponse.text());
     const opts = optionsFromCapabilities(capabilities, {
