@@ -88,7 +88,7 @@ export default class CatalogueMap extends Component {
 
       showAllVisibleItems: false,
       catalogue: null,
-      selectedDate: null,
+      selectedDates: [],
       selectedBand: null,
 
       minAvailableDate: null,
@@ -459,7 +459,7 @@ export default class CatalogueMap extends Component {
         return memo;
       }, []);
       let visibleDates = that.state.visibleDates;
-      let selectedDate = that.state.selectedDate;
+      let selectedDates = that.state.selectedDates;
 
       let dateCache = {};
 
@@ -475,27 +475,39 @@ export default class CatalogueMap extends Component {
       });
       visibleDates.sort((a,b) => a.diff(b));
       
-      if (!_.find(visibleDates, d => d.isSame(selectedDate, 'day'))) {
-        selectedDate = null;
-      }
+      // Turn dates that are not visible to nulls
+      selectedDates = _.map(selectedDates, selectedDate => {
+        if (!_.find(visibleDates, d => d.isSame(selectedDate, 'day'))) {
+          selectedDate = null;
+        }
+        return selectedDate;
+      });
+      selectedDates = _.without(selectedDates, null); // remove nulls
 
       let minAvailableDate = new Date(that.state.catalogue.properties['dtr:start_datetime']);
       let maxAvailableDate = new Date(that.state.catalogue.properties['dtr:end_datetime']);
 
-      that.setState({visibleDates, selectedDate, dateCatalogs, minAvailableDate, maxAvailableDate});
-      if (selectedDate !== null) {
-        that.retrieveAndShowItems(selectedDate);
-      }
+      that.setState({visibleDates, selectedDates, dateCatalogs, minAvailableDate, maxAvailableDate});
+      that.retrieveAndShowItems(selectedDates);
     }
 
     Promise.all(_.filter(promises, p => !!p)).then(showItemBboxes);
   }
 
-  retrieveAndShowItems(selectedDate) {
+  retrieveAndShowItems(selectedDates) {
+    const that = this;
+console.log('retrieveAndShowItems', selectedDates);
+    that.clearFeatures();
+
+    _.each(selectedDates, date => that.retrieveAndShowSingleDate(date));
+  }
+
+  retrieveAndShowSingleDate(selectedDate) {
     const that = this;
     let dateCatalogs = this.state.dateCatalogs;
 
-    const thisCounter = ++that.itemLoadCounter;
+    // TODO: this needs to be refactored
+    //const thisCounter = ++that.itemLoadCounter;
 
     var momentSelectedDate = null;
     if (selectedDate) {
@@ -513,9 +525,7 @@ export default class CatalogueMap extends Component {
     });
 
     Promise.all(promises).then(values => {
-      if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
-
-      that.clearFeatures();
+      //if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
 
       let itemLinks = _.reduce(values, (memo, v) => {
         _.each(v.links, l => memo.push(l));
@@ -536,7 +546,7 @@ export default class CatalogueMap extends Component {
           that.setState({datasetBands, selectedBand});
         }
 
-        if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
+        //if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
         const feature = new GeoJSON().readFeatureFromObject(json, {
           dataProjection: 'EPSG:4326',
           featureProjection: MAP_PROJECTION
@@ -568,16 +578,24 @@ export default class CatalogueMap extends Component {
   }
 
   selectDate(selectedDate) {
-    if (this.state.selectedDate === selectedDate) {
-      // => unselect
-      selectedDate = null;
+    var selectedDates = this.state.selectedDates;
+    if (selectedDate) {
+      if (selectedDates.indexOf(selectedDate) === -1) {
+        // Select
+        selectedDates.push(selectedDate);
+      } else {
+        // Unselect
+        selectedDates = _.without(selectedDates, selectedDate);
+      }
     }
+    console.log('selectedDates => ', selectedDates);
 
     this.clearDatasetFeatures();
 
-    this.setState({selectedDate});
-    let selectedDateString = selectedDate != null ? selectedDate.format() : null;
-    this.retrieveAndShowItems(selectedDateString);
+    this.setState({selectedDates});
+    //let selectedDateString = selectedDate != null ? selectedDate.format() : null;
+    let stringArray = _.map(selectedDates, s => s.format());
+    this.retrieveAndShowItems(stringArray);
   }
 
   clearDatasetFeatures() {
@@ -594,11 +612,17 @@ export default class CatalogueMap extends Component {
   }
 
   selectDateRange(startDate, endDate) {
+    console.log('selectDateRange',startDate,endDate,this);
+    var selectedDates = this.state.selectedDates.splice(0);
     // moment("2019-06-20", DATE_FORMAT)
-    this.setState({startDate, endDate});
+    this.setState({startDate, endDate, selectedDates}, () => {
+      this.selectDate(); // Update view
+    });
+    /*
     if (this.state.selectedDate < startDate || this.state.selectedDate > endDate) {
       this.setState({selectedDate: null}, () => this.selectDate(null));
     }
+    */
   }
 
   async selectCatalogue(catalogue) {
@@ -698,14 +722,14 @@ export default class CatalogueMap extends Component {
                           <span
                               key={i}
                               onClick={() => this.selectDate(date)}
-                              className={'Time' + (date.isSame(this.state.selectedDate, 'day') ? ' SelectedDate' : '')}>{date.format()}</span>
+                              className={'Time' + (_.find(this.state.selectedDates, d => date.isSame(d, 'day')) ? ' SelectedDate' : '')}>{date.format()}</span>
                       )
                   )}
                 </p>
               </div>
               <div>
                 <p>Number of STAC items
-                  visible: {this.state.selectedDate === null ? 'choose a date above' : this.state.visibleFeatures.length}</p>
+                  visible: {this.state.selectedDates.length === 0 ? 'choose a date above' : this.state.visibleFeatures.length}</p>
               </div>
               <div>
                 <h3>Choose band</h3>
