@@ -187,21 +187,17 @@ export default class CatalogueMap extends Component {
     const cogLayersPerId = this.state.cogLayersPerId;
     const catalogueFeatureLayerSource = this.state.catalogueFeatureLayerSource;
     const showAllVisibleItems = this.state.showAllVisibleItems;
-console.log('updateFeaturesOnMap(',selectEvent,'), showAllVisibleItems = '+showAllVisibleItems);
+
     var selectedFeatures;
     if (showAllVisibleItems) {
-      console.log(' => A');
       selectedFeatures = catalogueFeatureLayerSource.getFeatures();
     } else {
       if (selectEvent) {
-        console.log(' => B');
         selectedFeatures = selectEvent.target.getFeatures().getArray();
       } else {
-        console.log(' => C');
         selectedFeatures = this.state.selectionInteraction.getFeatures().getArray();
       }
     }
-    console.log(' => selectedFeatures', selectedFeatures);
 
     const layersBefore = _.keys(cogLayersPerId);
     const selectedKeys = _.map(selectedFeatures, f => f.getId());
