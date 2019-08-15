@@ -2,6 +2,7 @@
     width: 750px;
     height: 500px;
     margin: auto;
+    background: #e1e1e1;
 }
 
 .CatalogueMap .LoadingGeotiff {

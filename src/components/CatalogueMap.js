@@ -142,10 +142,19 @@ export default class CatalogueMap extends Component {
     });
 
     map.on('moveend', this.mapMoved.bind(this));
-    //var capabilitiesResponse = await fetch('https://avoin-karttakuva.maanmittauslaitos.fi/avoin/wmts/1.0.0/WMTSCapabilities.xml', CACHE_POLICY);
-    const capabilitiesResponse = await fetch('./WMTSCapabilities.xml', CACHE_POLICY);
+
+    var capabilitiesResponse;
+    try {
+      // Use the Capabilities from NLS Finland
+      capabilitiesResponse = await fetch('https://avoin-karttakuva.maanmittauslaitos.fi/avoin/wmts/1.0.0/WMTSCapabilities.xml', CACHE_POLICY);
+      capabilitiesResponse = await capabilitiesResponse.text();
+    } catch(e) {
+      // .. but if it fails, use the local copy instead
+      capabilitiesResponse = await fetch('./WMTSCapabilities.xml', CACHE_POLICY);
+      capabilitiesResponse = await capabilitiesResponse.text();
+    }
     const parser = new format.WMTSCapabilities();
-    const capabilities = parser.read(await capabilitiesResponse.text());
+    const capabilities = parser.read(capabilitiesResponse);
     const opts = optionsFromCapabilities(capabilities, {
       layer: 'taustakartta',
       matrixSet: 'WGS84_Pseudo-Mercator',
