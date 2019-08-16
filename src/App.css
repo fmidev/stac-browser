@@ -16,6 +16,10 @@ body {
 }
 
 .App-header .Explanation {
+  width: 750px;
+  top: 700px;
+  position: absolute;
+  background: #e1e1e1;
   text-align: left;
   margin-left: 1em;
   margin-right: 1em;

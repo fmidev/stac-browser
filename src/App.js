@@ -16,7 +16,7 @@ export default class App extends Component {
             <hr/>
             <div className="Explanation">
               <h1>What is this?</h1>
-              <p>
+              <details><p>
                 This is a demonstration of a prototype <a href="https://github.com/radiantearth/stac-spec">STAC catalogue</a> and <a href="https://www.cogeo.org/">cloud optimized geotiffs</a>. The <a href="/catalog/root.json">catalogue</a> used in this application contains a subset of the Sentinel 1 imagery hosted by <a href="http://space.fmi.fi/">FMI Space and Earth Observation Centre</a>.
               </p>
               <p>
@@ -47,6 +47,7 @@ export default class App extends Component {
               <p>
                 Prototype developed by <a href="https://fmi.fi" target="_blank" rel="noopener noreferrer"><img alt="Finnish Meteorological Institute" src="./il-logo-fmi-rgb-229x115px.png" className="Logo FMI"/></a> <a href="https://www.spatineo.com" target="_blank" rel="noopener noreferrer"><img alt="Spatineo" src="./SpatineoLogo_Reverse.png" className="Logo"/></a>
               </p>
+	    </details>
             </div>
           </header>
         </div>

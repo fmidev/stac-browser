@@ -1,7 +1,9 @@
 .CatalogueMap .CatalogueMapContainer {
     width: 750px;
-    height: 500px;
-    margin: auto;
+    height: 700px;
+    display: inlinke-block;
+    position: absolute;
+    left: 10px;
     background: #e1e1e1;
 }
 
@@ -40,9 +42,13 @@
 }
 
 .CatalogueMap .Controls {
+  display: inlinke-block;
+  position: absolute;
+  left: 770px;
+  width: 450px;
   text-align: left;
-  margin-left: 1em;
-  margin-right: 1em;
+/*  margin-left: 1em;
+  margin-right: 1em;*/
 }
 
 .CatalogueMap .react-datepicker-wrapper input {
