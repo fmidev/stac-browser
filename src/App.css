@@ -3,11 +3,15 @@ body {
 }
 
 .App {
-  text-align: center;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 1vmin);
+    color: white;
 }
 
 .App-header {
-  min-height: 100vh;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -15,41 +19,45 @@ body {
   color: white;
 }
 
-.App-header .Explanation {
-  width: 750px;
-  top: 700px;
-  position: absolute;
-  background: #e1e1e1;
+.App .Explanation { /* Informaiton menu below image*/
+  width: 37%;
+  top: 40%;
+  position: relative;
+  background:#282c34;
   text-align: left;
-  margin-left: 1em;
-  margin-right: 1em;
+  left: 3%;
+  font-size: 20px;
+  overflow: auto
 }
 
-.App-header .Explanation a {
+.App .Explanation a { /* marked exprs. in informaiton menu*/
+  font-size: 20px;
   color: #bbf;
   text-decoration: none;
-  font-weight: bold;
 }
 
-.App-header .Explanation .CatalogueStructure {
+.App .Explanation .CatalogueStructure { /*Spacing in text in information menu*/
   font-family: monospace;
 }
 
-.App-header .Explanation pre {
+.App .Explanation pre {
   font-size: 75%;
 }
 
-.App-link {
+.App-link { 
   color: #61dafb;
 }
 
-.App-header .Explanation .Logo {
+.App .Explanation .Logo { /*Size of logos*/
   height: 47px;
   margin-left: 16px;
   padding: 5px;
 }
 
-.App-header .Explanation .FMI {
+.App .Explanation .FMI { /*FMI logo*/
   background: #fff;
 } 
 
+.App details > summary::-webkit-details-marker {
+  display: none;
+}

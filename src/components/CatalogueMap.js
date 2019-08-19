@@ -62,7 +62,7 @@ function BandDropDown(props) {
       <div>
         <DropdownButton
             bsize="small"
-            title={(bandDict[props.selectedBand] || props.selectedBand) || "No dataset or date selected"}
+            title={(bandDict[props.selectedBand] || props.selectedBand) || "No date selected"}
             id="asd"
         >
           {props.bands.map(band =>
@@ -135,12 +135,12 @@ export default class CatalogueMap extends Component {
       overlays: [],
       view: new View({
         center: fromLonLat([24.95, 65.23]),
-        zoom: 6,
+        zoom: 5,
         minZoom: 4,
         maxZoom: 11
       })
     });
-
+    console.log(map)
     map.on('moveend', this.mapMoved.bind(this));
 
     var capabilitiesResponse;
@@ -658,24 +658,33 @@ export default class CatalogueMap extends Component {
   render() {
     return (
         <div className="CatalogueMap">
-          <h1>{this.state.catalogue ? this.state.catalogue.description : '...'} {this.state.selectedDate ? 'at ' + this.state.selectedDate.format() : ''}</h1>
+          <h1>{this.state.catalogue ? this.state.catalogue.description : 'FMI Sentinel catalog'} {this.state.selectedDate ? 'at ' + this.state.selectedDate.format() : ''}</h1>
+          <hr></hr>
           <div className={"CatalogueMapContainer "+(this.state.loading > 0 ? "LoadingGeotiff" : "")} ref="mapContainer">
           </div>
           <div className="Controls">
+            <div>
+              <details>
+                  <summary>Instructions </summary>
+                  <p><ul><li>Chose the dataset.</li>
+                    <li>Choose a time span by clicking on dates below. Sentinel imagery aqusitions on those days will appear.</li> 
+                    <li>Select the days to show the satellite sensor data on the map.</li></ul></p>
+              </details>
+            </div>
+            <br></br>
             <div>
               <RootCatalogue root={this.props.root} selectCatalogue={catalogue => this.selectCatalogue(catalogue)}/>
             </div>
             {this.state.catalogue ? 
               <div>
               <div>
-                <h2>Catalog "{this.state.catalogue.description}"</h2>
+                <h3><u>Catalog "{this.state.catalogue.description}"</u></h3>
               </div>
+              <div><p>Available dates: {moment(this.state.catalogue.properties['dtr:start_datetime']).format('LL')} &mdash; {moment(this.state.catalogue.properties['dtr:end_datetime']).format('LL')}</p></div>
+              
+              <br></br>
               <div>
-                <p>Choose a time span and then click on dates below to show bounding boxes of sentinel imagery take on that day. Selecting
-                  the bounding boxes shows the satellite sensor data on the map.</p>
-              </div>
-              <div>
-                <p className="VisibleTimes">Dates within:</p>
+                <p>Dates within:
                 <div className="DatePickers">
                   <DatePicker
                       selected={this.state.startDate}
@@ -708,11 +717,8 @@ export default class CatalogueMap extends Component {
                       }}
                       placeholderText="End date"
                   />
-                </div>
-                <p className="showAllVisibleItems">
-                  <label>Show all visible items on map<input type="checkbox" checked={this.state.showAllVisibleItems} onChange={this.toggleShowAllVisibleItems.bind(this)}/></label>
-                </p>
-                <p className="VisibleTimes">Times available in view:
+                </div></p>
+                <p className="VisibleTimes">Dates available in view:
                   {this.state.visibleDates
                       .filter(date => date.isBetween(this.state.startDate, this.state.endDate, 'day', '[]'))
                       .map(
@@ -724,19 +730,22 @@ export default class CatalogueMap extends Component {
                       )
                   )}
                 </p>
+                <p className="showAllVisibleItems">
+                  Show items for the chosen dates on map<input type="checkbox" checked={this.state.showAllVisibleItems} onChange={this.toggleShowAllVisibleItems.bind(this)}/>
+                </p>
               </div>
+              <br></br>
               <div>
-                <p>Number of STAC items
-                  visible: {this.state.selectedDates.length === 0 ? 'choose a date above' : this.state.visibleFeatures.length}</p>
-              </div>
-              <div>
-                <h3>Choose band</h3>
+                <p>Choose band:
                 <BandDropDown selectedBand={this.state.selectedBand} bands={this.state.datasetBands}
                               onBandSelected={selectedBand => this.selectBand(selectedBand)}/>
+                </p>
               </div>
-              <h3>Debug information</h3>
+              <br></br>
               <div>
-                <p>Data from {moment(this.state.catalogue.properties['dtr:start_datetime']).format('LL')} to {moment(this.state.catalogue.properties['dtr:end_datetime']).format('LL')}</p>
+                <p>Number of visible STAC items: {this.state.selectedDates.length === 0 ? 'choose a date above' : this.state.visibleFeatures.length}</p>
+              </div>
+              <div>  
                 <p className="VisibleGeohashes">Visible geohashes:
                   {this.state.visibleGeohashes.map((hash, i) => (<span key={i}>{hash}</span>))}
                 </p>
