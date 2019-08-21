@@ -5,19 +5,19 @@
 }
 
 .CatalogueMap .CatalogueMapContainer { /*The map container itself*/
-    width:29%;
+    width:35.9%;
     height: 30vw;
     display: inline-block;
     position: relative;
-    left: 1%;
+    left: 0.1%;
     background: #e1e1e1;
 }
 .CatalogueMap div.Controls { /* Interaction panel. Right side of map */
-  width:56%;
+  width:51%;
   height:100%;
   float:right;
   position: relative;
-  margin-left: 2%;
+  margin-left: 1%;
   margin-right: 2%;
   text-align: left;
   font-size: 20px;

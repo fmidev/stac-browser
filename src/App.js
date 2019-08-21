@@ -28,7 +28,7 @@ export default class App extends Component {
               </p>
               <ul>
                 <li>Geohash: catalogue tree contains items that overlap with the two character geohash tile</li>
-                <li>Time: catalogue tree contains items that were aquired (radar pass started at) on that date (UTC)</li>
+                <li>Time: catalogue tree contains items that were acquired (radar pass started at) on that date (UTC)</li>
               </ul>
 
               <p>

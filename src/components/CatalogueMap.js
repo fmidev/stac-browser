@@ -140,7 +140,7 @@ export default class CatalogueMap extends Component {
         maxZoom: 11
       })
     });
-    console.log(map)
+
     map.on('moveend', this.mapMoved.bind(this));
 
     var capabilitiesResponse;
@@ -667,7 +667,7 @@ export default class CatalogueMap extends Component {
               <details>
                   <summary>Instructions </summary>
                   <p><ul><li>Chose the dataset.</li>
-                    <li>Choose a time span by clicking on dates below. Sentinel imagery aqusitions on those days will appear.</li> 
+                    <li>Choose a time span by clicking on dates below. Sentinel imagery acqusitions on those days will appear.</li> 
                     <li>Select the days to show the satellite sensor data on the map.</li></ul></p>
               </details>
             </div>
