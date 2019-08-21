@@ -20,14 +20,26 @@ body {
 }
 
 .App .Explanation { /* Informaiton menu below image*/
-  width: 33%;
-  /* tsop: 40%; */
   position: relative;
   background:#282c34;
   text-align: left;
-  left: 8%;
   font-size: 20px;
-  overflow: auto
+  margin-right: 2%;
+  padding: 10px 15px;
+}
+@media (max-width: 1111px) {
+  .App .Explanation {
+    width:98%;
+    float:left;
+    margin-left: 0.5%;
+  }
+}
+@media (min-width: 1111px) {
+  .App .Explanation {
+    width:54%;
+    clear: left;
+    margin-left: 2%;
+  }
 }
 
 .App .Explanation a { /* marked exprs. in informaiton menu*/
@@ -44,7 +56,7 @@ body {
   font-size: 75%;
 }
 
-.App-link { 
+.App-link {
   color: #61dafb;
 }
 
@@ -56,7 +68,7 @@ body {
 
 .App .Explanation .FMI { /*FMI logo*/
   background: #fff;
-} 
+}
 
 .App details > summary::-webkit-details-marker {
   display: none;

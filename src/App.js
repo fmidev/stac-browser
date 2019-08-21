@@ -13,6 +13,7 @@ export default class App extends Component {
         <div className="App">
           <header className="App-header"></header>
           <CatalogueMap root="https://pta.data.lit.fmi.fi/stac/catalog/root.json" />
+          <br></br>
           <div className="Explanation">
             {/* <h1>What is this?</h1> */}
             <details>
