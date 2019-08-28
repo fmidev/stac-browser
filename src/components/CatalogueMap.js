@@ -73,7 +73,20 @@ function BandDropDown(props) {
       </div>
   )
 }
-
+const asc = arr => {
+  return arr.sort((a, b) => a - b);
+};
+const quantile = (arr, q) => {
+  const sorted = asc(arr);
+  const pos = ((sorted.length) - 1) * q;
+  const base = Math.floor(pos);
+  const rest = pos - base;
+  if ((sorted[base + 1] !== undefined)) {
+      return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+  } else {
+      return sorted[base];
+  }
+};
 
 export default class CatalogueMap extends Component {
 
@@ -255,20 +268,7 @@ export default class CatalogueMap extends Component {
       });
     })
   }
-  const asc = arr => {
-    return arr.sort((a, b) => a - b);
-  };
-  const quantile = (arr, q) => {
-    const sorted = asc(arr);
-    const pos = ((sorted.length) - 1) * q;
-    const base = Math.floor(pos);
-    const rest = pos - base;
-    if ((sorted[base + 1] !== undefined)) {
-        return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
-    } else {
-        return sorted[base];
-    }
-  };
+
   async createCogLayer(stacJson) {
     const that = this;
     const asset = stacJson.assets[this.state.selectedBand] || stacJson.assets[_.keys(stacJson.assets)[0]];
