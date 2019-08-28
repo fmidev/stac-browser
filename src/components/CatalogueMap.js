@@ -255,7 +255,9 @@ export default class CatalogueMap extends Component {
       });
     })
   }
-  const asc = arr => arr.sort((a, b) => a - b);
+  const asc = arr => {
+    return arr.sort((a, b) => a - b);
+  };
   const quantile = (arr, q) => {
     const sorted = asc(arr);
     const pos = ((sorted.length) - 1) * q;
