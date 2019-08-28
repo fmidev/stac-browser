@@ -9,6 +9,7 @@ body {
     justify-content: center;
     font-size: calc(10px + 1vmin);
     color: white;
+    -webkit-overflow-scrolling: auto;
 }
 
 .App-header {
@@ -25,10 +26,10 @@ body {
   text-align: left;
   font-size: 20px;
   margin-right: 2%;
-  padding: 10px 15px;
 }
 @media (max-width: 1111px) {
   .App .Explanation {
+    padding: 10px 15px;
     width:98%;
     float:left;
     margin-left: 0.5%;
@@ -36,6 +37,7 @@ body {
 }
 @media (min-width: 1111px) {
   .App .Explanation {
+    padding: 1px 15px;
     width:54%;
     clear: left;
     margin-left: 2%;

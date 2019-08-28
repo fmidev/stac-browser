@@ -9,7 +9,7 @@
 .RootCatalogue .AvailableDatasets span.Dataset {
     display: inline-block;
     cursor: pointer;
-    white-space: nowrap;
+    /* white-space: nowrap; */
     background: #567;
     padding: .15em;
     border-radius: .2em;

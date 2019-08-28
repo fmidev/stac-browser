@@ -17,12 +17,12 @@ export default class App extends Component {
           <div className="Explanation">
             {/* <h1>What is this?</h1> */}
             <details>
-              <summary>Information</summary>
+              <summary>Technical information</summary>
               <p>
                 This is a demonstration of a prototype <a href="https://github.com/radiantearth/stac-spec">STAC catalogue</a> and <a href="https://www.cogeo.org/">cloud optimized geotiffs</a>. The <a href="/catalog/root.json">catalogue</a> used in this application contains a subset of the Sentinel 1 imagery hosted by <a href="http://space.fmi.fi/">FMI Space and Earth Observation Centre</a>.
               </p>
               <p>
-                This catalogue is structured as: <span className="CatalogueStructure">root -> dataset -> grid (2 character geohash) -> date -> items</span>. Using this structure allows a browser to efficiently find subcatalogues that contain items for the current view. It also provides the user with information about what data is available.
+                This catalogue is structured as: <span className="CatalogueStructure">root &#8594; dataset &#8594; grid (2 character geohash) &#8594; date &#8594; items</span>. Using this structure allows a browser to efficiently find subcatalogues that contain items for the current view. It also provides the user with information about what data is available.
               </p>
               <p>
                 There is a simple extension to STAC in this catalogue. Links to subcatalogues contain dimension information that provides the client with information about the catalogue structure and helps the client traverse the tree efficiently. This catalogue uses the dimensions 'geohash' and 'time':

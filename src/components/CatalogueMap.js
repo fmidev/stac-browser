@@ -136,11 +136,11 @@ export default class CatalogueMap extends Component {
       view: new View({
         center: fromLonLat([24.95, 65.23]),
         zoom: 5,
-        minZoom: 4,
-        maxZoom: 11
+        minZoom: 5,
+        maxZoom: 14
       })
     });
-
+    console.log(catalogueFeatureLayer)
     map.on('moveend', this.mapMoved.bind(this));
 
     var capabilitiesResponse;
