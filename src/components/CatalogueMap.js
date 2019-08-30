@@ -315,7 +315,7 @@ export default class CatalogueMap extends Component {
       case 'S1M':
         colorFn = (() => {
           return function(d) {
-            if (selectDate < moment("2019-05-21", DATE_FORMAT)) var min = -2500, max = 1000;
+            if (selectedDate < moment("2019-05-21", DATE_FORMAT)) var min = -2500, max = 1000;
             else var min = -25, max = 10;
             var opacity = d === 0 ? 0 : 255;
             d = Math.min(Math.max(d, min), max);
