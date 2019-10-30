@@ -62,7 +62,7 @@ function BandDropDown(props) {
       <div>
         <DropdownButton
             bsize="small"
-            title={(bandDict[props.selectedBand] || props.selectedBand) || "No dataset or date selected"}
+            title={(bandDict[props.selectedBand] || props.selectedBand) || "No date selected"}
             id="asd"
         >
           {props.bands.map(band =>
@@ -101,7 +101,7 @@ export default class CatalogueMap extends Component {
 
       showAllVisibleItems: false,
       catalogue: null,
-      selectedDate: null,
+      selectedDates: [],
       selectedBand: null,
 
       minAvailableDate: null,
@@ -148,12 +148,12 @@ export default class CatalogueMap extends Component {
       overlays: [],
       view: new View({
         center: fromLonLat([24.95, 65.23]),
-        zoom: 6,
-        minZoom: 4,
-        maxZoom: 11
+        zoom: 5,
+        minZoom: 5,
+        maxZoom: 14
       })
     });
-
+    console.log(catalogueFeatureLayer)
     map.on('moveend', this.mapMoved.bind(this));
 
     var capabilitiesResponse;
@@ -295,9 +295,10 @@ export default class CatalogueMap extends Component {
 
       var data = retrievedData.data[0];
 
-      var datasetClass = stacJson.id.substring(0,3);
+      var datasetClass = stacJson.id.substring(0,2);
 
       var colorFn;
+
       
       switch(datasetClass) {
       case 'S1':
@@ -312,6 +313,7 @@ export default class CatalogueMap extends Component {
           }
         })();
         break;
+<<<<<<< HEAD
       case 'S1M':
         colorFn = (() => {
           return function(d) {
@@ -327,6 +329,9 @@ export default class CatalogueMap extends Component {
         })();
         break;
       case 'S2M':
+=======
+      case 'S2':
+>>>>>>> parent of 71ca1ee... improving visualization
         colorFn = (() => {
           var min = 0;
           var max = 225; // real data looks to be between 0 and 200, this seems like a good compromise
@@ -361,8 +366,8 @@ export default class CatalogueMap extends Component {
       default:
         // Auto-detect min and max and draw a black-white gradient
         colorFn = (() => {
-          var min = quantile(data,0.02);
-          var max = quantile(data,0.98);
+          var min = _.min(data);
+          var max = _.max(data);
           if (min === max) { max = min + 1; }
           return function(d) {
             var opacity = d === 0 ? 0 : 255;
@@ -501,7 +506,7 @@ export default class CatalogueMap extends Component {
         return memo;
       }, []);
       let visibleDates = that.state.visibleDates;
-      let selectedDate = that.state.selectedDate;
+      let selectedDates = that.state.selectedDates;
 
       let dateCache = {};
 
@@ -517,27 +522,38 @@ export default class CatalogueMap extends Component {
       });
       visibleDates.sort((a,b) => a.diff(b));
       
-      if (!_.find(visibleDates, d => d.isSame(selectedDate, 'day'))) {
-        selectedDate = null;
-      }
+      // Turn dates that are not visible to nulls
+      selectedDates = _.map(selectedDates, selectedDate => {
+        if (!_.find(visibleDates, d => d.isSame(selectedDate, 'day'))) {
+          selectedDate = null;
+        }
+        return selectedDate;
+      });
+      selectedDates = _.without(selectedDates, null); // remove nulls
 
       let minAvailableDate = new Date(that.state.catalogue.properties['dtr:start_datetime']);
       let maxAvailableDate = new Date(that.state.catalogue.properties['dtr:end_datetime']);
 
-      that.setState({visibleDates, selectedDate, dateCatalogs, minAvailableDate, maxAvailableDate});
-      if (selectedDate !== null) {
-        that.retrieveAndShowItems(selectedDate);
-      }
+      that.setState({visibleDates, selectedDates, dateCatalogs, minAvailableDate, maxAvailableDate});
+      that.retrieveAndShowItems(selectedDates);
     }
 
     Promise.all(_.filter(promises, p => !!p)).then(showItemBboxes);
   }
 
-  retrieveAndShowItems(selectedDate) {
+  retrieveAndShowItems(selectedDates) {
+    const that = this;
+    that.clearFeatures();
+
+    _.each(selectedDates, date => that.retrieveAndShowSingleDate(date));
+  }
+
+  retrieveAndShowSingleDate(selectedDate) {
     const that = this;
     let dateCatalogs = this.state.dateCatalogs;
 
-    const thisCounter = ++that.itemLoadCounter;
+    // TODO: this needs to be refactored
+    //const thisCounter = ++that.itemLoadCounter;
 
     var momentSelectedDate = null;
     if (selectedDate) {
@@ -555,9 +571,7 @@ export default class CatalogueMap extends Component {
     });
 
     Promise.all(promises).then(values => {
-      if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
-
-      that.clearFeatures();
+      //if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
 
       let itemLinks = _.reduce(values, (memo, v) => {
         _.each(v.links, l => memo.push(l));
@@ -578,7 +592,7 @@ export default class CatalogueMap extends Component {
           that.setState({datasetBands, selectedBand});
         }
 
-        if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
+        //if (thisCounter !== that.itemLoadCounter) return; // Abandon feature from previous load
         const feature = new GeoJSON().readFeatureFromObject(json, {
           dataProjection: 'EPSG:4326',
           featureProjection: MAP_PROJECTION
@@ -610,16 +624,24 @@ export default class CatalogueMap extends Component {
   }
 
   selectDate(selectedDate) {
-    if (this.state.selectedDate === selectedDate) {
-      // => unselect
-      selectedDate = null;
+    var selectedDates = this.state.selectedDates;
+    if (selectedDate) {
+      var previousSelection = _.find(selectedDates, d => d.isSame(selectedDate));
+      if (previousSelection) {
+        // Unselect
+        selectedDates = _.without(selectedDates, previousSelection);
+      } else {
+        // Select
+        selectedDates.push(selectedDate);
+      }
     }
 
     this.clearDatasetFeatures();
 
-    this.setState({selectedDate});
-    let selectedDateString = selectedDate != null ? selectedDate.format() : null;
-    this.retrieveAndShowItems(selectedDateString);
+    this.setState({selectedDates});
+    //let selectedDateString = selectedDate != null ? selectedDate.format() : null;
+    let stringArray = _.map(selectedDates, s => s.format());
+    this.retrieveAndShowItems(stringArray);
   }
 
   clearDatasetFeatures() {
@@ -636,11 +658,16 @@ export default class CatalogueMap extends Component {
   }
 
   selectDateRange(startDate, endDate) {
+    var selectedDates = this.state.selectedDates.splice(0);
     // moment("2019-06-20", DATE_FORMAT)
-    this.setState({startDate, endDate});
+    this.setState({startDate, endDate, selectedDates}, () => {
+      this.selectDate(); // Update view
+    });
+    /*
     if (this.state.selectedDate < startDate || this.state.selectedDate > endDate) {
       this.setState({selectedDate: null}, () => this.selectDate(null));
     }
+    */
   }
 
   async selectCatalogue(catalogue) {
@@ -678,24 +705,33 @@ export default class CatalogueMap extends Component {
   render() {
     return (
         <div className="CatalogueMap">
-          <h1>{this.state.catalogue ? this.state.catalogue.description : '...'} {this.state.selectedDate ? 'at ' + this.state.selectedDate.format() : ''}</h1>
+          <h1>{this.state.catalogue ? this.state.catalogue.description : 'FMI Sentinel catalog'} {this.state.selectedDate ? 'at ' + this.state.selectedDate.format() : ''}</h1>
+          <hr></hr>
           <div className={"CatalogueMapContainer "+(this.state.loading > 0 ? "LoadingGeotiff" : "")} ref="mapContainer">
           </div>
           <div className="Controls">
+            <div>
+              <details>
+                  <summary>Instructions </summary>
+                  <p><ul><li>Chose the dataset.</li>
+                    <li>Choose a time span by clicking on dates below. Sentinel imagery acqusitions on those days will appear.</li> 
+                    <li>Select the days to show the satellite sensor data on the map.</li></ul></p>
+              </details>
+            </div>
+            <br></br>
             <div>
               <RootCatalogue root={this.props.root} selectCatalogue={catalogue => this.selectCatalogue(catalogue)}/>
             </div>
             {this.state.catalogue ? 
               <div>
               <div>
-                <h2>Catalog "{this.state.catalogue.description}"</h2>
+                <h3><u>Catalog "{this.state.catalogue.description}"</u></h3>
               </div>
+              <div><p>Available dates: {moment(this.state.catalogue.properties['dtr:start_datetime']).format('LL')} &mdash; {moment(this.state.catalogue.properties['dtr:end_datetime']).format('LL')}</p></div>
+              
+              <br></br>
               <div>
-                <p>Choose a time span and then click on dates below to show bounding boxes of sentinel imagery take on that day. Selecting
-                  the bounding boxes shows the satellite sensor data on the map.</p>
-              </div>
-              <div>
-                <p className="VisibleTimes">Dates within:</p>
+                <p>Dates within:
                 <div className="DatePickers">
                   <DatePicker
                       selected={this.state.startDate}
@@ -728,11 +764,8 @@ export default class CatalogueMap extends Component {
                       }}
                       placeholderText="End date"
                   />
-                </div>
-                <p className="showAllVisibleItems">
-                  <label>Show all visible items on map<input type="checkbox" checked={this.state.showAllVisibleItems} onChange={this.toggleShowAllVisibleItems.bind(this)}/></label>
-                </p>
-                <p className="VisibleTimes">Times available in view:
+                </div></p>
+                <p className="VisibleTimes">Dates available in view:
                   {this.state.visibleDates
                       .filter(date => date.isBetween(this.state.startDate, this.state.endDate, 'day', '[]'))
                       .map(
@@ -740,23 +773,26 @@ export default class CatalogueMap extends Component {
                           <span
                               key={i}
                               onClick={() => this.selectDate(date)}
-                              className={'Time' + (date.isSame(this.state.selectedDate, 'day') ? ' SelectedDate' : '')}>{date.format()}</span>
+                              className={'Time' + (_.find(this.state.selectedDates, d => date.isSame(d, 'day')) ? ' SelectedDate' : '')}>{date.format()}</span>
                       )
                   )}
                 </p>
+                <p className="showAllVisibleItems">
+                  Show items for the chosen dates on map<input type="checkbox" checked={this.state.showAllVisibleItems} onChange={this.toggleShowAllVisibleItems.bind(this)}/>
+                </p>
               </div>
+              <br></br>
               <div>
-                <p>Number of STAC items
-                  visible: {this.state.selectedDate === null ? 'choose a date above' : this.state.visibleFeatures.length}</p>
-              </div>
-              <div>
-                <h3>Choose band</h3>
+                <p>Choose band:
                 <BandDropDown selectedBand={this.state.selectedBand} bands={this.state.datasetBands}
                               onBandSelected={selectedBand => this.selectBand(selectedBand)}/>
+                </p>
               </div>
-              <h3>Debug information</h3>
+              <br></br>
               <div>
-                <p>Data from {moment(this.state.catalogue.properties['dtr:start_datetime']).format('LL')} to {moment(this.state.catalogue.properties['dtr:end_datetime']).format('LL')}</p>
+                <p>Number of visible STAC items: {this.state.selectedDates.length === 0 ? 'choose a date above' : this.state.visibleFeatures.length}</p>
+              </div>
+              <div>  
                 <p className="VisibleGeohashes">Visible geohashes:
                   {this.state.visibleGeohashes.map((hash, i) => (<span key={i}>{hash}</span>))}
                 </p>

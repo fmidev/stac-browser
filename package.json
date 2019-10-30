@@ -15,8 +15,12 @@
     "react-bootstrap": "^0.32.4",
     "react-datepicker": "^2.8.0",
     "react-dom": "^16.8.6",
+<<<<<<< HEAD
     "react-ga": "^2.7.0",
     "react-scripts": "^3.2.0"
+=======
+    "react-scripts": "3.0.1"
+>>>>>>> parent of 71ca1ee... improving visualization
   },
   "scripts": {
     "start": "react-scripts start",
