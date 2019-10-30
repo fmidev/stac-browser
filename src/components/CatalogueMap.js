@@ -342,6 +342,22 @@ export default class CatalogueMap extends Component {
           }
         })();
         break;
+      case 'LSM':
+        colorFn = (() => {
+          var min = -200;
+          var max = 1000; // real data looks to be between -200 and 1000, this seems like a good compromise
+
+          return function(d) {
+            var opacity = d === 0 ? 0 : 255;
+            d = Math.min(Math.max(d, min), max);
+            var val = (d - min) / (max - min);
+            var r = val < .5 ? 1         : 1-(val-.5)*2;
+            var g = val < .5 ? 0+(val)*2 : 1;
+
+            return [r * 255, g * 255, val, opacity];
+          }
+        })();
+        break;
       default:
         // Auto-detect min and max and draw a black-white gradient
         colorFn = (() => {

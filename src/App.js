@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import './App.css';
-
+import ReactGA from 'react-ga';
 import CatalogueMap from './components/CatalogueMap';
 
 export default class App extends Component {
   constructor(props) {
     super(props);
     document.title = 'FMI STAC Proto';
+    ReactGA.initialize('UA-9509467-34');
+    ReactGA.pageview(window.location.pathname + window.location.search);
   }
   render() {
     return (
