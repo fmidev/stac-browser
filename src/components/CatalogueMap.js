@@ -288,8 +288,8 @@ export default class CatalogueMap extends Component {
 
       
       switch(datasetClass) {
-      case 'S1':
-        colorFn = (() => {
+        case 'S1':
+          colorFn = (() => {
           return function(d) {
             var min = -25, max = 10;
             var opacity = d === 0 ? 0 : 255;
@@ -300,23 +300,63 @@ export default class CatalogueMap extends Component {
           }
         })();
         break;
-      case 'S2':
-        colorFn = (() => {
-          var min = 0;
-          var max = 225; // real data looks to be between 0 and 200, this seems like a good compromise
-
+        case 'S1DM':
+          colorFn = (() => {
           return function(d) {
+            var min = -25, max = 10;
             var opacity = d === 0 ? 0 : 255;
             d = Math.min(Math.max(d, min), max);
-            var val = (d - min) / (max - min);
-            var r = val < .5 ? 1         : 1-(val-.5)*2;
-            var g = val < .5 ? 0+(val)*2 : 1;
+            var val = (d - min) / (max - min) * 255;
 
-            return [r * 255, g * 255, 0, opacity];
+            return [val, val, val, opacity];
           }
         })();
         break;
-      default:
+        case 'S1M':
+          colorFn = (() => {
+          return function(d) {
+            var min = -2500, max = 1000;
+            var opacity = d === 0 ? 0 : 255;
+            d = Math.min(Math.max(d, min), max);
+            var val = (d - min) / (max - min) * 255;
+
+            return [val, val, val, opacity];
+          }
+        })();
+        break;
+        case 'S2IM':
+          colorFn = (() => {
+            var min = 0;
+            var max = 225; // real data looks to be between 0 and 200, this seems like a good compromise
+  
+            return function(d) {
+              var opacity = d === 0 ? 0 : 255;
+              d = Math.min(Math.max(d, min), max);
+              var val = (d - min) / (max - min);
+              var r = val < .5 ? 1         : 1-(val-.5)*2;
+              var g = val < .5 ? 0+(val)*2 : 1;
+  
+              return [r * 255, g * 255, 0, opacity];
+            }
+          })();
+        break;
+        case 'S2RM':
+          colorFn = (() => {
+            var min = 0;
+            var max = 5000; // real data looks to be between 0 and 200, this seems like a good compromise
+  
+            return function(d) {
+              var opacity = d === 0 ? 0 : 255;
+              d = Math.min(Math.max(d, min), max);
+              var val = (d - min) / (max - min);
+              var r = val < .5 ? 1         : 1-(val-.5)*2;
+              var g = val < .5 ? 0+(val)*2 : 1;
+  
+              return [r * 255, g * 255, 0, opacity];
+            }
+          })();
+        break;
+        default:
         // Auto-detect min and max and draw a black-white gradient
         colorFn = (() => {
           var min = _.min(data);
