@@ -313,13 +313,12 @@ export default class CatalogueMap extends Component {
           }
         })();
         break;
-<<<<<<< HEAD
       case 'S1M':
         colorFn = (() => {
           return function(d) {
-            //if (stacJson.selectedDate < moment("2019-05-21", DATE_FORMAT)) 
+            if (this.selectedDates[0] < moment("2019-05-21", DATE_FORMAT)) 
             var min = -2500, max = 1000;
-            //else var min = -25, max = 10;
+            else var min = -25, max = 10;
             var opacity = d === 0 ? 0 : 255;
             d = Math.min(Math.max(d, min), max);
             var val = (d - min) / (max - min) * 255;
@@ -328,10 +327,7 @@ export default class CatalogueMap extends Component {
           }
         })();
         break;
-      case 'S2M':
-=======
-      case 'S2':
->>>>>>> parent of 71ca1ee... improving visualization
+      case 'S2IM':
         colorFn = (() => {
           var min = 0;
           var max = 225; // real data looks to be between 0 and 200, this seems like a good compromise
