@@ -313,7 +313,19 @@ export default class CatalogueMap extends Component {
           }
         })();
         break;
-      case 'S1M':
+        case 'S1DM':
+          colorFn = (() => {
+            return function(d) {
+              var min = -25, max = 10;
+              var opacity = d === 0 ? 0 : 255;
+              d = Math.min(Math.max(d, min), max);
+              var val = (d - min) / (max - min) * 255;
+  
+              return [val, val, val, opacity];
+            }
+          })();
+          break;
+        case 'S1M':
         colorFn = (() => {
           return function(d) {
             if (this.selectedDates[0] < moment("2019-05-21", DATE_FORMAT)) 
@@ -327,7 +339,7 @@ export default class CatalogueMap extends Component {
           }
         })();
         break;
-      case 'S2IM':
+        case 'S2IM':
         colorFn = (() => {
           var min = 0;
           var max = 225; // real data looks to be between 0 and 200, this seems like a good compromise
@@ -343,7 +355,23 @@ export default class CatalogueMap extends Component {
           }
         })();
         break;
-      case 'LSM':
+      case 'S2RM':
+          colorFn = (() => {
+            var min = 0;
+            var max = 5000; // real data looks to be between 0 and 200, this seems like a good compromise
+  
+            return function(d) {
+              var opacity = d === 0 ? 0 : 255;
+              d = Math.min(Math.max(d, min), max);
+              var val = (d - min) / (max - min);
+              var r = val < .5 ? 1         : 1-(val-.5)*2;
+              var g = val < .5 ? 0+(val)*2 : 1;
+  
+              return [r * 255, g * 255, 0, opacity];
+            }
+          })();
+          break;
+        case 'LSM':
         colorFn = (() => {
           var min = -200;
           var max = 1000; // real data looks to be between -200 and 1000, this seems like a good compromise
