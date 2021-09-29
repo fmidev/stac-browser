@@ -1,0 +1,84 @@
+{
+    "stac_version": "1.0.0",
+    "stac_extensions": [],
+    "type": "Feature",
+    "id": "S1M_20170801_20170811",
+    "bbox": [
+      172.91173669923782,
+      1.3438851951615003,
+      172.95469614953714,
+      1.3690476620161975
+    ],
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            172.91173669923782,
+            1.3438851951615003
+          ],
+          [
+            172.95469614953714,
+            1.3438851951615003
+          ],
+          [
+            172.95469614953714,
+            1.3690476620161975
+          ],
+          [
+            172.91173669923782,
+            1.3690476620161975
+          ],
+          [
+            172.91173669923782,
+            1.3438851951615003
+          ]
+        ]
+      ]
+    },
+    "properties": {
+      "datetime": null,
+      "start_datetime": "2017-08-01 00:00:00",
+      "end_datetime": "2017-08-11 00:00:00"
+    },
+    "collection": "dataset-S1M",
+    "links": [
+      {
+        "rel": "self",
+        "href": "/TestData/S1M_20170801_20170811.json"
+      },
+      {
+        "rel": "collection",
+        "href": "/TestData/dataset-S1M.json"
+      }
+    ],
+    "assets": {
+        "min_VV_R20m": {
+            "sourceUrl": "https://pta.data.lit.fmi.fi/sen1/s1m_grd_vv_min/s1m_grd_20170801-20170811_min_VV_R20m.tif"
+        },
+        "max_VV_R20m": {
+            "sourceUrl": "https://pta.data.lit.fmi.fi/sen1/s1m_grd_vv_max/s1m_grd_20170801-20170811_max_VV_R20m.tif"
+        },
+        "mean_VV_R20m": {
+            "sourceUrl": "https://pta.data.lit.fmi.fi/sen1/s1m_grd_vv_mean/s1m_grd_20170801-20170811_mean_VV_R20m.tif"
+        },
+        "stdev_VV_R20m": {
+            "sourceUrl": "https://pta.data.lit.fmi.fi/sen1/s1m_grd_vv_std/s1m_grd_20170801-20170811_stdev_VV_R20m.tif"
+        },
+        "mean_VVVH_R20m": {
+            "sourceUrl": "https://pta.data.lit.fmi.fi/sen1/s1m_grd_vvvh_mean/s1m_grd_20170801-20170811_mean_VVVH_R20m.tif"
+        },
+        "min_VH_R20m": {
+            "sourceUrl": "https://pta.data.lit.fmi.fi/sen1/s1m_grd_vh_min/s1m_grd_20170801-20170811_min_VH_R20m.tif"
+        },
+        "max_VH_R20m": {
+            "sourceUrl": "https://pta.data.lit.fmi.fi/sen1/s1m_grd_vh_max/s1m_grd_20170801-20170811_max_VH_R20m.tif"
+        },
+        "mean_VH_R20m": {
+            "sourceUrl": "https://pta.data.lit.fmi.fi/sen1/s1m_grd_vh_mean/s1m_grd_20170801-20170811_mean_VH_R20m.tif"
+        },
+        "stdev_VH_R20m": {
+            "sourceUrl": "https://pta.data.lit.fmi.fi/sen1/s1m_grd_vh_std/s1m_grd_20170801-20170811_stdev_VH_R20m.tif"
+        }
+    }
+}

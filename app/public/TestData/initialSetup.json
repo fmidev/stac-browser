@@ -1,0 +1,64 @@
+{
+  "data": {
+    "global": {
+      "mapExtent": {
+        "center": [397915, 7132330],
+        "resolution": 3550,
+        "rotation": 0
+      },
+      "selectedMonth": "",
+      "inspectionDate": "",
+      "comparisonDate": "",
+      "fullScreen": null,
+      "mapSize": ""
+    },
+    "maps": [
+      {
+        "id": 0,
+        "selectedDataset": "Sentinel-1_dekadi_mosaiikki",
+        "channelSettings": {
+          "R": "min_vv",
+          "G": "max_vv",
+          "B": "max_vh"
+        },
+        "displayWindDamageVector": true,
+        "displaySpyglass": false,
+        "panelBarSettings": {
+          "displayDataSourceList": false,
+          "displayVisualization": false
+        },
+        "derivedData": {
+          "bands": [],
+          "timeValues": {
+            "inspection": "",
+            "comparison": ""
+          },
+          "mapLayers": [[ ]]
+        }
+      },
+      {
+        "id": 1,
+        "selectedDataset": "Sentinel-2_global_mosaic_dekadi",
+        "channelSettings": {
+          "R": "b04",
+          "G": "b03",
+          "B": "b02"
+        },
+        "displayWindDamageVector": true,
+        "displaySpyglass": false,
+        "panelBarSettings": {
+          "displayDataSourceList": false,
+          "displayVisualization": false
+        },
+        "derivedData": {
+          "bands": [],
+          "timeValues": {
+            "inspection": "",
+            "comparison": ""
+          },
+          "mapLayers": [[ ]]
+        }
+      }
+    ]
+  }
+}

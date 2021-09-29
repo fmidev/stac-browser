@@ -1,0 +1,7 @@
+{
+  "type": "Collection",
+  "stac_version": "1.0.0",
+  "stac_extensions": [],
+  "id": "dataset-S2M",
+  "title": "this is just for testing purposes"
+ }

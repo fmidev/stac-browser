@@ -1,0 +1,60 @@
+{
+  "data": {
+    "global": {
+      "mapExtent": [],
+      "inspectionDate": "ISO time",
+      "fullScreen": "null or id of the map",
+      "mapSize": "small / medium / large"
+    },
+    "maps": [
+      {
+        "id": 0,
+        "selectedDataset": "id of the source",
+        "channelSettings": {
+          "R": "VV",
+          "G": "",
+          "B": "VH"
+        },
+        "displayWindDamageVector": true,
+        "displaySpyglass": false,
+        "panelBarSettings": {
+          "displayDataSourceList": false,
+          "displayVisualization": false
+        },
+
+        "derivedData": {
+          "bands": [],
+          "timeValues": {
+            "inspection": "2021-06-29T10:07:49Z",
+            "comparison": "2022-08-30T10:07:49Z"
+          },
+          "mapLayers": [
+            [
+              {
+                "linkToMapImage": "https://asdasdasd",
+                "srs": "EPSG:3067"
+              }
+            ]
+          ]
+        }
+      }
+    ]
+  },
+
+  "cache": {
+    "catalog": {},
+    "datasets": [
+      {
+        "id": "S1M",
+        "name": "S1M (sentinel 1 mosaic)",
+        "channelSelectorType": "sentinel / metsävara / none"
+      }
+    ],
+    "windDamages": [
+      {
+        "date": "YY/MM/DD",
+        "value": "some number, still unsure what it represents"
+      }
+    ]
+  }
+}

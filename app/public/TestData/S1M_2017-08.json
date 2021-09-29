@@ -1,0 +1,92 @@
+{
+    "type": "Collection",
+    "stac_version": "1.0.0",
+    "stac_extensions": [],
+    "id": "S1M_2017-08",
+    "description": "dataset-S1M, 20170801_20170831",
+    "license": "proprietary",
+    "extent": {
+      "spatial": {
+        "bbox": [
+          [
+            -180,
+            -56,
+            180,
+            83
+          ]
+        ]
+      },
+      "temporal": {
+        "interval": [
+          [
+            "2017-08-01 00:00:00",
+            "2017-08-31 00:00:00"
+          ]
+        ]
+      }
+    },
+    "assets": {
+      "metadata_iso_19139": {
+        "roles": [
+          "metadata",
+          "iso-19139"
+        ],
+        "href": "https://storage.googleapis.com/open-cogs/stac-examples/sentinel-2-iso-19139.xml",
+        "title": "ISO 19139 metadata",
+        "type": "application/vnd.iso.19139+xml"
+      }
+    },
+    "summaries": {
+      "datetime": {
+        "minimum": "2017-08-01 00:00:00",
+        "maximum": "2017-08-31 00:00:00"
+      },
+      "bands": [
+        {
+          "name": "min_VV_R20m"
+        },
+        {
+          "name": "max_VV_R20m"
+        },
+        {
+          "name": "mean_VV_R20m"
+        },
+        {
+          "name": "stdev_VV_R20m"
+        },
+        {
+          "name": "mean_VVVH_R20m"
+        },
+        {
+          "name": "min_VH_R20m"
+        },
+        {
+          "name": "max_VH_R20m"
+        },
+        {
+          "name": "mean_VH_R20m"
+        },
+        {
+          "name": "stdev_VH_R20m"
+        }
+      ]
+    },
+    "links": [
+      {
+        "rel": "self",
+        "href": "/TestData/S1M_2017-08.json"
+      },
+      {
+        "rel": "root",
+        "href": "/TestData/root.json"
+      },
+      {
+        "rel": "child",
+        "href": "/TestData/S1M_20170801_20170811.json"
+      },
+      {
+        "rel": "license",
+        "href": "https://scihub.copernicus.eu/twiki/pub/SciHubWebPortal/TermsConditions/Sentinel_Data_Terms_and_Conditions.pdf"
+      }
+    ]
+  }
