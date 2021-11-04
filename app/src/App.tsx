@@ -3,7 +3,6 @@ import { createStore, combineReducers, applyMiddleware } from 'redux'
 import createSagaMiddleware from '@redux-saga/core';
 import { Provider } from 'react-redux'
 import { composeWithDevTools } from 'redux-devtools-extension';
-// @ts-ignore
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { rootSaga } from './Store/Sagas/rootSaga'
 import MainView from './Components/Views/MainView'
