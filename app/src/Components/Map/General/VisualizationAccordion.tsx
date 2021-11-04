@@ -16,9 +16,10 @@ import { setBands } from '../../../Store/Actions/data'
 interface Props {
   mapComponentIndex: number
   isExpanded: boolean
+  items: any[]
 }
 
-const VisualizationAccordion: React.FC<Props> = ({ isExpanded, mapComponentIndex }) => {
+const VisualizationAccordion: React.FC<Props> = ({ items, isExpanded, mapComponentIndex }) => {
   const dispatch = useDispatch()
   const channelSettings = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].channelSettings)
   const selectedDataset = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].selectedDataset)
@@ -96,7 +97,8 @@ const VisualizationAccordion: React.FC<Props> = ({ isExpanded, mapComponentIndex
             <BandList
               bands={bands}
               color={'red'}
-              mapComponentIndex={mapComponentIndex} />
+              mapComponentIndex={mapComponentIndex}
+              items={items} />
           </Grid>
         )
       }
@@ -106,7 +108,8 @@ const VisualizationAccordion: React.FC<Props> = ({ isExpanded, mapComponentIndex
             <BandList
               bands={bands}
               color={'green'}
-              mapComponentIndex={mapComponentIndex} />
+              mapComponentIndex={mapComponentIndex}
+              items={items} />
           </Grid>
         )
       }
@@ -116,7 +119,8 @@ const VisualizationAccordion: React.FC<Props> = ({ isExpanded, mapComponentIndex
             <BandList
               bands={bands}
               color={'blue'}
-              mapComponentIndex={mapComponentIndex} />
+              mapComponentIndex={mapComponentIndex}
+              items={items} />
           </Grid>
         )
       }
@@ -126,7 +130,8 @@ const VisualizationAccordion: React.FC<Props> = ({ isExpanded, mapComponentIndex
             <BandList
               bands={bands}
               color={'red'}
-              mapComponentIndex={mapComponentIndex} />
+              mapComponentIndex={mapComponentIndex}
+              items={items} />
           </Grid>
         )
       }

@@ -9,7 +9,7 @@ import OpenLayersMap from './OpenLayersMap'
 import { Map } from '../../../types'
 import { removeMap } from '../../../Store/Actions/data'
 import DatasetList from '../ListComponents/Lists/DatasetList'
-import NormalVisualization from '../Visualization/NormalVisualization'
+// import NormalVisualization from '../Visualization/NormalVisualization'
 import { getAllDatasets, getItemsForDatasetAndTime } from '../../../API/Api'
 import VisualizationAccordion from './VisualizationAccordion'
 
@@ -102,7 +102,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
           -
         </Button>
         <div
-          style={{ position: 'absolute', zIndex: 2, left: '0px', bottom: '0px', padding: '0.5em', color: '#ffffffaa', pointerEvents: 'none', filter: 'drop-shadow(0px 0px 5px black)' }}
+          style={{ position: 'absolute', zIndex: 2, left: '0px', bottom: '0px', padding: '0.5em', color: '#ffffffaa', pointerEvents: 'auto', filter: 'drop-shadow(0px 0px 5px black)'}}
         >
           {itemsTemporalInterval}
         </div>
@@ -118,6 +118,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
           <VisualizationAccordion
             isExpanded={false}
             mapComponentIndex={mapComponentIndex}
+            items={itemObject.items}
           />
         </div>
       </div>

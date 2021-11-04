@@ -14,9 +14,10 @@ interface Props {
   bands: Band[],
   color?: string
   mapComponentIndex: number
+  items: any[]
 }
 
-const BandList: React.FC<Props> = ({ bands, color, mapComponentIndex }) => {
+const BandList: React.FC<Props> = ({ items, bands, color, mapComponentIndex }) => {
   const colorData = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].channelSettings)
   const sidePanelIsOpen = useSelector((state: RootState) => state.dataReducer.data.global.sidebarIsOpen)
   const [searchText, setSearchText] = React.useState('')
@@ -69,7 +70,8 @@ const BandList: React.FC<Props> = ({ bands, color, mapComponentIndex }) => {
               itemData={{
                 bands: filteredBands,
                 selectedValue: colorData.R,
-                mapComponentIndex: mapComponentIndex
+                mapComponentIndex: mapComponentIndex,
+                items: items
               }}>
               {RedListItem}
             </FixedSizeList>
@@ -81,13 +83,14 @@ const BandList: React.FC<Props> = ({ bands, color, mapComponentIndex }) => {
           <Grid item xs={12}>
             <FixedSizeList
               height={200}
-              width={200}
+              width={listWidth}
               itemSize={30}
               itemCount={filteredBands.length}
               itemData={{
                 bands: filteredBands,
                 selectedValue: colorData.G,
-                mapComponentIndex: mapComponentIndex
+                mapComponentIndex: mapComponentIndex,
+                items: items
               }}>
               {GreenListItem}
             </FixedSizeList>
@@ -99,13 +102,14 @@ const BandList: React.FC<Props> = ({ bands, color, mapComponentIndex }) => {
           <Grid item xs={12}>
             <FixedSizeList
               height={200}
-              width={200}
+              width={listWidth}
               itemSize={30}
               itemCount={filteredBands.length}
               itemData={{
                 bands: filteredBands,
                 selectedValue: colorData.B,
-                mapComponentIndex: mapComponentIndex
+                mapComponentIndex: mapComponentIndex,
+                items: items
               }}>
               {BlueListItem}
             </FixedSizeList>

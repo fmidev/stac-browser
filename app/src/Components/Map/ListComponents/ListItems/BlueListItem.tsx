@@ -28,6 +28,30 @@ const BlueListItem: React.FC<ListChildComponentProps> = ({ data, index, style })
   const dispatch = useDispatch()
   const channelSettings = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].channelSettings)
 
+  const listItem = () => {
+    if (data.items.length > 0) {
+      const linksList = [];
+      for (let i=0; i<data.items.length; i++) {
+        const links: any = Object.values(data.items[i].assets).find((obj: any) => {
+          return obj.title == name
+        });
+        if (links !== undefined) {linksList[i] = links.href}
+      }
+      console.debug(linksList)
+      if (linksList.length > 0) {
+        const linkArray = [
+          <div style={{minWidth: '40%', textAlign: 'left'}}>{name}</div>,
+          "Download",
+        ]
+        for (let i=1; i<=linksList.length; i++) {
+          linkArray.push(<a href={linksList[linksList.length-i]} style={{ marginLeft: '5px' }}>{i}</a>);
+        }
+        return linkArray
+      }
+      else { return name }
+    }
+  }
+  
   const changeToNextList = () => {
     const key = Object.keys(channelSettings).find(key => channelSettings[key] === '' && key !== 'B')
     console.log('key in red list item: ', key)
@@ -47,7 +71,7 @@ const BlueListItem: React.FC<ListChildComponentProps> = ({ data, index, style })
         }}
         value={isNamedExports}
       />
-      {name}
+      {listItem()}
     </div>
   )
 }
