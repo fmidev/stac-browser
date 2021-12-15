@@ -10,7 +10,7 @@ import { Map } from '../../../types'
 import { removeMap } from '../../../Store/Actions/data'
 import DatasetList from '../ListComponents/Lists/DatasetList'
 // import NormalVisualization from '../Visualization/NormalVisualization'
-import { getAllDatasets, getItemsForDatasetAndTime } from '../../../API/Api'
+import { getAllDatasets, getItemsForDatasetAndTime, getTimeseries } from '../../../API/Api'
 import VisualizationAccordion from './VisualizationAccordion'
 
 interface Props {
@@ -54,6 +54,7 @@ function calculateItemsTemporalInterval(itemObject : any) {
 
 const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const inspectionDate = useSelector((state: RootState): string => state.dataReducer.data.global.inspectionDate)
+  const center = useSelector((state: RootState) : number[] => state.dataReducer.data.global.mapExtent.center)
   const selectedDataset = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].selectedDataset)
   const editedDate = new Date(inspectionDate).toISOString().split("T")[0]
   const classes = useStyles()
@@ -81,6 +82,23 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
       })
     }
   }, [selectedDataset, inspectionDate])
+
+  React.useEffect(() => {
+    if (!selectedDataset) {
+      return
+    }
+    console.log('Load new timeseries for',selectedDataset)
+    const bands = ['R','G','B'].map(color => mapObject.channelSettings[color]).filter(band => !!band)
+    const startDate = new Date(inspectionDate)
+    const endDate = new Date(inspectionDate)
+
+    startDate.setMonth(startDate.getMonth()-3)
+    endDate.setMonth(endDate.getMonth()+3)
+    
+    getTimeseries(selectedDataset, center, bands, startDate, endDate).then((data) => {
+      console.log('Got timeseries for',selectedDataset, data)
+    })
+  }, [selectedDataset, inspectionDate, center, mapObject.channelSettings])
 
   const itemsTemporalInterval = calculateItemsTemporalInterval(itemObject)
 
