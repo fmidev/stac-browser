@@ -4,35 +4,24 @@ import * as React from 'react';
 import Dygraph from 'dygraphs';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../App';
+import { createStyles, makeStyles } from '@material-ui/styles'
 import { ContactsOutlined, ContactSupportOutlined } from '@material-ui/icons';
 import { getTimeseries } from '../../API/Api';
+
 
 interface Props {
   data: any[]
 }
 
-const divStyle = {
-  border: "1px solid #c8c8c8",
-  padding: "1rem 2rem 2rem 0",
-  margin: "1rem",
-  borderRadius: "4px",
-  width: "98%"
-};
-
-const graphStyle = {
-  width: "inherit",
-  height: "300"
-};
-
-
 //GraphView component start
-const Dygraphed: React.FC/*<Props>*/ = (/*{data}: Props*/) => {
-  //const [graphState, setGraph] = React.useState<any>()
+const Dygraphed: React.FC<Props> = ({data}: Props) => {
+  //const [graphState, setGraphState] = React.useState<data>([]);
   const graphRef = React.useRef<HTMLDivElement>(null)
   const inspectionDate = useSelector((state: RootState) => state.dataReducer.data.global.inspectionDate)
   const dispatch = useDispatch()
+  const classes = useStyles()
 
-  const fullPresets = {
+  /* const fullPresets = {
     axes: {
       x: {
         drawGrid: true,
@@ -60,21 +49,20 @@ const Dygraphed: React.FC/*<Props>*/ = (/*{data}: Props*/) => {
     animatedZooms: true,
     hideOverlayOnMouseOut: false
   };
-  
-/*   const classes = useStyles()
  */  
-
   const year = new Date(inspectionDate).getFullYear()
   const month = new Date(inspectionDate).getMonth()
   const day = new Date(inspectionDate).getDate()
 
-    const graphData = [] as any[]
-    const dateString = Date.parse(`${year}/${month - 3}/${day}`)
-    //console.log(dateString)
-    const num = 24 * 0.5 * 365;
-    const endTime = Date.parse(`${year}/${month + 3}/${day}`)
+  const graphData = [] as any[]
+  const dateString = Date.parse(`${year}/${month - 3}/${day}`)
+  //console.log(dateString)
+  const num = 24 * 0.5 * 365;
+  const endTime = Date.parse(`${year}/${month + 3}/${day}`)
 
-  const ret = getTimeseries("1", new Date(dateString), new Date(endTime), [ "Punainen", "Vihreä", "Sininen"] )
+  const coords: number[] = []
+  const bands: string[] = []
+  const ret = getTimeseries("1", coords, bands ,new Date(dateString), new Date(endTime) )
 
     if(dateString){
     for (let i = 0; i < num; i++) {
@@ -85,10 +73,6 @@ const Dygraphed: React.FC/*<Props>*/ = (/*{data}: Props*/) => {
         Math.random()
       ]);
     }
-  }
-
-  function addGraphData(){
-    console.log('')
   }
 
   function legendFormatter(this: any, data: any) {
@@ -120,8 +104,9 @@ const Dygraphed: React.FC/*<Props>*/ = (/*{data}: Props*/) => {
   React.useEffect(() => {
     if (!graphRef.current) throw Error("graphRef is not assigned");
       new Dygraph(graphRef.current,
-      graphData, 
+      data, 
       {
+        width: 500,
         legend: "follow",
         highlightCircleSize: 5,
         fillGraph: true,
@@ -137,10 +122,12 @@ const Dygraphed: React.FC/*<Props>*/ = (/*{data}: Props*/) => {
        legendFormatter: legendFormatter,
        axes: {
          x:{
-           axisLineColor: "white"
+           axisLineColor: "white",
+           drawGrid: false
          },
          y: {
-           axisLineColor: "white"
+           axisLineColor: "white",
+           drawGrid: false,
          }
        }
       });
@@ -148,17 +135,28 @@ const Dygraphed: React.FC/*<Props>*/ = (/*{data}: Props*/) => {
   }, [graphData])
   // console.log(graphData)
   return (
-    <div style={divStyle}>
+    <div className={classes.graphDivContainer}>
       <h3>Stac-Browser</h3>
-      <div style={graphStyle} ref={graphRef}>
+      <div ref={graphRef} className={classes.graph}>
       </div>
     </div>
   )
 }
-/* 
+
 const useStyles = makeStyles(() =>
   createStyles({
+    graphDivContainer: {
+      border: "1px solid #c8c8c8",
+      padding: "1rem 0 2rem 0",
+      margin: "auto",
+      borderRadius: "4px",
+      width: "100%"
+    },
+    graph: {
+      display: 'flex',
+      width: '100%'
+    }
     
-  })) */
+  }))
 
 export default Dygraphed

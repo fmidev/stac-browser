@@ -12,6 +12,7 @@ import DatasetList from '../ListComponents/Lists/DatasetList'
 // import NormalVisualization from '../Visualization/NormalVisualization'
 import { getAllDatasets, getItemsForDatasetAndTime, getTimeseries } from '../../../API/Api'
 import VisualizationAccordion from './VisualizationAccordion'
+import GraphedView from '../../Views/GraphedView'
 
 interface Props {
   mapObject: Map,
@@ -61,6 +62,8 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const dispatch = useDispatch()
   const [itemObject, setItemObject] = React.useState({ items: [] } as { items: any });
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
+  const [graphData, setGraphData] = React.useState([] as any[]);
+
 
   React.useEffect(() => {
     getAllDatasets().then(allDatasets => {
@@ -97,6 +100,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     
     getTimeseries(selectedDataset, center, bands, startDate, endDate).then((data) => {
       console.log('Got timeseries for',selectedDataset, data)
+      setGraphData(data)
     })
   }, [selectedDataset, inspectionDate, center, mapObject.channelSettings])
 
@@ -109,36 +113,41 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   }
 
   return (
-    <div className={classes.mapContainer} id='MapContainer'>
-      <div className={classes.mapBox}>
-        <Button
-          style={{ position: 'absolute', zIndex: 2, maxWidth: '35px', minWidth: '35px', maxHeight: '35px', minHeight: '35px', right: '0px' }}
-          variant="contained"
-          color="secondary"
-          onClick={() => dispatch(removeMap({ id: mapObject.id }))}
-        >
-          -
-        </Button>
-        <div
-          style={{ position: 'absolute', zIndex: 2, left: '0px', bottom: '0px', padding: '0.5em', color: '#ffffffaa', pointerEvents: 'auto', filter: 'drop-shadow(0px 0px 5px black)'}}
-        >
-          {itemsTemporalInterval}
+    <div>
+      <div className={classes.mapContainer} id='MapContainer'>
+        <div className={classes.mapBox}>
+          <Button
+            style={{ position: 'absolute', zIndex: 2, maxWidth: '35px', minWidth: '35px', maxHeight: '35px', minHeight: '35px', right: '0px' }}
+            variant="contained"
+            color="secondary"
+            onClick={() => dispatch(removeMap({ id: mapObject.id }))}
+          >
+            -
+          </Button>
+          <div
+            style={{ position: 'absolute', zIndex: 2, left: '0px', bottom: '0px', padding: '0.5em', color: '#ffffffaa', pointerEvents: 'auto', filter: 'drop-shadow(0px 0px 5px black)'}}
+          >
+            {itemsTemporalInterval}
+          </div>
+          <OpenLayersMap datasetCatalog={datasetCatalog} items={itemObject.items} channelSettings={mapObject.channelSettings} />
         </div>
-        <OpenLayersMap datasetCatalog={datasetCatalog} items={itemObject.items} channelSettings={mapObject.channelSettings} />
+        <div className={classes.menuContainer}>
+          <div className={classes.dropDown}>
+            <SlimAccordion name={datasetCatalog ? datasetCatalog.title : '-'} date={itemsTemporalInterval} temporalInterval={catalogTemporalInterval} isExpanded={false}>
+              <DatasetList datasets={allDatasets} mapComponentIndex={mapComponentIndex} />
+            </SlimAccordion>
+          </div>
+          <div className={classes.dropDown}>
+            <VisualizationAccordion
+              isExpanded={false}
+              mapComponentIndex={mapComponentIndex}
+              items={itemObject.items}
+            />
+          </div>
+        </div>
       </div>
-      <div className={classes.menuContainer}>
-        <div className={classes.dropDown}>
-          <SlimAccordion name={datasetCatalog ? datasetCatalog.title : '-'} date={itemsTemporalInterval} temporalInterval={catalogTemporalInterval} isExpanded={false}>
-            <DatasetList datasets={allDatasets} mapComponentIndex={mapComponentIndex} />
-          </SlimAccordion>
-        </div>
-        <div className={classes.dropDown}>
-          <VisualizationAccordion
-            isExpanded={false}
-            mapComponentIndex={mapComponentIndex}
-            items={itemObject.items}
-          />
-        </div>
+      <div>
+        <GraphedView data={graphData} />
       </div>
     </div>
   )
