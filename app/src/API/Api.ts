@@ -1,4 +1,5 @@
 import { Dataset } from '../types'
+import { fromUrl } from 'geotiff'
 
 //const CATALOG_ROOT = 'https://s3.eu-west-1.amazonaws.com/directory.spatineo.com/tmp/tuulituhohaukka-stac/catalog/root2.json'
 const CATALOG_ROOT = 'https://pta.data.lit.fmi.fi/stac/root.json'
@@ -23,16 +24,27 @@ interface CreatedLinkObject {
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const debug = function (...args: any[]) { /* NOP */ }
 
-const CACHE : Record<string, Promise<Response> | undefined> = {}
+const JSON_CACHE : Record<string, Promise<Response> | undefined> = {}
 
-async function get(url : string) {
-  let promise = CACHE[url];
+async function get(url : string) : Promise<any> {
+  let promise = JSON_CACHE[url];
   if (promise === undefined) {
     promise = fetch(url, { method: 'GET' }).then(r => r.json())
-    CACHE[url] = promise;
+    JSON_CACHE[url] = promise;
   }
 
   return await promise;
+}
+
+const COG_CACHE : Record<string, Promise<any> | undefined> = {}
+
+async function getCog(url : string) : Promise<any> {
+  let promise = COG_CACHE[url]
+  if (promise === undefined) {
+    promise = COG_CACHE[url] = fromUrl(url)
+  }
+
+  return await promise
 }
 
 // 1. get root catalog
@@ -176,4 +188,89 @@ const getItemsForDatasetAndTime_generic = (
 
     }).catch(reject)
   })
+}
+
+const getItemsForTimeseries = (
+  datasetId: string, 
+  dateStart: Date,
+  dateEnd: Date) => {
+  debug('API: getItemsForTimeseries called!')
+
+  return new Promise((resolve, reject) => {
+
+    const createLinkObject = (link: Link) => {
+        return {
+          href: link.href,
+          time_start: link.time ? new Date(link.time.time_start) : null,
+          time_end: link.time ? new Date(link.time.time_end) : null
+        }
+    }
+
+    getAllDatasets().then((dataSets) => {
+
+        const dataSetById = dataSets.find((dataSet: any) => dataSet.id == datasetId)
+        if (!dataSetById) {
+            return reject('No such dataset: '+datasetId)
+        }
+
+        const listOfSubCatalogs = dataSetById.links
+          .filter((link: Link) => link.rel === 'child')
+          .map(createLinkObject)
+          .filter((a : CreatedLinkObject) => (dateStart <= a.time_end && a.time_start <= dateEnd) )
+
+        // Filter catalogs that are between our dates
+        Promise.all(listOfSubCatalogs.map(async (cat : any) => {
+          const datasetTimeCatalog = await get(cat.href);
+          return datasetTimeCatalog.links
+            .filter((link: Link) => link.rel === 'item')
+            .map(createLinkObject)
+            .filter((a : CreatedLinkObject) => (dateStart <= a.time_end && a.time_start <= dateEnd) )
+
+        })).catch(reject).then((allItemLinks : any) => {
+
+          allItemLinks = allItemLinks.flat()
+          allItemLinks.sort((a: CreatedLinkObject, b: CreatedLinkObject) => -(b.time_start.getTime() - a.time_start.getTime()))
+
+          Promise.all(allItemLinks.map((i : any) => get(i.href))).then(items => {
+            debug('API: Fetched', items.length, 'items')
+            resolve(items)
+          })
+        })
+
+    }).catch(reject)
+  })
+}
+
+export const getTimeseries = async (datasetId : string, coords : number[], bands: string[], dateStart: Date, dateEnd: Date) => {
+  const items : any = await getItemsForTimeseries(datasetId, dateStart, dateEnd)
+
+  function getTimestamp(i : any) {
+    if (i.properties.datetime) {
+      return i.properties.datetime
+    }
+    const start = new Date(i.properties.start_datetime).getTime()
+    const end   = new Date(i.properties.end_datetime).getTime()
+    return new Date(start + (end-start)/2)
+  }
+  
+  return await Promise.all(items.map(async (item : any) => {
+    const ts = getTimestamp(item)
+    const bandValues = await Promise.all(bands.map(async (band) => {
+      try {
+        const url = item.assets[band].href
+        const cog = await getCog(url)
+        const data = await cog.readRasters({
+          // TODO: check if this is ok or if we should react to zoom level or other factors
+          bbox: [coords[0]-10, coords[1]-10, coords[0]+10, coords[1]+10],
+          // Request 1x1 box
+          width: 1,
+          height: 1
+        })
+        return data[0][0]
+      } catch(err) {
+        return NaN
+      }
+    }))
+    return [ts, ...bandValues]
+  }))
 }
