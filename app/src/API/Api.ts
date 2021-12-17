@@ -241,9 +241,12 @@ const getItemsForTimeseries = (
   })
 }
 
-export const getTimeseries = async (datasetId : string, coords : number[], bands: string[], dateStart: Date, dateEnd: Date) => {
+export const getTimeseries = async (datasetId : string, coords : number[], resolution : number, bands: string[], dateStart: Date, dateEnd: Date) => {
   const items : any = await getItemsForTimeseries(datasetId, dateStart, dateEnd)
 
+  const offset = resolution * 0.5;
+  const bbox = [coords[0]-offset, coords[1]-offset, coords[0]+offset, coords[1]+offset]
+  
   function getTimestamp(i : any) {
     if (i.properties.datetime) {
       return i.properties.datetime
@@ -260,13 +263,13 @@ export const getTimeseries = async (datasetId : string, coords : number[], bands
         const url = item.assets[band].href
         const cog = await getCog(url)
         const data = await cog.readRasters({
-          // TODO: check if this is ok or if we should react to zoom level or other factors
-          bbox: [coords[0]-10, coords[1]-10, coords[0]+10, coords[1]+10],
-          // Request 1x1 box
-          width: 1,
-          height: 1
+          bbox,
+          width: 2,
+          height: 2
         })
-        return data[0][0]
+
+        // NOTE! This works only for single-band images
+        return data[0].reduce((memo : number, value : number) => memo+value, 0) / data[0].length
       } catch(err) {
         return NaN
       }
