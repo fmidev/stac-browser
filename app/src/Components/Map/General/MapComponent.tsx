@@ -86,6 +86,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     }
   }, [selectedDataset, inspectionDate])
 
+  // Graph useEffect
   React.useEffect(() => {
     if (!selectedDataset) {
       return
@@ -99,7 +100,8 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     endDate.setMonth(endDate.getMonth()+3)
     
     getTimeseries(selectedDataset, center, bands, startDate, endDate).then((data) => {
-      console.log('Got timeseries for',selectedDataset, data)
+      //console.log('Got timeseries for',selectedDataset, data)
+      console.log([...graphData, data])
       setGraphData(data)
     })
   }, [selectedDataset, inspectionDate, center, mapObject.channelSettings])
