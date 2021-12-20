@@ -59,7 +59,7 @@ const VisualizationAccordion: React.FC<Props> = ({ items, isExpanded, mapCompone
     })
   }, [bands])
 
-  // Function will set all bands selected automagically, when one of the described datasets is selected
+  // Function will set all bands selected automatically, when one of the described datasets is selected
   React.useEffect(() => {
     const specialDatasets = [{
       name: 'Latvuskorkeusmalli',
@@ -203,7 +203,7 @@ const AccordionSummary = withStyles({
 
 const AccordionDetails = withStyles((theme) => ({
   root: {
-    width: '100%',
+    width: '40%',
     padding: theme.spacing(0),
   },
 }))(MuiAccordionDetails);

@@ -22,6 +22,7 @@ const Dygraphed: React.FC<Props> = ({data}: Props) => {
   const classes = useStyles()
   const graphData = [] as any[]
 
+
   function legendFormatter(this: any, data: any) {
     if (data.x == null) {
       return '<br>' + data.series.map(function(series: { dashHTML: string; labelHTML: string; }) { 
@@ -90,10 +91,10 @@ const useStyles = makeStyles(() =>
   createStyles({
     graphDivContainer: {
       border: "1px solid #c8c8c8",
-      padding: "1rem 0 2rem 0",
-      margin: "auto",
+      padding: "1rem",
+      margin: "1rem 0.1rem",
       borderRadius: "4px",
-      width: "100%"
+      width: "90%",
     },
     graph: {
       display: 'flex',

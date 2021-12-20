@@ -86,4 +86,9 @@ const AccordionDetails = withStyles((theme) => ({
   },
 }))(MuiAccordionDetails);
 
+  /* 
+   root: {
+    width: '100%',
+    padding: theme.spacing(0),
+  }, */
 export default SlimAccordion

@@ -13,6 +13,7 @@ import DatasetList from '../ListComponents/Lists/DatasetList'
 import { getAllDatasets, getItemsForDatasetAndTime, getTimeseries } from '../../../API/Api'
 import VisualizationAccordion from './VisualizationAccordion'
 import GraphedView from '../../Views/GraphedView'
+import GraphAccordion from './GraphAccordion'
 
 interface Props {
   mapObject: Map,
@@ -99,7 +100,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
 
     startDate.setMonth(startDate.getMonth()-3)
     endDate.setMonth(endDate.getMonth()+3)
-    
+
     getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
       console.log(data)
@@ -141,11 +142,14 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             </SlimAccordion>
           </div>
           <div className={classes.dropDown}>
-            <VisualizationAccordion
-              isExpanded={false}
-              mapComponentIndex={mapComponentIndex}
-              items={itemObject.items}
-            />
+            <VisualizationAccordion isExpanded={false} mapComponentIndex={mapComponentIndex} items={itemObject.items} />
+          </div>  
+          <div style={{width: '20%', verticalAlign: 'bottom', borderBottom: '1px solid grey', borderRight: '1px solid grey',height: '85px', position: 'relative', top: 16}}>
+            <Grid>
+              <Button>
+                Aikasarja
+              </Button>
+            </Grid>
           </div>
         </div>
       </div>
@@ -163,7 +167,7 @@ const useStyles = makeStyles(() =>
       flexDirection: 'column',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      width: '100%',
+      width: '90%',
       aspectRatio: '11/10',
     },
     mapBox: {
@@ -191,9 +195,11 @@ const useStyles = makeStyles(() =>
       alignItems: 'center',
     },
     dropDown: {
-      width: '100%',
       height: '100%',
       zIndex: 10,
+      margin: 0,
+      padding: 0,
+      width: '40%',
     },
   }))
 
