@@ -101,7 +101,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     
     getTimeseries(selectedDataset, center, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
-      console.log([...graphData, data])
+      console.log(data)
       setGraphData(data)
     })
   }, [selectedDataset, inspectionDate, center, mapObject.channelSettings])
