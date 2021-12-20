@@ -56,6 +56,7 @@ function calculateItemsTemporalInterval(itemObject : any) {
 const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const inspectionDate = useSelector((state: RootState): string => state.dataReducer.data.global.inspectionDate)
   const center = useSelector((state: RootState) : number[] => state.dataReducer.data.global.mapExtent.center)
+  const resolution = useSelector((state: RootState) : number => state.dataReducer.data.global.mapExtent.resolution)
   const selectedDataset = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].selectedDataset)
   const editedDate = new Date(inspectionDate).toISOString().split("T")[0]
   const classes = useStyles()
@@ -99,12 +100,12 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     startDate.setMonth(startDate.getMonth()-3)
     endDate.setMonth(endDate.getMonth()+3)
     
-    getTimeseries(selectedDataset, center, bands, startDate, endDate).then((data) => {
+    getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
       console.log(data)
       setGraphData(data)
     })
-  }, [selectedDataset, inspectionDate, center, mapObject.channelSettings])
+  }, [selectedDataset, inspectionDate, center, resolution, mapObject.channelSettings])
 
   const itemsTemporalInterval = calculateItemsTemporalInterval(itemObject)
 
