@@ -27,10 +27,10 @@ const SlimAccordion: React.FC<Props> = ({ children, name, date, temporalInterval
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1d-content" id="panel1d-header" style={{ height: '85px' }}>
           <Grid container direction='column' justify='center'>
             <Grid item>
-              <Typography style={{ fontSize: '14px' }}>{name}</Typography>
+              <Typography style={{ fontSize: 'calc(8px + 2 * ((100vw - 320px) / 680))' }}>{name}</Typography>
             </Grid>
             <Grid item>
-              <Typography style={{ fontSize: '14px' }}>{temporalInterval}</Typography>
+              <Typography style={{ fontSize: 'calc(8px + 2 * ((100vw - 320px) / 680))' }}>{temporalInterval}</Typography>
             </Grid>
           </Grid>
         </AccordionSummary>
@@ -44,9 +44,9 @@ const SlimAccordion: React.FC<Props> = ({ children, name, date, temporalInterval
 
 const Accordion = withStyles({
   root: {
-    boxSizing: 'border-box',
-    border: '1px solid rgba(0, 0, 0, .125)',
+    boxSizing: 'border-box',   
     boxShadow: 'none',
+    textAlign: 'left',
     '&:not(:last-child)': {
       borderBottom: 0,
     },
@@ -55,6 +55,7 @@ const Accordion = withStyles({
     },
     '&$expanded': {
       margin: 'auto',
+     
     },
   },
   expanded: {},
@@ -64,16 +65,18 @@ const AccordionSummary = withStyles({
   root: {
     backgroundColor: 'rgba(0, 0, 0, .03)',
     borderBottom: '1px solid rgba(0, 0, 0, .125)',
+    borderLeft: '1px solid rgba(0, 0, 0, .125)',
     marginBottom: -1,
     minHeight: 15,
     '&$expanded': {
       minHeight: 15,
+      
     },
   },
   content: {
     '&$expanded': {
-      width: '100%',
-      margin: '12px 0',
+      margin: '-12px 0',
+
     },
   },
   expanded: {},
@@ -81,14 +84,10 @@ const AccordionSummary = withStyles({
 
 const AccordionDetails = withStyles((theme) => ({
   root: {
-    width: '100%',
-    padding: theme.spacing(0),
+   width: '190%',
+   border: '1px solid rgba(0, 0, 0, .125)',
+  padding: theme.spacing(0),
   },
 }))(MuiAccordionDetails);
 
-  /* 
-   root: {
-    width: '100%',
-    padding: theme.spacing(0),
-  }, */
 export default SlimAccordion

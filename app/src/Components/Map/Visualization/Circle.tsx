@@ -51,7 +51,7 @@ const useStyles = makeStyles<Props>(() =>
       }
     },
     shortText: {
-      fontSize: '16px'
+      fontSize: 'calc(8px + 2 * ((100vw - 320px) / 680))' ,
     },
     longText: {
       fontSize: '11px'

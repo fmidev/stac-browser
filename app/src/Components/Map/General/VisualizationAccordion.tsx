@@ -141,7 +141,11 @@ const VisualizationAccordion: React.FC<Props> = ({ items, isExpanded, mapCompone
   return (
     <div>
       <Accordion square expanded={expanded === 'panel1' || expanded === true} onChange={handleChange('panel1')}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1d-content" id="panel1d-header" style={{ height: '85px' }}>
+        <AccordionSummary 
+          expandIcon={<ExpandMoreIcon />} 
+          aria-controls="panel1d-content" 
+          id="panel1d-header" 
+          style={{ height: '85px', }}>
           <Grid container direction='column'>
             <Grid container item direction='row' justify='space-evenly'>
               <Grid item xs={3}>
@@ -167,7 +171,7 @@ const VisualizationAccordion: React.FC<Props> = ({ items, isExpanded, mapCompone
 const Accordion = withStyles({
   root: {
     boxSizing: 'border-box',
-    border: '1px solid rgba(0, 0, 0, .125)',
+    borderLeft: '1px solid rgba(0, 0, 0, .125)',
     boxShadow: 'none',
     '&:not(:last-child)': {
       borderBottom: 0,
@@ -203,7 +207,8 @@ const AccordionSummary = withStyles({
 
 const AccordionDetails = withStyles((theme) => ({
   root: {
-    width: '40%',
+    width: '186%',
+    border: '1px solid rgba(0, 0, 0, .125)',
     padding: theme.spacing(0),
   },
 }))(MuiAccordionDetails);

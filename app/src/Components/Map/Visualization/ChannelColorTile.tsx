@@ -40,6 +40,7 @@ const useStyles = makeStyles(() =>
       flexDirection: 'column',
       justifyContent: 'center',
       alignItem: 'center',
+    fontSize: 'calc(10px + 2 * ((100vw - 320px) / 680))',
     },
   }))
 
