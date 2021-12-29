@@ -59,7 +59,6 @@ const GraphAccordion: React.FC<Props> = ({name, isExpanded, onClick}) => {
     content: {
       '&$expanded': {
         margin: '-12px 0',
-        innerWidth: '100',
         width: '400%'
       },
     },

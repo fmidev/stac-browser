@@ -201,7 +201,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             
           </div>
           <div style={{
-            margin: '0rem', 
+            margin: 'auto', 
             width: '100%', 
             position: 'relative', 
             zIndex: 100, 
@@ -227,7 +227,7 @@ const useStyles = makeStyles(() =>
       flexDirection: 'column',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      width: '100%',
+      minWidth: '100%',
       minHeight: '300px',
       flexGrow: 1,
       margin: '0.5rem 0rem',

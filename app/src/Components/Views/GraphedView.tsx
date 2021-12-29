@@ -59,7 +59,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
       const g = new Dygraph(graphRef.current,
       data, 
       {
-        width: 500,
+        width: 525,
         legend: "follow",
         highlightCircleSize: 5,
         rollPeriod: 10,
@@ -141,8 +141,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
   }, [graphData])
   
   return (
-    <div className={classes.graphDivContainer}>
-      <h3>Stac-Browser</h3>
+    <div style={{marginTop: '1.8rem'}}>
       <div ref={graphRef} className={classes.graph}>
       </div>
     </div>
@@ -151,16 +150,10 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
 
 const useStyles = makeStyles(() =>
   createStyles({
-    graphDivContainer: {
-      border: "1px solid #c8c8c8",
-      padding: "0.2rem 0rem",
-      margin: "0.5rem auto",
-      borderRadius: "4px",
-      width: '100%',
-    },
     graph: {
       display: 'flex',
       boxSizing: 'border-box',
+      border: "1px solid #c8c8c8",
     }
     
   }))
