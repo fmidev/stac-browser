@@ -30,6 +30,23 @@ code {
     rgba(67, 90, 111, 0.47) 0px 2px 4px -2px;
 }
 
+.dygraph-legend-row {
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+  flex-wrap: wrap;
+}
+
+.dygraph-axis-label {
+  /* position: absolute; */
+  font-size: 12px;
+  z-index: 10;
+  line-height: normal;
+  overflow: hidden;
+  color: black;
+  opacity: 0.8;
+}
+
 .dygraph-annotation {
   position: absolute;
   z-index: 10;

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Dataset } from '../../../types'
 import { RootState } from '../../../App'
 import { createStyles, makeStyles } from '@material-ui/styles'
-import { Grid, Button } from '@material-ui/core'
+import { Grid, Button, styled } from '@material-ui/core'
 import SlimAccordion from './SlimAccordion'
 import OpenLayersMap from './OpenLayersMap'
 import { Map } from '../../../types'
@@ -14,10 +14,11 @@ import { getAllDatasets, getItemsForDatasetAndTime, getTimeseries } from '../../
 import VisualizationAccordion from './VisualizationAccordion'
 import GraphedView from '../../Views/GraphedView'
 import GraphAccordion from './GraphAccordion'
+import { divide } from 'lodash'
 
 interface Props {
   mapObject: Map,
-  mapComponentIndex: number
+  mapComponentIndex: number,
 }
 
 function calculateItemsTemporalInterval(itemObject : any) {
@@ -53,6 +54,22 @@ function calculateItemsTemporalInterval(itemObject : any) {
   }
   return dateStr
 }
+
+const GraphDiv = styled('div')(({ theme }) => ({
+  padding: theme.spacing(1),
+  [theme.breakpoints.only('sm')]: {
+    border: '1px solid red'
+  },
+  [theme.breakpoints.only('md')]: {
+    border: '1px solid green'
+  },
+  [theme.breakpoints.only('lg')]: {
+    width: '100%',
+    border: '1px solid gray',
+    margin:'1rem auto',
+  },
+ 
+}));
 
 const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const inspectionDate = useSelector((state: RootState): string => state.dataReducer.data.global.inspectionDate)
@@ -133,7 +150,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   }
 
   return (
-      <div className={classes.mapContainer} id='MapContainer'>
+    <div className={classes.mapContainer} id='MapContainer'>
         <div className={classes.mapBox} style={{border: '1px solid grey',}}>
           <Button
             style={{ 
@@ -180,42 +197,14 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             <GraphAccordion name={'Aikasarja'} isExpanded={toggleGraph} onClick={showGraph}>
             </GraphAccordion>
           </div>
-          {/* 
-          <div style={{
-            display: 'flex',
-            width: '20%', 
-            boxSizing: 'border-box',
-            backgroundColor: 'rgba(0, 0, 0, .03)',
-            borderBottom: '1px solid rgba(0, 0, 0, .125)',
-            borderRight: '1px solid rgba(0, 0, 0, .125)',
-            height: '85px',
-            // border: '2px solid black',
-            }}>
-            <div style={{}}>
-              <Grid item>
-                {/* <Button onClick={showGraph} style={{textTransform: 'none', fontWeight: 400, position: 'relative', top: 30}}>
-                  Aikasarja
-                </Button> 
-              </Grid>
-            </div> */}
-            
-          </div>
-          <div style={{
-            margin: 'auto', 
-            width: '100%', 
-            position: 'relative', 
-            zIndex: 100, 
-            backgroundColor: 'white',
-            }}>
-            {toggleGraph && <div >
+        </div>
+        <div style={{width: '100%'}}>
+            {toggleGraph && 
+            <div className={classes.graphContainer}>
               <GraphedView data={graphData} label={labels}/>
-              <div>
-                <Button>2 kk</Button>
-                <Button>4 kk</Button>
-                <Button>6 kk</Button>
-              </div>
-          </div>}
-      </div>
+            </div>
+            }
+        </div>
     </div>
   )
 }
@@ -227,7 +216,7 @@ const useStyles = makeStyles(() =>
       flexDirection: 'column',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      minWidth: '100%',
+      width: '100%',
       minHeight: '300px',
       flexGrow: 1,
       margin: '0.5rem 0rem',
@@ -267,6 +256,15 @@ const useStyles = makeStyles(() =>
       padding: 0,
       boxSizing: 'border-box',
     },
+    graphContainer: {
+      position: 'relative', 
+      zIndex: 100, 
+      backgroundColor: 'white',
+      marginTop: '0.6rem',
+      marginBottom: '4rem',
+      borderBottom: 'solid 	rgb(211,211,211) 1px',
+      width: '100%',
+    }
   }))
 
 export default MapComponent

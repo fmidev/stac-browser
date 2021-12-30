@@ -2,8 +2,9 @@ import * as React from 'react';
 import Dygraph from 'dygraphs';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../App';
-import { createStyles, makeStyles } from '@material-ui/styles'
-
+import { createStyles, makeStyles, styled } from '@material-ui/core/styles'
+import { Grid } from '@material-ui/core';
+import clsx from 'clsx';
 
 interface Props {
   data: any[],
@@ -11,17 +12,21 @@ interface Props {
   label: string[]
 }
 
+const drawerWidth = 440
+
+
 //GraphView component start
 const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
   const graphRef = React.useRef<HTMLDivElement>(null)
   const inspectionDate = useSelector((state: RootState) => state.dataReducer.data.global.inspectionDate)
   //const bands = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].derivedData.bands)
   //const [bands, setBands] = React.useState([] as [])
+  const sidebarIsOpen = useSelector((state: RootState) => state.dataReducer.data.global.sidebarIsOpen)
+
 
   const dispatch = useDispatch()
   const classes = useStyles()
   const graphData = [] as any[]
-
 
   function legendFormatter(this: any, data: any) {
     if (data.x == null) {
@@ -31,7 +36,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
     let html = "<b>" + data.xHTML + "</b>"      
     data.series.forEach(function(series: any) {
     if (!series.isVisible) return;
-    let labeledData = series.labelHTML + "<b>" + series.yHTML + "</b>";
+    let labeledData = series.labelHTML + `: <b>` + series.yHTML + "</b>";
     if (series.isHighlighted) {
       labeledData = "<b>" +  labeledData + "</b>";
     }
@@ -59,7 +64,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
       const g = new Dygraph(graphRef.current,
       data, 
       {
-        width: 525,
+        width: 500,
         legend: "follow",
         highlightCircleSize: 5,
         rollPeriod: 10,
@@ -69,17 +74,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
         visibility: [true, true, true],
         // errorBars: true,
         labels: ['Date', ...label],
-        series: {
-          'min_vv': {
-            strokeWidth: 2
-          },
-          'max_vv': {
-            strokeWidth: 2
-          },
-          'max_vh': {
-            strokeWidth: 2
-          }
-        },
+         
         pointClickCallback: function(e, point) {
           console.log(e, point)
         },
@@ -90,7 +85,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
          x:{
            axisLabelFormatter: (ms) => new Date(ms).toISOString().substr(0,7),
            valueFormatter: (ms) => new Date(ms).toISOString(),
-           axisLineColor: "rgb(229, 228, 226)",
+           axisLineColor: "rgb(229, 228, 256)",
            drawGrid: false
          },
          y: {
@@ -106,7 +101,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
 
       const annDate = new Date(inspectionDate).getTime();
 
-      g.ready(() => {
+      /* g.ready(() => {
         console.log(label[0])
         g.setAnnotations([
           {
@@ -114,7 +109,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
             x: modifiedData[0][0],
             shortText: "R",
             text: "Punainen",
-            cssClass: '',
+            cssClass: 'annotation',
             tickHeight: 80,
             attachAtBottom: true,
           },
@@ -138,29 +133,30 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
           }
           ]);
       })
-  }, [graphData])
+ */  }, [graphData])
   
   return (
-    <div style={{marginTop: '1.8rem'}}>
-      <div ref={graphRef} className={classes.graph}>
-      </div>
+    <div style={{width: '100%'}}>
+      <Grid ref={graphRef} className={classes.container}>
+      </Grid>
     </div>
   )
 }
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
-    graph: {
+    container: {
+      height: '100%',
+      marginLeft: '0rem'
+    },
+    root: {
       display: 'flex',
-      boxSizing: 'border-box',
-      border: "1px solid #c8c8c8",
-    }
-    
-  }))
+      justifyContent: 'center'
+    },
+   
+  }),
+)
+
 
 export default Dygraphed
 
-/* function bands(arg0: string, center: number[], resolution: number, bands: any, startDate: Date, endDate: Date) {
-  throw new Error('Function not implemented.');
-}
- */

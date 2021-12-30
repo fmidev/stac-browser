@@ -65,8 +65,7 @@ const MapView: React.FC = () => {
             <Grid key={mapObject.id} container direction='column' item xs={12} md={12} lg={6} xl={4} alignItems='center' >
               <MapComponent
                 mapObject={mapObject}
-                mapComponentIndex={index}
-              />
+                mapComponentIndex={index}/>
             </Grid>)
         })}
       </Grid>

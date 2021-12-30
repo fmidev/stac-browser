@@ -51,14 +51,15 @@ const GraphAccordion: React.FC<Props> = ({name, isExpanded, onClick}) => {
     root: {
     backgroundColor: 'rgba(0, 0, 0, .03)',
       marginBottom: -1,
-      minHeight: 84,
+      minHeight: 83,
       '&$expanded': {
-        minHeight: 85,
+        minHeight: 84,
       },
     },
     content: {
       '&$expanded': {
         margin: '-12px 0',
+        innerWidth: '90',
         width: '400%'
       },
     },
