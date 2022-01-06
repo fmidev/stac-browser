@@ -1,24 +1,28 @@
 import * as React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Dataset } from '../../../types'
 import { RootState } from '../../../App'
 import { createStyles, makeStyles } from '@material-ui/styles'
-import { Grid, Button, styled } from '@material-ui/core'
+import { Button, styled } from '@material-ui/core'
 import SlimAccordion from './SlimAccordion'
 import OpenLayersMap from './OpenLayersMap'
 import { Map } from '../../../types'
-import { removeMap } from '../../../Store/Actions/data'
+import { removeMap, setGraphState } from '../../../Store/Actions/data'
 import DatasetList from '../ListComponents/Lists/DatasetList'
 // import NormalVisualization from '../Visualization/NormalVisualization'
 import { getAllDatasets, getItemsForDatasetAndTime, getTimeseries } from '../../../API/Api'
 import VisualizationAccordion from './VisualizationAccordion'
 import GraphedView from '../../Views/GraphedView'
 import GraphAccordion from './GraphAccordion'
-import { divide } from 'lodash'
 
 interface Props {
   mapObject: Map,
   mapComponentIndex: number,
+}
+
+const Loading = () =>{
+  return(
+    <div style={{marginTop: '3rem'}}>...Latauttuu</div>
+  )
 }
 
 function calculateItemsTemporalInterval(itemObject : any) {
@@ -55,28 +59,13 @@ function calculateItemsTemporalInterval(itemObject : any) {
   return dateStr
 }
 
-const GraphDiv = styled('div')(({ theme }) => ({
-  padding: theme.spacing(1),
-  [theme.breakpoints.only('sm')]: {
-    border: '1px solid red'
-  },
-  [theme.breakpoints.only('md')]: {
-    border: '1px solid green'
-  },
-  [theme.breakpoints.only('lg')]: {
-    width: '100%',
-    border: '1px solid gray',
-    margin:'1rem auto',
-  },
- 
-}));
-
 const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const inspectionDate = useSelector((state: RootState): string => state.dataReducer.data.global.inspectionDate)
   const center = useSelector((state: RootState) : number[] => state.dataReducer.data.global.mapExtent.center)
   const resolution = useSelector((state: RootState) : number => state.dataReducer.data.global.mapExtent.resolution)
   const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.global.comparisonDate)
   const selectedDataset = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].selectedDataset)
+  const graphIsOpen = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].graphIsOpen)
   const editedDate = new Date(inspectionDate).toISOString().split("T")[0]
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -84,12 +73,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
   const [graphData, setGraphData] = React.useState([] as any[]);
   const [labels, setLabel] = React.useState([] as string[])
-  const [toggleGraph, setToggleGraph] = React.useState<boolean>(false)
 
-  const showGraph = (e: any) => {
-    e.preventDefault()
-    console.log(e.type)
-    setToggleGraph(!toggleGraph)
+  const showGraph = () => {
+    dispatch(setGraphState({graphIsOpen: !graphIsOpen, index: mapComponentIndex}))
   }
 
   React.useEffect(() => {
@@ -115,14 +101,12 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
 
   // Graph useEffect
   React.useEffect(() => {
-    if(toggleGraph === true){
+    if(graphIsOpen === true){
       if (!selectedDataset) {
-      return
+      return 
     }
     //console.log('Load new timeseries for',selectedDataset)
-    console.log(mapObject.channelSettings)
     const bands = ['R','G','B'].map(color => mapObject.channelSettings[color]).filter(band => !!band)
-    // console.log(bands)
     setLabel(bands)
     const startDate = new Date(inspectionDate)
     const endDate = new Date(inspectionDate)
@@ -135,11 +119,8 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
       setGraphData(data)
     })
   }
-  }, [toggleGraph, selectedDataset, inspectionDate, center, resolution, mapObject.channelSettings])
+  }, [graphIsOpen, selectedDataset, inspectionDate, center, resolution, mapObject.channelSettings])
 
-  React.useEffect(() => {
-    console.log('')
-  },[])
 
   const itemsTemporalInterval = calculateItemsTemporalInterval(itemObject)
 
@@ -150,7 +131,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   }
 
   return (
-    <div className={classes.mapContainer} id='MapContainer'>
+      <div className={classes.mapContainer} id='MapContainer'>
         <div className={classes.mapBox} style={{border: '1px solid grey',}}>
           <Button
             style={{ 
@@ -194,15 +175,19 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             <VisualizationAccordion isExpanded={false} mapComponentIndex={mapComponentIndex} items={itemObject.items} />
           </div>  
           <div className={classes.dropDown} style={{width: '30%'}}>
-            <GraphAccordion name={'Aikasarja'} isExpanded={toggleGraph} onClick={showGraph}>
+            <GraphAccordion 
+            name={'Aikasarja'} 
+            isExpanded={graphIsOpen} 
+            onClick={showGraph}>
             </GraphAccordion>
           </div>
         </div>
         <div style={{width: '100%'}}>
-            {toggleGraph && 
+            {graphIsOpen && 
+            ((graphData.length === 0 ) ? Loading() : 
             <div className={classes.graphContainer}>
               <GraphedView data={graphData} label={labels}/>
-            </div>
+            </div>)
             }
         </div>
     </div>

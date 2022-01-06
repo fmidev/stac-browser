@@ -66,6 +66,7 @@ const MapView: React.FC = () => {
               <MapComponent
                 mapObject={mapObject}
                 mapComponentIndex={index}/>
+                
             </Grid>)
         })}
       </Grid>

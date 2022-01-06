@@ -17,6 +17,7 @@ export const ADD_MAP = 'ADD_MAP'
 export const UPDATE_MAP_EXTENT = 'UPDATE_MAP_EXTENT'
 export const SET_SIDEBAR_STATE = 'SET_SIDEBAR_STATE'
 export const SET_CLICKED_COLOR_TILE = 'SET_CLICKED_COLOR_TILE'
+export const SET_GRAPH_STATE = 'SET_GRAPH_STATE'
 
 interface LoadDataAction {
   type: string
@@ -110,6 +111,11 @@ export const updateMapExtent = (data: Record<string, unknown>): SetDataAction =>
 
 export const setSiderbarState = (data: Record<string, unknown>): SetDataAction => ({
   type: SET_SIDEBAR_STATE,
+  payload: data
+})
+
+export const setGraphState = (data: Record<string, unknown>): SetDataAction => ({
+  type: SET_GRAPH_STATE,
   payload: data
 })
 

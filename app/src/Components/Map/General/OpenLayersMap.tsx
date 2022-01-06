@@ -6,9 +6,12 @@ import { Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/WebGLTile';
 import GeoTIFF from 'ol/source/GeoTIFF';
 import Projection from 'ol/proj/Projection';
-import * as ol from 'ol'
+import * as ol from 'ol';
+import { getRenderPixel} from 'ol/render';
 import { MouseWheelZoom, defaults } from 'ol/interaction';
 import 'ol/ol.css'
+import { border, borderBottom, borderRight, width } from '@material-ui/lab/node_modules/@material-ui/system';
+import zIndex from '@material-ui/core/styles/zIndex';
 
 const RED = 0;
 const GREEN = 1;
@@ -30,6 +33,7 @@ interface Props {
 const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings }) => {
   const mapExtent = useSelector((state: any) => state.dataReducer.data.global.mapExtent)
   const sidebarIsOpen = useSelector((state: any) => state.dataReducer.data.global.sidebarIsOpen)
+  const [mousePosition, setMousePostion] = React.useState(null as any)
   const dispatch = useDispatch()
 
   const [map, setMap] = React.useState<any>()
@@ -53,6 +57,9 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
       })
     })
     map.on('moveend', sendUpdateExtentAction)
+    const mapLayers = map.getLayerGroup().getLayers()
+    mapLayers.on('change', handleMouseover)
+
     return map
   }, [mapRef])
 
@@ -186,7 +193,6 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
       })
     })
     map.getLayers().extend(layers)
-
   }, [map, layerConfig]);
 
   React.useEffect(() => {
@@ -200,10 +206,82 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
     }
   }, [])
 
+   //Mouseover
+   const handleMouseover = (event: any) => {
+    // const map = initializeOL()
+    if(!map) return;
+    console.log(map.getEventPixel(event))
+    setMousePostion(map.getEventPixel(event))
+    map.render();
+  };
+
+  const radius = 75;
+
+  //Mouseout
+  const handleMouseout = (event: any) => {
+    console.log(event)
+    setMousePostion(null);
+    if(map) map.render();
+  }
+ 
+   //prerender function spyglass
+   const preRender = function(event: any) {
+      console.log(event)
+      const ctx = event.context;
+      ctx.save();
+      ctx.beginPath();
+      if(mousePosition){
+        //only show circle around mouse
+        const pixel = getRenderPixel(event, mousePosition);
+        const offset = getRenderPixel(event, [
+          mousePosition[0] + radius,
+          mousePosition[1],
+        ]);
+        const canvasRadius = Math.sqrt(Math.pow(offset[0] - pixel[0], 2) + Math.pow(offset[1] - pixel[1], 2))
+        ctx.arc(pixel[0], pixel[1], canvasRadius, 0, 2 * Math.PI);
+        ctx.lineWidth = (5 * canvasRadius) / radius;
+        ctx.strokeStyle = '#000000';
+        ctx.stroke();
+      }
+      ctx.clip()
+  }
+
+  //postrender function
+  const postRender = (event: any) => {
+      event.preventDefault();
+      if(layerConfig.sources.length > 0) {console.log(layerConfig.sources)}
+      const ctx = event.map.context;
+      console.log(event)
+  }
+
+ React.useEffect(() =>{
+   console.log(mousePosition)
+   if(mapRef){
+    mapRef.current?.addEventListener('mousemove', handleMouseover)
+   }
+
+  return () => {
+    if(mapRef){
+      mapRef.current?.addEventListener('mouseout', handleMouseout)
+    }
+  }
+  }, [map, layerConfig])
+ 
   const classes = useStyles()
   return (
     <div ref={mapRef as any} className={classes.mapContainer}>
-      <div className={classes.crossHair} />
+      <div className={classes.crossHair}>
+        <div className={classes.flexOne}>
+          <div className={classes.flexOneInner}></div>
+        </div>
+        <div className={classes.flexTwo}>
+          <div className={classes.flexTwoInner}></div>
+          <div className={classes.flexTwoInner} style={{
+            borderTop: '1px solid white',
+            borderLeft: '1px solid white',
+          }}></div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -229,7 +307,35 @@ const useStyles = makeStyles(() =>
       margin: 0,
       padding: 0,
       zIndex: 100,
-      position: 'absolute'
+      position: 'absolute',
+      display: 'flex',
+      flexDirection: 'row'
+    },
+    crossHairInner: {
+      position: 'relative',
+      height:'100%', 
+      width: '100%',
+      zIndex: 101,
+      display: 'flex',
+      flexDirection: 'row',
+      border: 'none'
+    },
+    flexOne: {
+      backgroundColor: 'inherit',
+      width: '50%',
+    },
+    flexOneInner: {
+
+    },
+    flexTwo: {
+      backgroundColor: 'inherit',
+      width: '50%',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    flexTwoInner: {
+      width: '100%',
+      height: '100%',
     }
   }))
 

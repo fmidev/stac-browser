@@ -10,7 +10,8 @@ export interface Data {
 
 export interface Global {
   mapExtent: MapExtent
-  sidebarIsOpen: boolean
+  graphIsOpen: boolean,
+  sidebarIsOpen: boolean,
   clickedColorTile: string
   inspectionDate: string
   comparisonDate: string
@@ -48,6 +49,7 @@ export interface Map {
   displaySpyGlass: boolean
   panelBarSettings: PanelBarSettings
   derivedData: DerivedData
+  graphIsOpen: boolean
 }
 
 export interface DerivedData {
