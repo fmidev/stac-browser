@@ -7,11 +7,8 @@ import TileLayer from 'ol/layer/WebGLTile';
 import GeoTIFF from 'ol/source/GeoTIFF';
 import Projection from 'ol/proj/Projection';
 import * as ol from 'ol';
-import { getRenderPixel} from 'ol/render';
 import { MouseWheelZoom, defaults } from 'ol/interaction';
 import 'ol/ol.css'
-import { border, borderBottom, borderRight, width } from '@material-ui/lab/node_modules/@material-ui/system';
-import zIndex from '@material-ui/core/styles/zIndex';
 
 const RED = 0;
 const GREEN = 1;
@@ -33,7 +30,6 @@ interface Props {
 const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings }) => {
   const mapExtent = useSelector((state: any) => state.dataReducer.data.global.mapExtent)
   const sidebarIsOpen = useSelector((state: any) => state.dataReducer.data.global.sidebarIsOpen)
-  const [mousePosition, setMousePostion] = React.useState(null as any)
   const dispatch = useDispatch()
 
   const [map, setMap] = React.useState<any>()
@@ -57,9 +53,6 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
       })
     })
     map.on('moveend', sendUpdateExtentAction)
-    const mapLayers = map.getLayerGroup().getLayers()
-    mapLayers.on('change', handleMouseover)
-
     return map
   }, [mapRef])
 
@@ -142,6 +135,8 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
 
   }, [items, datasetCatalog, channelSettings])
 
+  const radius = 75;
+
   React.useEffect(() => {
     if (!map) return;
 
@@ -192,7 +187,9 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
         })
       })
     })
+    
     map.getLayers().extend(layers)
+    
   }, [map, layerConfig]);
 
   React.useEffect(() => {
@@ -206,67 +203,6 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
     }
   }, [])
 
-   //Mouseover
-   const handleMouseover = (event: any) => {
-    // const map = initializeOL()
-    if(!map) return;
-    console.log(map.getEventPixel(event))
-    setMousePostion(map.getEventPixel(event))
-    map.render();
-  };
-
-  const radius = 75;
-
-  //Mouseout
-  const handleMouseout = (event: any) => {
-    console.log(event)
-    setMousePostion(null);
-    if(map) map.render();
-  }
- 
-   //prerender function spyglass
-   const preRender = function(event: any) {
-      console.log(event)
-      const ctx = event.context;
-      ctx.save();
-      ctx.beginPath();
-      if(mousePosition){
-        //only show circle around mouse
-        const pixel = getRenderPixel(event, mousePosition);
-        const offset = getRenderPixel(event, [
-          mousePosition[0] + radius,
-          mousePosition[1],
-        ]);
-        const canvasRadius = Math.sqrt(Math.pow(offset[0] - pixel[0], 2) + Math.pow(offset[1] - pixel[1], 2))
-        ctx.arc(pixel[0], pixel[1], canvasRadius, 0, 2 * Math.PI);
-        ctx.lineWidth = (5 * canvasRadius) / radius;
-        ctx.strokeStyle = '#000000';
-        ctx.stroke();
-      }
-      ctx.clip()
-  }
-
-  //postrender function
-  const postRender = (event: any) => {
-      event.preventDefault();
-      if(layerConfig.sources.length > 0) {console.log(layerConfig.sources)}
-      const ctx = event.map.context;
-      console.log(event)
-  }
-
- React.useEffect(() =>{
-   console.log(mousePosition)
-   if(mapRef){
-    mapRef.current?.addEventListener('mousemove', handleMouseover)
-   }
-
-  return () => {
-    if(mapRef){
-      mapRef.current?.addEventListener('mouseout', handleMouseout)
-    }
-  }
-  }, [map, layerConfig])
- 
   const classes = useStyles()
   return (
     <div ref={mapRef as any} className={classes.mapContainer}>

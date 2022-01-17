@@ -18,6 +18,9 @@ code {
 
 .dygraph-legend {
   position: absolute;
+  top: 0;
+  right: 0;
+  width: 30%;
   font-size: 14px;
   z-index: 10;
   padding: 0.7rem 1rem;

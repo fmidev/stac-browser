@@ -13,6 +13,7 @@ import { getAllDatasets, getItemsForDatasetAndTime, getTimeseries } from '../../
 import VisualizationAccordion from './VisualizationAccordion'
 import GraphedView from '../../Views/GraphedView'
 import GraphAccordion from './GraphAccordion'
+import data from '../../../Store/Reducers/data'
 
 interface Props {
   mapObject: Map,
@@ -21,7 +22,7 @@ interface Props {
 
 const Loading = () =>{
   return(
-    <div style={{marginTop: '3rem'}}>...Latauttuu</div>
+    <div style={{marginTop: '3rem'}}>...Latautuu</div>
   )
 }
 
@@ -71,7 +72,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const dispatch = useDispatch()
   const [itemObject, setItemObject] = React.useState({ items: [] } as { items: any });
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
-  const [graphData, setGraphData] = React.useState([] as any[]);
+  const [graphData, setGraphData] = React.useState<any>([]);
   const [labels, setLabel] = React.useState([] as string[])
 
   const showGraph = () => {
@@ -113,6 +114,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
 
     startDate.setMonth(startDate.getMonth()-3)
     endDate.setMonth(endDate.getMonth()+3)
+    console.log(startDate, inspectionDate)
 
     getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
@@ -128,6 +130,15 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   if (datasetCatalog?.extent?.temporal?.interval) {
     const interval = datasetCatalog?.extent?.temporal?.interval
     catalogTemporalInterval = `(${interval[0].substring(0, 10)} - ${interval[1].substring(0, 10)})`
+  }
+
+
+  const finalData = [] as any
+  console.log(finalData)
+  if(graphData){
+    graphData.map((d: any) => {
+      return finalData.push([d[0], d[1], d[2], d[3], null])
+    })
   }
 
   return (
@@ -186,7 +197,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             {graphIsOpen && 
             ((graphData.length === 0 ) ? Loading() : 
             <div className={classes.graphContainer}>
-              <GraphedView data={graphData} label={labels}/>
+              <GraphedView data={finalData} label={labels}/>
             </div>)
             }
         </div>

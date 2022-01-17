@@ -22,7 +22,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
 
   const dispatch = useDispatch()
   const classes = useStyles()
-  const graphData = [] as any[]
+  const ann = [] as any[]
 
   function legendFormatter(this: any, data: any) {
     if (data.x == null) {
@@ -51,18 +51,36 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
     dispatch(setComparisonDate({comparisonDate: point.xval}))
   }
 
+  const serieOne = label[0]
+  const serieTwo = label[1]
+  const serieThree = label[2]
+
   const drawGraph = () => {
     if (!graphRef.current) throw Error("graphRef is not assigned");
     const graph = new Dygraph(graphRef.current,
     data, 
     {
-    width: 490,
+    width: 600,
     legend: "always",
     highlightCircleSize: 5,
-    colors: ["#DC143C","#32CD32","#0000FF"],
+    colors: ["#DC143C","#32CD32","#0000FF", '#DC155C'],
     animatedZooms: true,
-    visibility: [true, true, true],
-    labels: ['Date', ...label],
+    visibility: [true, true, true, true],
+    labels: ['Date', serieOne, serieTwo, serieThree, ''],
+    series: {
+      serieOne: {
+        axis: 'y1'
+      },
+      serieTwo: {
+        axis: 'y1'
+      },
+      serieThree: {
+        axis: 'y1'
+      },
+      '': {
+        axis: 'y2'
+      }
+    },
     pointClickCallback: pointClicked,
     legendFormatter: legendFormatter,
     axes: {
@@ -83,84 +101,61 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
 
   React.useEffect(() => {
     console.log('UseEffect 1')
-
     if (!data || data.length === 0) return;
+
     const startDate = new Date(inspectionDate)
     const endDate = new Date(inspectionDate)
 
-    startDate.setMonth(startDate.getMonth()-2)
-    endDate.setMonth(endDate.getMonth()+2)
-    const modifiedData = data.map((d) => [d[0].getTime(), d[1], d[2], d[3]])
-    drawGraph()
+    const monthTwoStart = startDate.setMonth(startDate.getMonth()-2)
+    const monthTwoEnd = endDate.setMonth(endDate.getMonth()+2)
+    console.log(monthTwoStart, monthTwoEnd)
+    console.log(comparisonDate)
+    
+    const entryAfterInspectionData = data.find((arr) => arr[0].getTime() > new Date(inspectionDate).getTime())
+    console.log('entryAfterInspectionData', entryAfterInspectionData, inspectionDate)
+    const insertIndex = entryAfterInspectionData ? data.indexOf(new Date(entryAfterInspectionData)) : data.length
+    console.log(insertIndex)
+    data.splice(insertIndex,0, [new Date(inspectionDate), null, null, null, 1])
 
-    const annotationX = modifiedData[1][0]
-    console.log(modifiedData[0][0])
-    console.log(modifiedData[1][0])
+    console.log(data)
 
-
-    const annDate = new Date(inspectionDate).getTime();
-    /* g.ready(() => {
-      console.log(label[0])
-      g.setAnnotations([
-        {
-          series: label[0],
-          x: modifiedData[0][0],
-          shortText: "R",
-          text: "Punainen",
-          cssClass: 'annotation',
-          tickHeight: 80,
-          attachAtBottom: true,
-        },
-        {
-          series: label[1],
-          x: modifiedData[1][0],
-          shortText: 'G',
-          cssClass: 'annotation',
-          text: 'Vihrea',
-          tickHeight: 100,
-          attachAtBottom: true,
-        },
-        {
-          series: label[2],
-          x: modifiedData[2][0],
-          shortText: 'B',
-          cssClass: 'annotation',
-          text: 'Sinenen',
-          tickHeight: 15,
-          attachAtBottom: true,
-        }
-        ]);
+    let compareDate;
+    if(comparisonDate){
+      compareDate = new Date(comparisonDate).getTime()
+    }
+    const g = drawGraph()
+    if(comparisonDate){
+      ann.push({
+        series: '',
+        x: new Date(inspectionDate).getTime(),
+        shortText: 'I',
+        text: 'Valkoinen',
+        cssClass: 'annotation',
+        tickHeight: 150,
+        attachAtBottom: true,
+    }, {
+      series: label[0],
+      x: compareDate,
+      shortText: '2',
+      text: 'Valkoinen',
+      cssClass: 'annotation',
+      tickHeight: 150,
+      attachAtBottom: true,
     })
-  */}, [graphData])
+    } else {
+      ann.push({ 
+        series: '',
+        x: new Date(inspectionDate).getTime(),
+        shortText: 'I',
+        text: 'Valkoinen',
+        cssClass: 'annotation',
+        tickHeight: 150,
+        attachAtBottom: true,
+      })
+    }
 
- React.useEffect(() =>{
-  console.log('UseEffect 2')
-  const graphDrawn = drawGraph()
-  if (!comparisonDate) return;
-  console.log('comparisonDate-', comparisonDate, '-line')
-  const parseDate = new Date(parseInt(comparisonDate))
-  const modifiedData = data.map((d) => [d[0].getTime(), d[1], d[2], d[3]])
-  const annotationX = modifiedData[1][0]
-  graphDrawn.setAnnotations([
-    {
-      series: label[1],
-      x: comparisonDate,
-      shortText: 'C',
-      text: 'Punainen',
-      cssClass: 'annotation',
-      tickHeight: 80,
-      attachAtBottom: true,
-    },
-    {
-      series: label[2],
-      x: annotationX,
-      shortText: 'A',
-      text: 'Punainen',
-      cssClass: 'annotation',
-      tickHeight: 80,
-      attachAtBottom: true,
-    },
-  ])
+    g.setAnnotations(ann)
+    console.log(ann)
  }, [comparisonDate])
 
   return (
@@ -176,7 +171,7 @@ const useStyles = makeStyles((theme) =>
     container: {
       height: '100%',
       width: '100%',
-      margin: '2rem auto auto -2rem'
+      margin: '2rem auto auto'
     },
   }),
 )
