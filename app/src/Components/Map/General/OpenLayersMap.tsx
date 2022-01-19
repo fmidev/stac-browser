@@ -8,6 +8,7 @@ import GeoTIFF from 'ol/source/GeoTIFF';
 import Projection from 'ol/proj/Projection';
 import * as ol from 'ol'
 import { MouseWheelZoom, defaults } from 'ol/interaction';
+import {getRenderPixel} from 'ol/render';
 import 'ol/ol.css'
 
 const RED = 0;
@@ -20,6 +21,8 @@ const projection = new Projection({
 });
 
 const mouseWheelZoomAnimationTime = 75;
+
+const spyGlassSize = 50;
 
 interface Props {
   items: any[],
@@ -37,7 +40,26 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
 
   const mapRef = React.useRef<HTMLElement>()
 
-  const initializeOL = React.useCallback(() => {
+  let mousePosition : null | number[] = null;
+
+  function onMouseMove(event : any) {
+    if (map) {
+      const position = map.getEventPixel(event)
+      mousePosition = position
+      map.render();
+    }
+  }
+
+  function onMouseOut() {
+    if (map) {
+      mousePosition = null
+      map.render();
+    }
+  }
+
+  React.useEffect(() => {
+    if (!mapRef || !mapRef.current) return;
+
     const map = new ol.Map({
       interactions: defaults({ mouseWheelZoom: false }).extend([
         new MouseWheelZoom({
@@ -53,8 +75,24 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
       })
     })
     map.on('moveend', sendUpdateExtentAction)
-    return map
-  }, [mapRef])
+
+    setMap(map)
+
+    return function cleanup() {
+      map.dispose()
+    }
+  }, [mapRef]);
+
+  React.useEffect(() => {
+    if (!map || !mapRef || !mapRef.current) return;
+
+    mapRef.current.removeEventListener('mousemove', onMouseMove)
+    mapRef.current.addEventListener('mousemove', onMouseMove)
+
+    mapRef.current.removeEventListener('mouseout', onMouseOut)
+    mapRef.current.addEventListener('mouseout', onMouseOut)
+
+  }, [map]);
 
   const sendUpdateExtentAction = (evt: any) => {
     const map = evt.map;
@@ -68,10 +106,6 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
     }
     dispatch(updateMapExtent(payload))
   }
-
-  React.useEffect(() => {
-    setMap(initializeOL())
-  }, [])
 
   // This function will resize map when page is manually resize
   window.onresize = () => {
@@ -185,10 +219,43 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
         })
       })
     })
+    layers.forEach(layer => {
+      layer.on('prerender', function (event) {
+        //console.log('mousePosition = ',mousePosition)
+        if (!event.context || mousePosition === null || mousePosition === undefined) return;
+
+        const ctx : CanvasRenderingContext2D | WebGLRenderingContext = event.context;
+        if (ctx instanceof CanvasRenderingContext2D) {
+          console.log('CanvasRenderingContext2D => dunno what to do!')
+        }
+        if (ctx instanceof WebGLRenderingContext) {
+          ctx.enable(ctx.SCISSOR_TEST);
+
+          const pixel = getRenderPixel(event, mousePosition);
+
+          ctx.scissor(pixel[0]-spyGlassSize/2, pixel[1]-spyGlassSize/2, spyGlassSize, spyGlassSize)
+        }
+      });
+      layer.on('postrender', function (event) {
+        if (!event.context || mousePosition === null || mousePosition === undefined) return;
+
+        const ctx : CanvasRenderingContext2D | WebGLRenderingContext = event.context;
+        //console.log('postrender')
+        if (ctx instanceof CanvasRenderingContext2D) {
+          console.log(' - Post canvas ?!?!?')
+        }
+        if (ctx instanceof WebGLRenderingContext) {
+          //console.log(' - post WebGL -> disable scissor')
+          ctx.disable(ctx.SCISSOR_TEST);
+        }
+        return;
+      });
+    })
     map.getLayers().extend(layers)
 
   }, [map, layerConfig]);
 
+  /*
   React.useEffect(() => {
     // Anything in here is fired on component mount.
     return () => {
@@ -199,7 +266,7 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
         map?.setTarget(null)
     }
   }, [])
-
+*/
   const classes = useStyles()
   return (
     <div ref={mapRef as any} className={classes.mapContainer}>
