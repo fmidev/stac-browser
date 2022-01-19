@@ -6,14 +6,13 @@ import { Button, styled } from '@material-ui/core'
 import SlimAccordion from './SlimAccordion'
 import OpenLayersMap from './OpenLayersMap'
 import { Map } from '../../../types'
-import { removeMap, setGraphState } from '../../../Store/Actions/data'
+import { removeMap, setGraphState, setGraphTimeSpan } from '../../../Store/Actions/data'
 import DatasetList from '../ListComponents/Lists/DatasetList'
 // import NormalVisualization from '../Visualization/NormalVisualization'
 import { getAllDatasets, getItemsForDatasetAndTime, getTimeseries } from '../../../API/Api'
 import VisualizationAccordion from './VisualizationAccordion'
 import GraphedView from '../../Views/GraphedView'
 import GraphAccordion from './GraphAccordion'
-import data from '../../../Store/Reducers/data'
 
 interface Props {
   mapObject: Map,
@@ -67,6 +66,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.global.comparisonDate)
   const selectedDataset = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].selectedDataset)
   const graphIsOpen = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].graphIsOpen)
+  const graphTimeSpan = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].graphTimeSpan)
   const editedDate = new Date(inspectionDate).toISOString().split("T")[0]
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -74,6 +74,11 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
   const [graphData, setGraphData] = React.useState<any>([]);
   const [labels, setLabel] = React.useState([] as string[])
+
+
+  const startDate = new Date(inspectionDate)
+  const endDate = new Date(inspectionDate)
+
 
   const showGraph = () => {
     dispatch(setGraphState({graphIsOpen: !graphIsOpen, index: mapComponentIndex}))
@@ -85,7 +90,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
         return allDatasets;
       })
     })
-  }, [])
+  }, [])  
 
   const datasetCatalog = allDatasets.find((c: any) => c.id === selectedDataset) || {}
 
@@ -109,19 +114,35 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     //console.log('Load new timeseries for',selectedDataset)
     const bands = ['R','G','B'].map(color => mapObject.channelSettings[color]).filter(band => !!band)
     setLabel(bands)
-    const startDate = new Date(inspectionDate)
-    const endDate = new Date(inspectionDate)
 
-    startDate.setMonth(startDate.getMonth()-3)
-    endDate.setMonth(endDate.getMonth()+3)
-    console.log(startDate, inspectionDate)
+    switch(graphTimeSpan){ 
+      case 2:
+        startDate.setMonth(startDate.getMonth()-1)
+        endDate.setMonth(endDate.getMonth() + 1)
+      break;
+      case 4:
+        startDate.setMonth(startDate.getMonth()-2)
+        endDate.setMonth(endDate.getMonth() + 2)
+      break;
+      case 6:
+        startDate.setMonth(startDate.getMonth()-3)
+        endDate.setMonth(endDate.getMonth() + 3)
+      break;
+      default: 
+        startDate.setMonth(startDate.getMonth()-3)
+        endDate.setMonth(endDate.getMonth() + 3)
+    }
+
+     /*  startDate.setMonth(startDate.getMonth()-3)
+      endDate.setMonth(endDate.getMonth() + 3) */
 
     getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
-      setGraphData(data)
+      const d = data.map((d: any) => [d[0], d[1], d[2], d[3], null])
+      setGraphData(d)
     })
   }
-  }, [graphIsOpen, selectedDataset, inspectionDate, center, resolution, mapObject.channelSettings])
+  }, [graphIsOpen, selectedDataset, inspectionDate, center, resolution, mapObject.channelSettings, graphTimeSpan])
 
 
   const itemsTemporalInterval = calculateItemsTemporalInterval(itemObject)
@@ -131,7 +152,6 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     const interval = datasetCatalog?.extent?.temporal?.interval
     catalogTemporalInterval = `(${interval[0].substring(0, 10)} - ${interval[1].substring(0, 10)})`
   }
-
 
   const finalData = [] as any
   console.log(finalData)
@@ -197,7 +217,28 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             {graphIsOpen && 
             ((graphData.length === 0 ) ? Loading() : 
             <div className={classes.graphContainer}>
-              <GraphedView data={finalData} label={labels}/>
+              <button onClick={(e: any) => {
+                e.preventDefault();
+                dispatch(setGraphTimeSpan({graphTimeSpan: Number(e.target.value), index: mapComponentIndex}))
+                console.log(graphTimeSpan, Number(e.target.value))
+              }
+                } style={{marginRight: '1rem'}} value="2">
+                  <span>2 kk</span>
+              </button>
+              <button onClick={(e: any) => {
+                 e.preventDefault();
+                dispatch(setGraphTimeSpan({graphTimeSpan: 4, index: mapComponentIndex}))
+                console.log(graphTimeSpan)
+                }} style={{marginRight: '1rem'}} value="4">
+                <span>4 KK</span>
+              </button>
+              <button onClick={
+                () => dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))} 
+                style={{marginRight: '1rem'}}
+                value="6">
+                <span>6 KK</span>
+              </button>
+              <GraphedView data={graphData} label={labels} mapComponentIndex={mapComponentIndex}/>
             </div>)
             }
         </div>

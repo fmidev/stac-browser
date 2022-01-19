@@ -15,6 +15,7 @@
     "maps": [
       {
         "id": 0,
+        "graphTimeSpan": 6,
         "selectedDataset": "Sentinel-1_dekadi_mosaiikki",
         "channelSettings": {
           "R": "min_vv",
@@ -38,6 +39,7 @@
       },
       {
         "id": 1,
+        "graphTimeSpan": 6,
         "selectedDataset": "Sentinel-2_global_mosaic_dekadi",
         "channelSettings": {
           "R": "b04",

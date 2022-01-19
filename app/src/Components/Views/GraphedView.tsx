@@ -8,14 +8,16 @@ import { setComparisonDate } from '../../Store/Actions/data'
 
 interface Props {
   data: any[],
-  label: string[]
+  label: string[], 
+  mapComponentIndex: number,
 }
 
 //GraphView component start
-const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
+const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex}: Props) => {
   const graphRef = React.useRef<HTMLDivElement>(null)
   const inspectionDate = useSelector((state: RootState) => state.dataReducer.data.global.inspectionDate)
-  const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.global.comparisonDate)
+  const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].comparisonDate)
+  const graphTimeSpan = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].graphTimeSpan)
 
   //const bands = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].derivedData.bands)
   //const [bands, setBands] = React.useState([] as [])
@@ -47,8 +49,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
   }
 
   function pointClicked(e: any, point: any){
-    console.log(point)
-    dispatch(setComparisonDate({comparisonDate: point.xval}))
+    dispatch(setComparisonDate({comparisonDate: point.xval, index: mapComponentIndex}))
   }
 
   const serieOne = label[0]
@@ -63,7 +64,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
     width: 600,
     legend: "always",
     highlightCircleSize: 5,
-    colors: ["#DC143C","#32CD32","#0000FF", '#DC155C'],
+    colors: ["#DC143C","#32CD32","#0000FF", '#000111'],
     animatedZooms: true,
     visibility: [true, true, true, true],
     labels: ['Date', serieOne, serieTwo, serieThree, ''],
@@ -102,22 +103,12 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
   React.useEffect(() => {
     console.log('UseEffect 1')
     if (!data || data.length === 0) return;
-
-    const startDate = new Date(inspectionDate)
-    const endDate = new Date(inspectionDate)
-
-    const monthTwoStart = startDate.setMonth(startDate.getMonth()-2)
-    const monthTwoEnd = endDate.setMonth(endDate.getMonth()+2)
-    console.log(monthTwoStart, monthTwoEnd)
-    console.log(comparisonDate)
     
     const entryAfterInspectionData = data.find((arr) => arr[0].getTime() > new Date(inspectionDate).getTime())
     console.log('entryAfterInspectionData', entryAfterInspectionData, inspectionDate)
     const insertIndex = entryAfterInspectionData ? data.indexOf(new Date(entryAfterInspectionData)) : data.length
     console.log(insertIndex)
     data.splice(insertIndex,0, [new Date(inspectionDate), null, null, null, 1])
-
-    console.log(data)
 
     let compareDate;
     if(comparisonDate){
@@ -131,7 +122,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
         shortText: 'I',
         text: 'Valkoinen',
         cssClass: 'annotation',
-        tickHeight: 150,
+        tickHeight: 145,
         attachAtBottom: true,
     }, {
       series: label[0],
@@ -156,7 +147,7 @@ const Dygraphed: React.FC<Props> = ({data, label}: Props) => {
 
     g.setAnnotations(ann)
     console.log(ann)
- }, [comparisonDate])
+ }, [comparisonDate, graphTimeSpan])
 
   return (
     <div style={{width: '100%'}}>

@@ -135,8 +135,6 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
 
   }, [items, datasetCatalog, channelSettings])
 
-  const radius = 75;
-
   React.useEffect(() => {
     if (!map) return;
 

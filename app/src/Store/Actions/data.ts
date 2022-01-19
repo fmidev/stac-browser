@@ -18,6 +18,7 @@ export const UPDATE_MAP_EXTENT = 'UPDATE_MAP_EXTENT'
 export const SET_SIDEBAR_STATE = 'SET_SIDEBAR_STATE'
 export const SET_CLICKED_COLOR_TILE = 'SET_CLICKED_COLOR_TILE'
 export const SET_GRAPH_STATE = 'SET_GRAPH_STATE'
+export const SET_GRAPH_TIME_SPAN = 'SET_GRAPH_TIME_SPAN'
 
 interface LoadDataAction {
   type: string
@@ -27,7 +28,6 @@ interface SetDataAction {
   type: string
   payload: Record<string, unknown>
 }
-
 
 // _____ datasets && Bands
 export const setAllDatasets = (data: Record<string, unknown>): SetDataAction => ({
@@ -39,8 +39,6 @@ export const setBands = (data: Record<string, unknown>): SetDataAction => ({
   type: SET_BANDS,
   payload: data
 })
-
-
 
 //_____ Dummy Data
 export const loadInitialSetup = (): LoadDataAction => ({
@@ -116,6 +114,11 @@ export const setSiderbarState = (data: Record<string, unknown>): SetDataAction =
 
 export const setGraphState = (data: Record<string, unknown>): SetDataAction => ({
   type: SET_GRAPH_STATE,
+  payload: data
+})
+
+export const setGraphTimeSpan = (data: Record<string, number>): SetDataAction => ({
+  type: SET_GRAPH_TIME_SPAN,
   payload: data
 })
 

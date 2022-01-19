@@ -15,7 +15,8 @@ const initialState: ReduxState = {
       inspectionDate: "",
       comparisonDate: "",
       fullScreen: "",
-      mapSize: ""
+      mapSize: "",
+      //graphTimeSpan: 0,
     },
     maps: []
   },
@@ -76,11 +77,6 @@ const dataReducer = createReducer(initialState, {
     const dateUtc = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
     state.data.global.inspectionDate = dateUtc.toISOString()
   },
-  SET_COMPARISON_DATE: (state, action) => {
-    debug('Reducer: Setting comparison date in reducer')
-    debug('Reducer: Action payload: ', action.payload)
-    state.data.global.comparisonDate = action.payload.comparisonDate
-  },
   SET_SELECTED_DATASET: (state, action) => {
     debug('Reducer: Setting data source or map in reducer')
     debug('Reducer: Action payload: ', action.payload)
@@ -118,10 +114,21 @@ const dataReducer = createReducer(initialState, {
     debug('Reducer: Action payload: ', action.payload)
     state.data.global.sidebarIsOpen = action.payload.sidebarIsOpen
   },
+  SET_COMPARISON_DATE: (state, action) => {
+    debug('Reducer: Setting comparison date in reducer')
+    debug('Reducer: Action payload: ', action.payload)
+    // state.data.global.comparisonDate = action.payload.comparisonDate
+    state.data.maps[action.payload.index].comparisonDate = action.payload.comparisonDate
+  },
   SET_GRAPH_STATE: (state, action) => {
     debug('Reducer: Setting sidebar state in Reducer')
     debug('Reducer: Action payload: ', action.payload)
     state.data.maps[action.payload.index].graphIsOpen = action.payload.graphIsOpen
+  },
+  SET_GRAPH_TIME_SPAN: (state, action) => {
+    debug('Reducer: Setting sidebar state in Reducer')
+    debug('Reducer: Action payload: ', action.payload)
+    state.data.maps[action.payload.index].graphTimeSpan = action.payload.graphTimeSpan
   },
   SET_CLICKED_COLOR_TILE: (state, action) => {
     debug('Reducer: Setting clicked color tile state in Reducer')
