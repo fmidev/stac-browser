@@ -24,7 +24,6 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex}: Props) => 
 
   const dispatch = useDispatch()
   const classes = useStyles()
-  const ann = [] as any[]
 
   function legendFormatter(this: any, data: any) {
     if (data.x == null) {
@@ -52,11 +51,22 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex}: Props) => 
     dispatch(setComparisonDate({comparisonDate: point.xval, index: mapComponentIndex}))
   }
 
-  const serieOne = label[0]
-  const serieTwo = label[1]
-  const serieThree = label[2]
+  const graphInit = () => {
+    const serieOne = label[0]
+    const serieTwo = label[1]
+    const serieThree = label[2]
 
-  const drawGraph = () => {
+    const annotation: any = [{
+      series: '',
+      x: new Date(inspectionDate).getTime(),
+      shortText: 'I',
+      text: 'Valkoinen',
+      cssClass: 'annotation',
+      tickHeight: 145,
+      attachAtBottom: true,
+    }];
+  
+    let graph_initialized = false;
     if (!graphRef.current) throw Error("graphRef is not assigned");
     const graph = new Dygraph(graphRef.current,
     data, 
@@ -96,48 +106,42 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex}: Props) => 
         drawGrid: false,
       }
     },
+    drawCallback: function(drawGraph, is_initial) {
+      if(is_initial) {
+        graph_initialized = true;
+        if(annotation.length > 0) {
+          drawGraph.setAnnotations(annotation)
+        }
+      }
+      }
     })
-    return graph
+    return graph;
   }
-
   React.useEffect(() => {
-    console.log('UseEffect 1')
-    if (!data || data.length === 0) return;
-    
-    const entryAfterInspectionData = data.find((arr) => arr[0].getTime() > new Date(inspectionDate).getTime())
-    console.log('entryAfterInspectionData', entryAfterInspectionData, inspectionDate)
-    const insertIndex = entryAfterInspectionData ? data.indexOf(new Date(entryAfterInspectionData)) : data.length
-    console.log(insertIndex)
-    data.splice(insertIndex,0, [new Date(inspectionDate), null, null, null, 1])
+  console.log('UseEffect 1')
+  if (!data || data.length === 0) return;
+  
+  const entryAfterInspectionData = data.find((arr) => arr[0].getTime() > new Date(inspectionDate).getTime())
+  //console.log('entryAfterInspectionData', entryAfterInspectionData, inspectionDate)
+  const insertIndex = entryAfterInspectionData ? data.indexOf(new Date(entryAfterInspectionData)) : data.length
+  //console.log(insertIndex)
+  data.splice(insertIndex,0, [new Date(inspectionDate), null, null, null, 1])
 
-    let compareDate;
-    if(comparisonDate){
-      compareDate = new Date(comparisonDate).getTime()
-    }
-    const g = drawGraph()
-    if(comparisonDate){
+  graphInit()
+  
+ }, [
+   inspectionDate,
+   data
+ ])
+
+ React.useEffect(() => {
+  const graph = graphInit()
+  const ann = graph.annotations()
+    if(comparisonDate ){
       ann.push({
-        series: '',
-        x: new Date(inspectionDate).getTime(),
-        shortText: 'I',
-        text: 'Valkoinen',
-        cssClass: 'annotation',
-        tickHeight: 145,
-        attachAtBottom: true,
-    }, {
-      series: label[0],
-      x: compareDate,
-      shortText: '2',
-      text: 'Valkoinen',
-      cssClass: 'annotation',
-      tickHeight: 150,
-      attachAtBottom: true,
-    })
-    } else {
-      ann.push({ 
-        series: '',
-        x: new Date(inspectionDate).getTime(),
-        shortText: 'I',
+        series: label[0],
+        x: new Date(comparisonDate).getTime(),
+        shortText: 'C',
         text: 'Valkoinen',
         cssClass: 'annotation',
         tickHeight: 150,
@@ -145,9 +149,12 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex}: Props) => 
       })
     }
 
-    g.setAnnotations(ann)
-    console.log(ann)
- }, [comparisonDate, graphTimeSpan])
+  graph.setAnnotations(ann)
+  console.log(graph.annotations())
+ }, [
+   comparisonDate, 
+   graphTimeSpan, 
+   data])
 
   return (
     <div style={{width: '100%'}}>
