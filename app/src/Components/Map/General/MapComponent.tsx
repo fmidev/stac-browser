@@ -75,11 +75,6 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const [graphData, setGraphData] = React.useState<any>([]);
   const [labels, setLabel] = React.useState([] as string[])
 
-
-  const startDate = new Date(inspectionDate)
-  const endDate = new Date(inspectionDate)
-
-
   const showGraph = () => {
     dispatch(setGraphState({graphIsOpen: !graphIsOpen, index: mapComponentIndex}))
   }
@@ -115,26 +110,15 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     const bands = ['R','G','B'].map(color => mapObject.channelSettings[color]).filter(band => !!band)
     setLabel(bands)
 
-    switch(graphTimeSpan){ 
-      case 2:
-        startDate.setMonth(startDate.getMonth()-1)
-        endDate.setMonth(endDate.getMonth() + 1)
-      break;
-      case 4:
-        startDate.setMonth(startDate.getMonth()-2)
-        endDate.setMonth(endDate.getMonth() + 2)
-      break;
-      case 6:
-        startDate.setMonth(startDate.getMonth()-3)
-        endDate.setMonth(endDate.getMonth() + 3)
-      break;
-      default: 
-        startDate.setMonth(startDate.getMonth()-3)
-        endDate.setMonth(endDate.getMonth() + 3)
-    }
+      const startDate = new Date(inspectionDate)
+      const endDate = new Date(inspectionDate)
 
+        startDate.setMonth(startDate.getMonth() - graphTimeSpan / 2)
+        endDate.setMonth(endDate.getMonth() + graphTimeSpan / 2)
      /*  startDate.setMonth(startDate.getMonth()-3)
       endDate.setMonth(endDate.getMonth() + 3) */
+
+      console.log(graphTimeSpan, mapComponentIndex)
 
     getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
@@ -142,7 +126,15 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
       setGraphData(d)
     })
   }
-  }, [graphIsOpen, selectedDataset, inspectionDate, center, resolution, mapObject.channelSettings, graphTimeSpan])
+  }, [
+    graphIsOpen, 
+    graphTimeSpan, 
+    selectedDataset, 
+    inspectionDate,
+    center, 
+    resolution, 
+    mapObject.channelSettings
+  ])
 
 
   const itemsTemporalInterval = calculateItemsTemporalInterval(itemObject)
@@ -151,14 +143,6 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   if (datasetCatalog?.extent?.temporal?.interval) {
     const interval = datasetCatalog?.extent?.temporal?.interval
     catalogTemporalInterval = `(${interval[0].substring(0, 10)} - ${interval[1].substring(0, 10)})`
-  }
-
-  const finalData = [] as any
-  console.log(finalData)
-  if(graphData){
-    graphData.map((d: any) => {
-      return finalData.push([d[0], d[1], d[2], d[3], null])
-    })
   }
 
   return (
@@ -170,7 +154,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
               zIndex: 2, 
               maxWidth: '35px', 
               minWidth: '35px', 
-              maxHeight: '35px', 
+              maxHeight: '35px',
               minHeight: '35px', 
               right: '0px' 
             }}
@@ -217,27 +201,28 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             {graphIsOpen && 
             ((graphData.length === 0 ) ? Loading() : 
             <div className={classes.graphContainer}>
-              <button onClick={(e: any) => {
-                e.preventDefault();
-                dispatch(setGraphTimeSpan({graphTimeSpan: Number(e.target.value), index: mapComponentIndex}))
-                console.log(graphTimeSpan, Number(e.target.value))
-              }
-                } style={{marginRight: '1rem'}} value="2">
-                  <span>2 kk</span>
-              </button>
-              <button onClick={(e: any) => {
-                 e.preventDefault();
-                dispatch(setGraphTimeSpan({graphTimeSpan: 4, index: mapComponentIndex}))
-                console.log(graphTimeSpan)
-                }} style={{marginRight: '1rem'}} value="4">
-                <span>4 KK</span>
-              </button>
-              <button onClick={
-                () => dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))} 
-                style={{marginRight: '1rem'}}
-                value="6">
-                <span>6 KK</span>
-              </button>
+              <div style={{marginTop: '1rem'}}>
+                <button onClick={(e: any) => {
+                  dispatch(setGraphTimeSpan({graphTimeSpan: 2, index: mapComponentIndex}));
+                  console.log(graphTimeSpan)
+                }} 
+                style={{marginRight: '1rem'}} value="2">
+                    <span>2 kk</span>
+                </button>
+                <button onClick={(e: any) => {
+                  dispatch(setGraphTimeSpan({graphTimeSpan: 4, index: mapComponentIndex}))
+                  console.log(graphTimeSpan)
+                  }} 
+                  style={{marginRight: '1rem'}} value="4">
+                  <span>4 KK</span>
+                </button>
+                <button onClick={
+                  () => dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))} 
+                  style={{marginRight: '1rem'}}
+                  value="6">
+                  <span>6 KK</span>
+                </button>
+              </div>
               <GraphedView data={graphData} label={labels} mapComponentIndex={mapComponentIndex}/>
             </div>)
             }
@@ -297,7 +282,7 @@ const useStyles = makeStyles(() =>
       position: 'relative', 
       zIndex: 100, 
       backgroundColor: 'white',
-      marginTop: '0.6rem',
+      marginTop: '1rem',
       marginBottom: '4rem',
       borderBottom: 'solid 	rgb(211,211,211) 1px',
       width: '100%',
