@@ -118,8 +118,8 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
      /*  startDate.setMonth(startDate.getMonth()-3)
       endDate.setMonth(endDate.getMonth() + 3) */
 
-      console.log(graphTimeSpan, mapComponentIndex)
-
+    console.log(startDate)
+    console.log(endDate)
     getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
       const d = data.map((d: any) => [d[0], d[1], d[2], d[3], null])
@@ -135,7 +135,6 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     resolution, 
     mapObject.channelSettings
   ])
-
 
   const itemsTemporalInterval = calculateItemsTemporalInterval(itemObject)
 
