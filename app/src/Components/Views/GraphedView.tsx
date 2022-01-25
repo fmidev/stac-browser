@@ -172,9 +172,9 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
 
   return (
     <div style={{width: '100%'}}>
-      <div>
-        <button onClick={twoMonths}>2 kk</button>
-        <button onClick={fourMonths}>4 kk</button>
+      <div style={{padding: '4px'}}>
+        <button onClick={twoMonths} style={{marginRight: '4px'}}>2 kk</button>
+        <button onClick={fourMonths} style={{marginRight: '4px'}}>4 kk</button>
         <button onClick={sixMonths}>6 kk</button>
       </div>
       <Grid ref={graphRef} className={classes.container}>
