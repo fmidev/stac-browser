@@ -10,9 +10,9 @@ interface Props {
   data: any[],
   label: string[], 
   mapComponentIndex: number,
-  twoMonths?:  any,
-  fourMonths?: any,
-  sixMonths?: any
+  twoMonths?:  React.MouseEventHandler,
+  fourMonths?: React.MouseEventHandler,
+  sixMonths?: React.MouseEventHandler
 }
 
 //GraphView component start
