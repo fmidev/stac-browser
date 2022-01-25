@@ -10,14 +10,18 @@ interface Props {
   data: any[],
   label: string[], 
   mapComponentIndex: number,
+  twoMonths?:  any,
+  fourMonths?: any,
+  sixMonths?: any
 }
 
 //GraphView component start
-const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex}: Props) => {
+const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, fourMonths, sixMonths}: Props) => {
   const graphRef = React.useRef<HTMLDivElement>(null)
   const inspectionDate = useSelector((state: RootState) => state.dataReducer.data.global.inspectionDate)
   const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].comparisonDate)
   const graphTimeSpan = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].graphTimeSpan)
+  const sidebarIsOpen = useSelector((state: any) => state.dataReducer.data.global.sidebarIsOpen)
 
   //const bands = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].derivedData.bands)
   //const [bands, setBands] = React.useState([] as [])
@@ -131,7 +135,7 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex}: Props) => 
   
  }, [
    inspectionDate,
-   data
+   data,
  ])
 
  React.useEffect(() => {
@@ -156,8 +160,23 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex}: Props) => 
    graphTimeSpan, 
    data])
 
+   // This function should resize map when sidebar is opened or closed
+  React.useEffect(() => {
+    if(sidebarIsOpen){
+      graphInit().resize(500, 280)
+    }
+    if(!sidebarIsOpen){
+      graphInit().resize(600, 300)
+    }
+  }, [sidebarIsOpen])
+
   return (
     <div style={{width: '100%'}}>
+      <div>
+        <button onClick={twoMonths}>2 kk</button>
+        <button onClick={fourMonths}>4 kk</button>
+        <button onClick={sixMonths}>6 kk</button>
+      </div>
       <Grid ref={graphRef} className={classes.container}>
       </Grid>
     </div>
@@ -169,7 +188,7 @@ const useStyles = makeStyles((theme) =>
     container: {
       height: '100%',
       width: '100%',
-      margin: '2rem auto auto'
+      margin: '1rem auto 0.3rem -1.3rem'
     },
   }),
 )
