@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { createStyles, makeStyles } from '@material-ui/styles'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateMapExtent } from '../../../Store/Actions/data'
+import { updateMapExtent, updateSpyglassPosition } from '../../../Store/Actions/data'
 import { Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/WebGLTile';
 import GeoTIFF from 'ol/source/GeoTIFF';
@@ -10,6 +10,7 @@ import * as ol from 'ol';
 import { MouseWheelZoom, defaults } from 'ol/interaction';
 import {getRenderPixel} from 'ol/render';
 import 'ol/ol.css'
+import RenderEvent from 'ol/render/Event';
 
 const RED = 0;
 const GREEN = 1;
@@ -33,33 +34,68 @@ interface Props {
 const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings }) => {
   const mapExtent = useSelector((state: any) => state.dataReducer.data.global.mapExtent)
   const sidebarIsOpen = useSelector((state: any) => state.dataReducer.data.global.sidebarIsOpen)
+  const spyGlass = useSelector((state: any) => state.dataReducer.transient.spyGlass)
+  const mySpyGlassRef = React.useRef(spyGlass)
   const dispatch = useDispatch()
 
   const [map, setMap] = React.useState<any>()
   const [layerConfig, setLayerConfig] = React.useState({ sources: [] as any[] })
 
+  const spyglassPreRender = (event : RenderEvent) => {
+    const mousePosition = mySpyGlassRef.current.position
+    if (!event.context || mousePosition === null || mousePosition === undefined) return;
+
+    const ctx : CanvasRenderingContext2D | WebGLRenderingContext = event.context;
+    if (ctx instanceof CanvasRenderingContext2D) {
+      console.log('CanvasRenderingContext2D => dunno what to do!')
+    }
+    if (ctx instanceof WebGLRenderingContext) {
+      const pixel = getRenderPixel(event, mousePosition);
+
+      const x1 = pixel[0]-spyGlassSize/2;
+      const y1 = pixel[1]-spyGlassSize/2;
+      const w = spyGlassSize;
+      const h = spyGlassSize;
+
+      console.log(` - ctx.scissor(${x1}, ${y1}, ${w}, ${h});`)
+      ctx.enable(ctx.SCISSOR_TEST);
+      ctx.scissor(x1, y1, w, h);
+      
+
+      /*
+      var vertices = new Float32Array([
+        x1, y1, x1 + w, y1
+        -0.5, 0.5*aspect, 0.5, 0.5*aspect, 0.5,-0.5*aspect, // Triangle 1
+        -0.5, 0.5*aspect, 0.5,-0.5*aspect, -0.5,-0.5*aspect // Triangle 2
+        ]);
+        
+        vbuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+      */
+    }
+  }
+
+  const spyglassPostRender = (event : RenderEvent) => {
+    if (!event.context) return;
+
+    const ctx : CanvasRenderingContext2D | WebGLRenderingContext = event.context;
+    //console.log('postrender')
+    if (ctx instanceof CanvasRenderingContext2D) {
+      console.log(' - Post canvas ?!?!?')
+    }
+    if (ctx instanceof WebGLRenderingContext) {
+      //console.log(' - post WebGL -> disable scissor')
+      ctx.disable(ctx.SCISSOR_TEST);
+    }
+  }
+
   const mapRef = React.useRef<HTMLElement>()
-
-  let mousePosition : null | number[] = null;
-
-  function onMouseMove(event : any) {
-    if (map) {
-      const position = map.getEventPixel(event)
-      mousePosition = position
-      map.render();
-    }
-  }
-
-  function onMouseOut() {
-    if (map) {
-      mousePosition = null
-      map.render();
-    }
-  }
 
   React.useEffect(() => {
     if (!mapRef || !mapRef.current) return;
 
+    console.log('Creating a map')
     const map = new ol.Map({
       interactions: defaults({ mouseWheelZoom: false }).extend([
         new MouseWheelZoom({
@@ -76,23 +112,31 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
     })
     map.on('moveend', sendUpdateExtentAction)
 
+    const current = mapRef?.current
+
+    
+    function onMouseMove(event : any) {
+      const position = map.getEventPixel(event)
+      dispatch(updateSpyglassPosition({position}))
+    }
+
+    function onMouseOut() {
+      dispatch(updateSpyglassPosition({position: null}))
+    }
+
+    current.addEventListener('mousemove', onMouseMove)
+    current.addEventListener('mouseout', onMouseOut)
+
     setMap(map)
 
     return function cleanup() {
+      console.log('Removing a map')
       map.dispose()
+
+      current.removeEventListener('mousemove', onMouseMove)
+      current.removeEventListener('mouseout', onMouseOut)
     }
   }, [mapRef]);
-
-  React.useEffect(() => {
-    if (!map || !mapRef || !mapRef.current) return;
-
-    mapRef.current.removeEventListener('mousemove', onMouseMove)
-    mapRef.current.addEventListener('mousemove', onMouseMove)
-
-    mapRef.current.removeEventListener('mouseout', onMouseOut)
-    mapRef.current.addEventListener('mouseout', onMouseOut)
-
-  }, [map]);
 
   const sendUpdateExtentAction = (evt: any) => {
     const map = evt.map;
@@ -170,14 +214,20 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
   }, [items, datasetCatalog, channelSettings])
 
   React.useEffect(() => {
+    mySpyGlassRef.current = spyGlass
+    map?.render()
+  }, [spyGlass]);
+
+  React.useEffect(() => {
     if (!map) return;
 
+    console.log('Modifying layers:')
     // Remove previous layers
     const previousLayers = [] as Layer<any>[]
     map.getLayers().forEach((l : Layer<any>) => previousLayers.push(l))
     map.getLayers().clear();
     previousLayers.forEach(l => l.dispose())
-
+    console.log(' - removed '+previousLayers.length+' layers')
     // adds bands together for a single color value
     function sumBands(sources: { url: string, color: number }[], targetColor: number) {
       return sources.reduce((memo, source, i) => {
@@ -219,54 +269,16 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
         })
       })
     })
+
     layers.forEach(layer => {
-      layer.on('prerender', function (event) {
-        //console.log('mousePosition = ',mousePosition)
-        if (!event.context || mousePosition === null || mousePosition === undefined) return;
-
-        const ctx : CanvasRenderingContext2D | WebGLRenderingContext = event.context;
-        if (ctx instanceof CanvasRenderingContext2D) {
-          console.log('CanvasRenderingContext2D => dunno what to do!')
-        }
-        if (ctx instanceof WebGLRenderingContext) {
-          ctx.enable(ctx.SCISSOR_TEST);
-
-          const pixel = getRenderPixel(event, mousePosition);
-
-          ctx.scissor(pixel[0]-spyGlassSize/2, pixel[1]-spyGlassSize/2, spyGlassSize, spyGlassSize)
-        }
-      });
-      layer.on('postrender', function (event) {
-        if (!event.context || mousePosition === null || mousePosition === undefined) return;
-
-        const ctx : CanvasRenderingContext2D | WebGLRenderingContext = event.context;
-        //console.log('postrender')
-        if (ctx instanceof CanvasRenderingContext2D) {
-          console.log(' - Post canvas ?!?!?')
-        }
-        if (ctx instanceof WebGLRenderingContext) {
-          //console.log(' - post WebGL -> disable scissor')
-          ctx.disable(ctx.SCISSOR_TEST);
-        }
-        return;
-      });
+      layer.on('prerender', spyglassPreRender)
+      layer.on('postrender', spyglassPostRender)
     })
     map.getLayers().extend(layers)
-    
+    console.log(' - added '+layers.length+' layers')
+
   }, [map, layerConfig]);
 
-  /*
-  React.useEffect(() => {
-    // Anything in here is fired on component mount.
-    return () => {
-        // Anything in here is fired on component unmount.
-        console.log('OL unmount!');
-        const oldLayers = map?.getLayers() || [];
-        oldLayers.forEach((l: any) => { l.getSource().clear(); l.setSource(undefined); map?.removeLayer(l) })
-        map?.setTarget(null)
-    }
-  }, [])
-*/
   const classes = useStyles()
   return (
     <div ref={mapRef as any} className={classes.mapContainer}>

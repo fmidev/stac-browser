@@ -20,6 +20,11 @@ const initialState: ReduxState = {
     },
     maps: []
   },
+  transient: {
+    spyGlass: {
+      position: null
+    }
+  },
   cache: {
     catalog: {},
     datasets: [],
@@ -98,6 +103,9 @@ const dataReducer = createReducer(initialState, {
     state.data.global.mapExtent.center = action.payload.center
     state.data.global.mapExtent.resolution = action.payload.resolution
     state.data.global.mapExtent.rotation = action.payload.rotation
+  },
+  UPDATE_SPYGLASS_POSITION: (state, action) => {
+    state.transient.spyGlass.position = action.payload.position
   },
   SET_ALL_DATASETS: (state, action) => {
     debug('Reducer: Setting all sources in Reducer')
