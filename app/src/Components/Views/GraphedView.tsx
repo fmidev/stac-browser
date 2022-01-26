@@ -76,7 +76,7 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
     data, 
     {
     width: 600,
-    legend: "always",
+    legend: "follow",
     highlightCircleSize: 5,
     colors: ["#DC143C","#32CD32","#0000FF", '#000111'],
     animatedZooms: true,
@@ -108,6 +108,9 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
       y: {
         axisLineColor: "rgb(229, 228, 226)",
         drawGrid: false,
+      },
+      y2: {
+        axisLineColor: "rgb(229, 228, 226)",
       }
     },
     drawCallback: function(drawGraph, is_initial) {
@@ -172,10 +175,28 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
 
   return (
     <div style={{width: '100%'}}>
-      <div style={{padding: '4px'}}>
-        <button onClick={twoMonths} style={{marginRight: '4px'}}>2 kk</button>
-        <button onClick={fourMonths} style={{marginRight: '4px'}}>4 kk</button>
-        <button onClick={sixMonths}>6 kk</button>
+      <div style={{}}>
+        <button 
+          onClick={twoMonths} 
+          style={{
+            marginRight: '4px',
+            border: 'solid 	rgb(211,211,211) 1px',
+            padding: '3px 6px'
+            }}>2 kk
+        </button>
+        <button 
+          onClick={fourMonths} 
+          style={{
+            marginRight: '4px',
+            border: 'solid 	rgb(211,211,211) 1px', 
+            padding: '3px 6px'}}>4 kk
+        </button>
+        <button 
+          onClick={sixMonths} 
+          style={{
+            border: 'solid 	rgb(211,211,211) 1px',
+            padding: '3px 6px'}}>6 kk
+        </button>
       </div>
       <Grid ref={graphRef} className={classes.container}>
       </Grid>
