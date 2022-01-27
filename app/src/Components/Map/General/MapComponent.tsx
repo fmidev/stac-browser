@@ -136,7 +136,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
       const d = data.map((d: any) => [...d, null])
-      setGraphData({data: d, labels: bands, colors: ["#DC143C","#32CD32","#0000FF"]})
+      const bandIds = bands.map((b,i) => b+'-'+['R','G','B'][i])
+      console.log('bands', bandIds, 'data', data[0])
+      setGraphData({data: d, labels: bandIds, colors: ["#DC143C","#32CD32","#0000FF"]})
     })
   }
   }, [
