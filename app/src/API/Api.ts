@@ -249,7 +249,7 @@ export const getTimeseries = async (datasetId : string, coords : number[], resol
   
   function getTimestamp(i : any) {
     if (i.properties.datetime) {
-      return i.properties.datetime
+      return new Date(i.properties.datetime)
     }
     const start = new Date(i.properties.start_datetime).getTime()
     const end   = new Date(i.properties.end_datetime).getTime()

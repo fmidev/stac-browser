@@ -1,11 +1,17 @@
 export interface ReduxState {
   data: Data
+  transient: Transient
   cache: Cache
 }
 
 export interface Data {
   global: Global
   maps: Map[]
+}
+export interface Transient {
+  spyGlass: {
+    position: number[] | null
+  }
 }
 
 export interface Global {

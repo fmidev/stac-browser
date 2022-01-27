@@ -71,14 +71,12 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [itemObject, setItemObject] = React.useState({ items: [] } as { items: any });
+  const [comparisonItemObject, setComparisonItemObject] = React.useState({ items: [] } as { items: any });
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
-  const [graphData, setGraphData] = React.useState<any>([]);
-  const [labels, setLabel] = React.useState([] as string[])
-  const [activeTwo, setActiveTwo] = React.useState<boolean>(false)
-  const [activeFour, setActiveFour] = React.useState<boolean>(false)
-  const [activeSix, setActiveSix] = React.useState<boolean>(false)
 
+  const [graphData, setGraphData] = React.useState<any>({ data: [] as any[], labels: [] as string[], colors: [] as string[]});
 
+  
   const showGraph = () => {
     dispatch(setGraphState({graphIsOpen: !graphIsOpen, index: mapComponentIndex}))
   }
@@ -97,12 +95,18 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   React.useEffect(() => {
     if (inspectionDate && selectedDataset) {
       getItemsForDatasetAndTime(selectedDataset, inspectionDate).then((ret: any) => {
-        setItemObject(() => {
-          return ret
-        })
+        setItemObject(ret)
       })
     }
   }, [selectedDataset, inspectionDate])
+
+  React.useEffect(() => {
+    if (comparisonDate && selectedDataset) {
+      getItemsForDatasetAndTime(selectedDataset, comparisonDate).then((ret: any) => {
+        setComparisonItemObject(ret)
+      })
+    }
+  }, [selectedDataset, comparisonDate])
 
   // Graph useEffect
   React.useEffect(() => {
@@ -110,8 +114,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
       if (!selectedDataset) {
       return 
     }
-    const bands = ['R','G','B'].map(color => mapObject.channelSettings[color]).filter(band => !!band)
-    setLabel(bands)
+    const bands = ['R','G','B'].map(color => mapObject.channelSettings[color])
 
     const startDate = new Date(inspectionDate)
     const endDate = new Date(inspectionDate)
@@ -133,8 +136,10 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     }
     getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
-      const d = data.map((d: any) => [d[0], d[1], d[2], d[3], null])
-      setGraphData(d)
+      const d = data.map((d: any) => [...d, null])
+      const bandIds = bands.map((b,i) => b+'-'+['R','G','B'][i])
+      console.log('bands', bandIds, 'data', data[0])
+      setGraphData({data: d, labels: bandIds, colors: ["#DC143C","#32CD32","#0000FF"]})
     })
   }
   }, [
@@ -149,6 +154,10 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   ])
 
   const itemsTemporalInterval = calculateItemsTemporalInterval(itemObject)
+  const comparisonItemsTemporalInterval = calculateItemsTemporalInterval(comparisonItemObject)
+
+  const visibleTemporalInterval = itemsTemporalInterval + ' (spy: '+(comparisonItemsTemporalInterval === itemsTemporalInterval ? 'same' : comparisonItemsTemporalInterval)+')'
+  
 
   let catalogTemporalInterval = '';
   if (datasetCatalog?.extent?.temporal?.interval) {
@@ -183,13 +192,13 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
               bottom: '0px', 
               padding: '0.5em', 
               color: '#ffffffaa', 
-              pointerEvents: 'auto', 
+              pointerEvents: 'none', 
               filter: 'drop-shadow(0px 0px 5px black)'
             }}
           >
-            {itemsTemporalInterval}
+            {visibleTemporalInterval}
           </div>
-          <OpenLayersMap datasetCatalog={datasetCatalog} items={itemObject.items} channelSettings={mapObject.channelSettings} />
+          <OpenLayersMap datasetCatalog={datasetCatalog} items={itemObject.items} comparisonItems={comparisonItemObject.items} channelSettings={mapObject.channelSettings} />
         </div>
         <div className={classes.menuContainer}>
           <div className={classes.dropDown} style={{width: '35%'}}>
@@ -215,11 +224,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             top: '10', 
             }}>
             {graphIsOpen && 
-            ((graphData.length === 0 ) ? Loading() : 
+            ((graphData.data.length === 0 ) ? Loading() : 
             <div className={classes.graphContainer}>
-              <GraphedView 
-              data={graphData} 
-              label={labels} mapComponentIndex={mapComponentIndex} 
+              <GraphedView graphData={graphData} mapComponentIndex={mapComponentIndex} 
               >
                 <div style={{marginTop: '1rem'}}>
                   <button 

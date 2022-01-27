@@ -15,6 +15,7 @@ export const SET_SELECTED_DATASET = 'SET_SELECTED_DATASET'
 export const REMOVE_MAP = 'REMOVE_MAP'
 export const ADD_MAP = 'ADD_MAP'
 export const UPDATE_MAP_EXTENT = 'UPDATE_MAP_EXTENT'
+export const UPDATE_SPYGLASS_POSITION = 'UPDATE_SPYGLASS_POSITION'
 export const SET_SIDEBAR_STATE = 'SET_SIDEBAR_STATE'
 export const SET_CLICKED_COLOR_TILE = 'SET_CLICKED_COLOR_TILE'
 export const SET_GRAPH_STATE = 'SET_GRAPH_STATE'
@@ -104,6 +105,11 @@ export const addMap = (data: Record<string, unknown>): SetDataAction => ({
 
 export const updateMapExtent = (data: Record<string, unknown>): SetDataAction => ({
   type: UPDATE_MAP_EXTENT,
+  payload: data
+})
+
+export const updateSpyglassPosition = (data: Record<string, unknown>): SetDataAction => ({
+  type: UPDATE_SPYGLASS_POSITION,
   payload: data
 })
 

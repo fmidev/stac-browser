@@ -1,14 +1,18 @@
 import * as React from 'react'
 import { createStyles, makeStyles } from '@material-ui/styles'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateMapExtent } from '../../../Store/Actions/data'
+import { updateMapExtent, updateSpyglassPosition } from '../../../Store/Actions/data'
 import { Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/WebGLTile';
 import GeoTIFF from 'ol/source/GeoTIFF';
 import Projection from 'ol/proj/Projection';
 import * as ol from 'ol';
 import { MouseWheelZoom, defaults } from 'ol/interaction';
+import {getRenderPixel} from 'ol/render';
 import 'ol/ol.css'
+import RenderEvent from 'ol/render/Event';
+import SpyGlassBorderCanvas from './SpyGlassBorderCanvas'
+
 
 const RED = 0;
 const GREEN = 1;
@@ -21,29 +25,81 @@ const projection = new Projection({
 
 const mouseWheelZoomAnimationTime = 75;
 
+const spyGlassSize = 50;
+
 interface Props {
   items: any[],
+  comparisonItems: any[],
   datasetCatalog: any,
   channelSettings: any
 }
 
-const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings }) => {
+const OpenLayersMap: React.FC<Props> = ({ items, comparisonItems, datasetCatalog, channelSettings }) => {
   const mapExtent = useSelector((state: any) => state.dataReducer.data.global.mapExtent)
   const sidebarIsOpen = useSelector((state: any) => state.dataReducer.data.global.sidebarIsOpen)
+  const spyGlass = useSelector((state: any) => state.dataReducer.transient.spyGlass)
+  const mySpyGlassRef = React.useRef(spyGlass)
   const dispatch = useDispatch()
 
+  const [borderRect, setBorderRect] = React.useState<number[] | null>(null)
   const [map, setMap] = React.useState<any>()
-  const [layerConfig, setLayerConfig] = React.useState({ sources: [] as any[] })
+  const [layerConfig, setLayerConfig] = React.useState({ sources: [] as any[], comparisonSources: [] as any[] })
+
+  const spyglassPreRender = (event : RenderEvent) => {
+    const mousePosition = mySpyGlassRef.current.position
+    if (!event.context) return;
+
+    const ctx : CanvasRenderingContext2D | WebGLRenderingContext = event.context;
+    if (ctx instanceof CanvasRenderingContext2D) {
+      console.log('CanvasRenderingContext2D => dunno what to do!')
+    }
+    if (ctx instanceof WebGLRenderingContext) {
+      
+      let x1,y1,w,h;
+
+      if (mousePosition === null || mousePosition === undefined) {
+        x1 = y1 = w = h = 0
+      } else {
+        const pixel = getRenderPixel(event, mousePosition);
+
+        x1 = pixel[0]-spyGlassSize/2;
+        y1 = pixel[1]-spyGlassSize/2;
+        w = spyGlassSize;
+        h = spyGlassSize;
+      }
+
+      ctx.enable(ctx.SCISSOR_TEST);
+      ctx.scissor(x1, y1, w, h);
+    }
+  }
+
+  const spyglassPostRender = (event : RenderEvent) => {
+    const mousePosition = mySpyGlassRef.current.position
+    if (!event.context) return;
+
+    const ctx : CanvasRenderingContext2D | WebGLRenderingContext = event.context;
+    if (ctx instanceof CanvasRenderingContext2D) {
+      console.log(' - Post canvas ?!?!?')
+    }
+    if (ctx instanceof WebGLRenderingContext) {
+      ctx.disable(ctx.SCISSOR_TEST);
+    }
+  }
 
   const mapRef = React.useRef<HTMLElement>()
 
-  const initializeOL = React.useCallback(() => {
+  React.useEffect(() => {
+    if (!mapRef || !mapRef.current) return;
+
+    const current = mapRef.current
+
+    console.log('Creating a map')
     const map = new ol.Map({
       interactions: defaults({ mouseWheelZoom: false }).extend([
         new MouseWheelZoom({
           duration: mouseWheelZoomAnimationTime,
         })]),
-      target: mapRef.current,
+      target: current,
       layers: [],
       view: new ol.View({
         center: mapExtent.center,
@@ -53,8 +109,29 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
       })
     })
     map.on('moveend', sendUpdateExtentAction)
-    return map
-  }, [mapRef])
+
+    function onMouseMove(event : any) {
+      const position = map.getEventPixel(event)
+      dispatch(updateSpyglassPosition({position}))
+    }
+
+    function onMouseOut() {
+      dispatch(updateSpyglassPosition({position: null}))
+    }
+
+    current.addEventListener('mousemove', onMouseMove)
+    current.addEventListener('mouseout', onMouseOut)
+
+    setMap(map)
+
+    return function cleanup() {
+      console.log('Removing a map')
+      map.dispose()
+
+      current.removeEventListener('mousemove', onMouseMove)
+      current.removeEventListener('mouseout', onMouseOut)
+    }
+  }, [mapRef]);
 
   const sendUpdateExtentAction = (evt: any) => {
     const map = evt.map;
@@ -68,10 +145,6 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
     }
     dispatch(updateMapExtent(payload))
   }
-
-  React.useEffect(() => {
-    setMap(initializeOL())
-  }, [])
 
   // This function will resize map when page is manually resize
   window.onresize = () => {
@@ -114,7 +187,7 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
       return visualisationParameters;
     }
 
-    const sources = items.map(item => {
+    const itemToSources = (item : any) => {
       return colors
         .filter(c => channelSettings[c.colorStr])
         .filter(c => item && item.assets && item.assets[channelSettings[c.colorStr]])
@@ -127,23 +200,40 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
             max: vis.max
           }
         });
-    }).filter(s => s.length > 0);
-     
-    if (JSON.stringify(layerConfig.sources) !== JSON.stringify(sources)) {
-      setLayerConfig({sources: sources})
     }
 
-  }, [items, datasetCatalog, channelSettings])
+    const newLayerConfig = {
+      sources: items.map(itemToSources).filter(s => s.length > 0),
+      comparisonSources: comparisonItems.map(itemToSources).filter(s => s.length > 0)
+    }
+    if (JSON.stringify(newLayerConfig) !== JSON.stringify(layerConfig)) {
+      setLayerConfig(newLayerConfig)
+    }
+
+  }, [items, comparisonItems, datasetCatalog, channelSettings])
+
+  React.useEffect(() => {
+    mySpyGlassRef.current = spyGlass
+    
+    let borderRect = null
+    if (spyGlass.position && layerConfig.comparisonSources.length > 0) {
+      borderRect = [spyGlass.position[0]- spyGlassSize / 2, spyGlass.position[1] - spyGlassSize / 2, spyGlassSize, spyGlassSize]
+    }
+    setBorderRect(borderRect)
+    
+    map?.render()
+  }, [spyGlass, layerConfig.comparisonSources]);
 
   React.useEffect(() => {
     if (!map) return;
 
+    console.log('Modifying layers:')
     // Remove previous layers
     const previousLayers = [] as Layer<any>[]
     map.getLayers().forEach((l : Layer<any>) => previousLayers.push(l))
     map.getLayers().clear();
     previousLayers.forEach(l => l.dispose())
-
+    console.log(' - removed '+previousLayers.length+' layers')
     // adds bands together for a single color value
     function sumBands(sources: { url: string, color: number }[], targetColor: number) {
       return sources.reduce((memo, source, i) => {
@@ -158,7 +248,7 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
       }, 0 as any)
     }
 
-    const layers = layerConfig.sources.map(sources => {
+    const sourcesToLayer = (sources : any) => {
       return new TileLayer({
         style: {
           color:
@@ -184,26 +274,24 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
           opaque: false
         })
       })
-    })
-    
-    map.getLayers().extend(layers)
-    
-  }, [map, layerConfig]);
-
-  React.useEffect(() => {
-    // Anything in here is fired on component mount.
-    return () => {
-        // Anything in here is fired on component unmount.
-        console.log('OL unmount!');
-        const oldLayers = map?.getLayers() || [];
-        oldLayers.forEach((l: any) => { l.getSource().clear(); l.setSource(undefined); map?.removeLayer(l) })
-        map?.setTarget(null)
     }
-  }, [])
+
+    const layers = layerConfig.sources.map(sourcesToLayer)
+    const comparisonLayers = layerConfig.comparisonSources.map(sourcesToLayer)
+
+    comparisonLayers.forEach(layer => {
+      layer.on('prerender', spyglassPreRender)
+      layer.on('postrender', spyglassPostRender)
+    })
+        
+    map.getLayers().extend([...layers, ...comparisonLayers])
+
+  }, [map, layerConfig]);
 
   const classes = useStyles()
   return (
     <div ref={mapRef as any} className={classes.mapContainer}>
+      <SpyGlassBorderCanvas borderRect={borderRect} />
       <div className={classes.crossHair}>
         <div className={classes.flexOne}>
           <div className={classes.flexOneInner}></div>
@@ -223,7 +311,7 @@ const OpenLayersMap: React.FC<Props> = ({ items, datasetCatalog, channelSettings
 const useStyles = makeStyles(() =>
   createStyles({
     mapContainer: {
-      heigh: '100%',
+      height: '100%',
       width: '100%',
       border: 'solid black 1px',
       background: 'black'
