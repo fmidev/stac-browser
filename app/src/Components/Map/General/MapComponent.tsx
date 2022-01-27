@@ -74,9 +74,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const [comparisonItemObject, setComparisonItemObject] = React.useState({ items: [] } as { items: any });
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
 
-  const [graphData, setGraphData] = React.useState<any>({ data: [] as any[], labels: [] as string[], colors: [] as string[]});
+  const [graphData, setGraphData] = React.useState<any>([]);
 
-  
+
   const showGraph = () => {
     dispatch(setGraphState({graphIsOpen: !graphIsOpen, index: mapComponentIndex}))
   }
@@ -224,7 +224,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             top: '10', 
             }}>
             {graphIsOpen && 
-            ((graphData.data.length === 0 ) ? Loading() : 
+            ((graphData.length === 0 ) ? Loading() : 
             <div className={classes.graphContainer}>
               <GraphedView graphData={graphData} mapComponentIndex={mapComponentIndex} 
               >
