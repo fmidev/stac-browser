@@ -73,8 +73,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const [itemObject, setItemObject] = React.useState({ items: [] } as { items: any });
   const [comparisonItemObject, setComparisonItemObject] = React.useState({ items: [] } as { items: any });
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
-  const [graphData, setGraphData] = React.useState<any>([]);
-  const [labels, setLabel] = React.useState([] as string[])
+  const [graphData, setGraphData] = React.useState<any>({ data: [] as any[], labels: [] as string[], colors: [] as string[]});
   const [active, setActive] = React.useState<boolean>(false)
 
   const showGraph = () => {
@@ -114,8 +113,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
       if (!selectedDataset) {
       return 
     }
-    const bands = ['R','G','B'].map(color => mapObject.channelSettings[color]).filter(band => !!band)
-    setLabel(bands)
+    const bands = ['R','G','B'].map(color => mapObject.channelSettings[color])
 
     const startDate = new Date(inspectionDate)
     const endDate = new Date(inspectionDate)
@@ -137,8 +135,8 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     }
     getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
-      const d = data.map((d: any) => [d[0], d[1], d[2], d[3], null])
-      setGraphData(d)
+      const d = data.map((d: any) => [...d, null])
+      setGraphData({data: d, labels: bands, colors: ["#DC143C","#32CD32","#0000FF"]})
     })
   }
   }, [
@@ -224,11 +222,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             marginTop:'1rem'
             }}>
             {graphIsOpen && 
-            ((graphData.length === 0 ) ? Loading() : 
+            ((graphData.data.length === 0 ) ? Loading() : 
             <div className={classes.graphContainer}>
-              <GraphedView 
-              data={graphData} 
-              label={labels} mapComponentIndex={mapComponentIndex} 
+              <GraphedView graphData={graphData} mapComponentIndex={mapComponentIndex} 
               >
                 <div>
                   <button 

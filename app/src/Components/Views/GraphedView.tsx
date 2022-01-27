@@ -7,8 +7,11 @@ import { Grid } from '@material-ui/core';
 import { setComparisonDate } from '../../Store/Actions/data'
 
 interface Props {
-  data: any[],
-  label: string[], 
+  graphData: {
+    data: any[],
+    labels: string[],
+    colors: string[]
+  },
   mapComponentIndex: number,
   children: JSX.Element,
   twoMonths?:  React.MouseEventHandler,
@@ -17,7 +20,7 @@ interface Props {
 }
 
 //GraphView component start
-const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, fourMonths, sixMonths, children}: Props) => {
+const Dygraphed: React.FC<Props> = ({graphData, mapComponentIndex, twoMonths, fourMonths, sixMonths, children}: Props) => {
   const inspectionDate = useSelector((state: RootState) => state.dataReducer.data.global.inspectionDate)
   const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].comparisonDate)
   const graphTimeSpan = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].graphTimeSpan)
@@ -57,9 +60,6 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
   }
 
   const graphInit = () => {
-    const serieOne = label[0]
-    const serieTwo = label[1]
-    const serieThree = label[2]
 
     const annotation: any = [{
       series: '',
@@ -74,29 +74,16 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
     let graph_initialized = false;
     if (!graphRef.current) throw Error("graphRef is not assigned");
     const graph = new Dygraph(graphRef.current,
-    data, 
+      graphData.data, 
     {
     width: 600,
     legend: "follow",
     highlightCircleSize: 5,
-    colors: ["#DC143C","#32CD32","#0000FF", '#000111'],
+    colors: [...graphData.colors, '#000111'],
     animatedZooms: true,
     visibility: [true, true, true, true],
-    labels: ['Date', serieOne, serieTwo, serieThree, ''],
-    series: {
-      serieOne: {
-        axis: 'y1'
-      },
-      serieTwo: {
-        axis: 'y1'
-      },
-      serieThree: {
-        axis: 'y1'
-      },
-      '': {
-        axis: 'y2'
-      }
-    },
+    labels: ['Date', ...graphData.labels, ''],
+    series: graphData.labels.reduce((memo : any, label) => { memo[label] = { axis: 'y1'}; return memo; }, { '': { axis: 'y2' }}),
     clickCallback: function(e: any, x: any, points: any){
       console.log(e, 'X: ', x, points )
     },
@@ -130,19 +117,19 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
   }
   React.useEffect(() => {
   console.log('UseEffect 1')
-  if (!data || data.length === 0) return;
-  
-  const entryAfterInspectionData = data.find((arr) => arr[0].getTime() > new Date(inspectionDate).getTime())
+  if (!graphData.data || graphData.data.length === 0) return;
+  console.log(graphData.data[0])
+  const entryAfterInspectionData = graphData.data.find((arr) => arr[0].getTime() > new Date(inspectionDate).getTime())
   //console.log('entryAfterInspectionData', entryAfterInspectionData, inspectionDate)
-  const insertIndex = entryAfterInspectionData ? data.indexOf(new Date(entryAfterInspectionData)) : data.length
+  const insertIndex = entryAfterInspectionData ? graphData.data.indexOf(new Date(entryAfterInspectionData)) : graphData.data.length
   //console.log(insertIndex)
-  data.splice(insertIndex,0, [new Date(inspectionDate), null, null, null, 1])
+  graphData.data.splice(insertIndex,0, [new Date(inspectionDate), null, null, null, 1])
 
   graphInit()
   
  }, [
    inspectionDate,
-   data,
+   graphData,
  ])
 
  React.useEffect(() => {
@@ -150,7 +137,7 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
   const ann = graph.annotations()
     if(comparisonDate ){
       ann.push({
-        series: label[0],
+        series: graphData.labels[0],
         x: new Date(comparisonDate).getTime(),
         shortText: 'C',
         text: 'Valkoinen',
@@ -165,7 +152,7 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
  }, [
    comparisonDate, 
    graphTimeSpan, 
-   data])
+   graphData])
 
    // This function should resize map when sidebar is opened or closed
   React.useEffect(() => {

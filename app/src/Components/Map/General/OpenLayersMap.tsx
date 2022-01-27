@@ -283,8 +283,8 @@ const OpenLayersMap: React.FC<Props> = ({ items, comparisonItems, datasetCatalog
       layer.on('prerender', spyglassPreRender)
       layer.on('postrender', spyglassPostRender)
     })
+        
     map.getLayers().extend([...layers, ...comparisonLayers])
-    console.log(' - added '+layers.length+' / '+comparisonLayers.length+' layers')
 
   }, [map, layerConfig]);
 
