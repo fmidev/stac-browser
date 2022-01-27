@@ -98,9 +98,10 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
       }
     },
     clickCallback: function(e: any, x: any, points: any){
-      console.log(e, 'X: ', x, points )
+      console.log(points[0].xval, points[0].yval, x)
+      dispatch(setComparisonDate({comparisonDate: x, index: mapComponentIndex}))
     },
-    pointClickCallback: pointClicked,
+    // pointClickCallback: pointClicked,
     legendFormatter: legendFormatter,
     axes: {
       x:{
@@ -178,33 +179,7 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
   }, [sidebarIsOpen])
 
   return (
-    <div style={{width: '100%', margin: '0rem auto'}}>
-      {/* <div>
-        <button 
-          onClick={twoMonths} 
-          style={{
-            marginRight: '4px',
-            border: 'solid 	rgb(211,211,211) 1px',
-            padding: '3px 6px'
-            }}>2 kk
-        </button>
-        <button 
-          onClick={fourMonths} 
-          style={{
-            marginRight: '4px',
-            border: 'solid 	rgb(211,211,211) 1px', 
-            padding: '3px 6px'}}>4 kk
-        </button>
-        <button 
-          onClick={
-            sixMonths
-            
-          } 
-          style={{
-            border: 'solid 	rgb(211,211,211) 1px',
-            padding: '3px 6px'}}>6 kk
-        </button>
-      </div> */}
+    <div style={{width: '100%', margin: '0rem auto', paddingTop: '0rem'}}>
       <div>{children}</div>
       <Grid ref={graphRef} className={classes.container}>
       </Grid>
@@ -217,7 +192,7 @@ const useStyles = makeStyles((theme) =>
     container: {
       height: '100%',
       width: '100%',
-      margin: '1rem auto 1rem -1.2rem'
+      margin: '1rem auto 1rem 1rem'
     },
   }),
 )

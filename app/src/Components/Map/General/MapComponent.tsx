@@ -74,7 +74,10 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
   const [graphData, setGraphData] = React.useState<any>([]);
   const [labels, setLabel] = React.useState([] as string[])
-  const [active, setActive] = React.useState<boolean>(false)
+  const [activeTwo, setActiveTwo] = React.useState<boolean>(false)
+  const [activeFour, setActiveFour] = React.useState<boolean>(false)
+  const [activeSix, setActiveSix] = React.useState<boolean>(false)
+
 
   const showGraph = () => {
     dispatch(setGraphState({graphIsOpen: !graphIsOpen, index: mapComponentIndex}))
@@ -210,7 +213,6 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             width: '100%', 
             position: 'relative', 
             top: '10', 
-            marginTop:'1rem'
             }}>
             {graphIsOpen && 
             ((graphData.length === 0 ) ? Loading() : 
@@ -219,43 +221,56 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
               data={graphData} 
               label={labels} mapComponentIndex={mapComponentIndex} 
               >
-                <div>
+                <div style={{marginTop: '1rem'}}>
                   <button 
                     onClick={
                       () => {
                       dispatch(setGraphTimeSpan({graphTimeSpan: 2, index: mapComponentIndex}))
-                      setActive(!active)
+                      /* setActiveFour(false)
+                      setActiveSix(false)
+                      setActiveTwo(true) */
                       }} 
                     style={{
                       marginRight: '4px',
                       border: 'solid 	rgb(211,211,211) 1px',
-                      padding: '3px 6px'
+                      padding: '4px 8px',
+                      fontWeight: 600,
                       }}
-                      className={active === true ? classes.buttonBg : undefined}>2 kk
+                      className={graphTimeSpan === 2 ? classes.buttonBg : undefined}>2 kk
                   </button>
                   <button 
                     onClick={
                       () => {
                       dispatch(setGraphTimeSpan({graphTimeSpan: 4, index: mapComponentIndex}))
-                      setActive(!active)
+                      /* setActiveTwo(false)
+                      setActiveSix(false)
+                      setActiveFour(true) */
                       }
                     } 
                     style={{
                       marginRight: '4px',
-                      border: 'solid 	rgb(211,211,211) 1px', 
-                      padding: '3px 6px'}}
+                      border: 'solid rgb(211,211,211) 1px', 
+                      padding: '4px 8px',
+                      fontWeight: 600,
+                    }}
+                      className={graphTimeSpan === 4 ? classes.buttonBg : undefined}
                       >4 kk
                   </button>
                   <button 
                     onClick={
                       () => {
                         dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))
+                       /*  setActiveTwo(false)
+                        setActiveFour(false)
+                        setActiveSix(true) */
                       }
                     } 
                     style={{
-                      border: 'solid 	rgb(211,211,211) 1px',
-                      padding: '3px 6px'}}
-                      >6 kk
+                      border: 'solid rgb(211,211,211) 1px',
+                      padding: '4px 8px',
+                      fontWeight: 600,
+                    }}
+                      className={graphTimeSpan === 6 ? classes.buttonBg : undefined}>6 kk
                   </button>
                 </div> 
               </GraphedView>
@@ -315,16 +330,21 @@ const useStyles = makeStyles(() =>
     },
     graphContainer: {
       position: 'relative',
-      top: 10,
+      top: 0,
+      marginTop: 0,
       zIndex: 100, 
       backgroundColor: 'white',
-      marginTop: '1rem',
       marginBottom: '4rem',
-      borderBottom: 'solid 	rgb(211,211,211) 1px',
+      border: 'solid 	rgb(211,211,211) 1px',
       width: '100%',
+      webkitBoxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
+      mozBoxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
+      boxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
     },
     buttonBg: {
-      backgroundColor: 'blue'
+      backgroundColor: '#558F6E',
+      color: 'white', 
+      border: '1px solid #558F6E',
     }
   }))
 
