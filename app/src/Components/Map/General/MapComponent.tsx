@@ -75,6 +75,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
   const [graphData, setGraphData] = React.useState<any>([]);
   const [labels, setLabel] = React.useState([] as string[])
+  const [active, setActive] = React.useState<boolean>(false)
 
   const showGraph = () => {
     dispatch(setGraphState({graphIsOpen: !graphIsOpen, index: mapComponentIndex}))
@@ -215,17 +216,60 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             </GraphAccordion>
           </div>
         </div>
-        <div style={{width: '100%'}}>
+        <div 
+            style={{
+            width: '100%', 
+            position: 'relative', 
+            top: '10', 
+            marginTop:'1rem'
+            }}>
             {graphIsOpen && 
             ((graphData.length === 0 ) ? Loading() : 
             <div className={classes.graphContainer}>
               <GraphedView 
               data={graphData} 
               label={labels} mapComponentIndex={mapComponentIndex} 
-              twoMonths={() => dispatch(setGraphTimeSpan({graphTimeSpan: 2, index: mapComponentIndex}))}
-              fourMonths={() => dispatch(setGraphTimeSpan({graphTimeSpan: 4, index: mapComponentIndex}))}
-              sixMonths={() => dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))}
-              />
+              >
+                <div>
+                  <button 
+                    onClick={
+                      () => {
+                      dispatch(setGraphTimeSpan({graphTimeSpan: 2, index: mapComponentIndex}))
+                      setActive(!active)
+                      }} 
+                    style={{
+                      marginRight: '4px',
+                      border: 'solid 	rgb(211,211,211) 1px',
+                      padding: '3px 6px'
+                      }}
+                      className={active === true ? classes.buttonBg : undefined}>2 kk
+                  </button>
+                  <button 
+                    onClick={
+                      () => {
+                      dispatch(setGraphTimeSpan({graphTimeSpan: 4, index: mapComponentIndex}))
+                      setActive(!active)
+                      }
+                    } 
+                    style={{
+                      marginRight: '4px',
+                      border: 'solid 	rgb(211,211,211) 1px', 
+                      padding: '3px 6px'}}
+                      >4 kk
+                  </button>
+                  <button 
+                    onClick={
+                      () => {
+                        dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))
+                      }
+                    } 
+                    style={{
+                      border: 'solid 	rgb(211,211,211) 1px',
+                      padding: '3px 6px'}}
+                      >6 kk
+                  </button>
+                </div> 
+              </GraphedView>
             </div>)
             }
         </div>
@@ -289,6 +333,9 @@ const useStyles = makeStyles(() =>
       marginBottom: '4rem',
       borderBottom: 'solid 	rgb(211,211,211) 1px',
       width: '100%',
+    },
+    buttonBg: {
+      backgroundColor: 'blue'
     }
   }))
 

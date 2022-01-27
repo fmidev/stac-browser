@@ -51,7 +51,7 @@ const GraphAccordion: React.FC<Props> = ({name, isExpanded, onClick}) => {
     root: {
     backgroundColor: 'rgba(0, 0, 0, .03)',
       marginBottom: -1,
-      minHeight: 83,
+      minHeight: 84,
       '&$expanded': {
         minHeight: 84,
       },
@@ -71,7 +71,6 @@ const GraphAccordion: React.FC<Props> = ({name, isExpanded, onClick}) => {
       width: '100%',
       padding: theme.spacing(0),
       fontSize: 'calc(8px + 2 * ((100vw - 320px) / 680))' ,
-
     },
   }))(MuiAccordionDetails);
   
