@@ -152,6 +152,10 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   ])
 
   const itemsTemporalInterval = calculateItemsTemporalInterval(itemObject)
+  const comparisonItemsTemporalInterval = calculateItemsTemporalInterval(comparisonItemObject)
+
+  const visibleTemporalInterval = itemsTemporalInterval + ' (spy: '+(comparisonItemsTemporalInterval === itemsTemporalInterval ? 'same' : comparisonItemsTemporalInterval)+')'
+  
 
   let catalogTemporalInterval = '';
   if (datasetCatalog?.extent?.temporal?.interval) {
@@ -186,11 +190,11 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
               bottom: '0px', 
               padding: '0.5em', 
               color: '#ffffffaa', 
-              pointerEvents: 'auto', 
+              pointerEvents: 'none', 
               filter: 'drop-shadow(0px 0px 5px black)'
             }}
           >
-            {itemsTemporalInterval}
+            {visibleTemporalInterval}
           </div>
           <OpenLayersMap datasetCatalog={datasetCatalog} items={itemObject.items} comparisonItems={comparisonItemObject.items} channelSettings={mapObject.channelSettings} />
         </div>

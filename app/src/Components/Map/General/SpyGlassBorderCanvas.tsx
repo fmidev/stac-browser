@@ -9,6 +9,9 @@ const SpyGlassBorderCanvas: React.FC<Props> = ({ children, borderRect }) => {
 
     const canvasRef = React.useRef<HTMLCanvasElement>()
 
+    const lineWidth = 2.5
+    const borderColor = '#993333'
+
     React.useEffect(() => {
         if (!canvasRef || !canvasRef.current) return;
 
@@ -28,9 +31,9 @@ const SpyGlassBorderCanvas: React.FC<Props> = ({ children, borderRect }) => {
 
         try {
             ctx.beginPath();
-            ctx.lineWidth = 1
-            ctx.strokeStyle = "red";
-            ctx.rect(borderRect[0], borderRect[1], borderRect[2], borderRect[3]);
+            ctx.lineWidth = lineWidth
+            ctx.strokeStyle = borderColor;
+            ctx.rect(borderRect[0] - lineWidth/2, borderRect[1] - lineWidth/2, borderRect[2] + lineWidth * 1.5, borderRect[3] + lineWidth * 1.5);
             ctx.stroke();
         } finally {
             ctx.restore();
