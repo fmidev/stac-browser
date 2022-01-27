@@ -10,18 +10,19 @@ interface Props {
   data: any[],
   label: string[], 
   mapComponentIndex: number,
+  children: JSX.Element,
   twoMonths?:  React.MouseEventHandler,
   fourMonths?: React.MouseEventHandler,
   sixMonths?: React.MouseEventHandler
 }
 
 //GraphView component start
-const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, fourMonths, sixMonths}: Props) => {
-  const graphRef = React.useRef<HTMLDivElement>(null)
+const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, fourMonths, sixMonths, children}: Props) => {
   const inspectionDate = useSelector((state: RootState) => state.dataReducer.data.global.inspectionDate)
   const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].comparisonDate)
   const graphTimeSpan = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].graphTimeSpan)
   const sidebarIsOpen = useSelector((state: any) => state.dataReducer.data.global.sidebarIsOpen)
+  const graphRef = React.useRef<HTMLDivElement>(null)
 
   //const bands = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].derivedData.bands)
   //const [bands, setBands] = React.useState([] as [])
@@ -66,7 +67,7 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
       shortText: 'I',
       text: 'Valkoinen',
       cssClass: 'annotation',
-      tickHeight: 145,
+      tickHeight: 138,
       attachAtBottom: true,
     }];
   
@@ -95,6 +96,9 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
       '': {
         axis: 'y2'
       }
+    },
+    clickCallback: function(e: any, x: any, points: any){
+      console.log(e, 'X: ', x, points )
     },
     pointClickCallback: pointClicked,
     legendFormatter: legendFormatter,
@@ -174,8 +178,8 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
   }, [sidebarIsOpen])
 
   return (
-    <div style={{width: '100%'}}>
-      <div style={{}}>
+    <div style={{width: '100%', margin: '0rem auto'}}>
+      {/* <div>
         <button 
           onClick={twoMonths} 
           style={{
@@ -192,12 +196,16 @@ const Dygraphed: React.FC<Props> = ({data, label, mapComponentIndex, twoMonths, 
             padding: '3px 6px'}}>4 kk
         </button>
         <button 
-          onClick={sixMonths} 
+          onClick={
+            sixMonths
+            
+          } 
           style={{
             border: 'solid 	rgb(211,211,211) 1px',
             padding: '3px 6px'}}>6 kk
         </button>
-      </div>
+      </div> */}
+      <div>{children}</div>
       <Grid ref={graphRef} className={classes.container}>
       </Grid>
     </div>
@@ -209,7 +217,7 @@ const useStyles = makeStyles((theme) =>
     container: {
       height: '100%',
       width: '100%',
-      margin: '1rem auto 0.3rem -1.3rem'
+      margin: '1rem auto 1rem -1.2rem'
     },
   }),
 )
