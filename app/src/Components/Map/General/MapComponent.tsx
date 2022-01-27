@@ -71,6 +71,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [itemObject, setItemObject] = React.useState({ items: [] } as { items: any });
+  const [comparisonItemObject, setComparisonItemObject] = React.useState({ items: [] } as { items: any });
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
   const [graphData, setGraphData] = React.useState<any>([]);
   const [labels, setLabel] = React.useState([] as string[])
@@ -93,12 +94,18 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   React.useEffect(() => {
     if (inspectionDate && selectedDataset) {
       getItemsForDatasetAndTime(selectedDataset, inspectionDate).then((ret: any) => {
-        setItemObject(() => {
-          return ret
-        })
+        setItemObject(ret)
       })
     }
   }, [selectedDataset, inspectionDate])
+
+  React.useEffect(() => {
+    if (comparisonDate && selectedDataset) {
+      getItemsForDatasetAndTime(selectedDataset, comparisonDate).then((ret: any) => {
+        setComparisonItemObject(ret)
+      })
+    }
+  }, [selectedDataset, comparisonDate])
 
   // Graph useEffect
   React.useEffect(() => {
@@ -185,7 +192,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
           >
             {itemsTemporalInterval}
           </div>
-          <OpenLayersMap datasetCatalog={datasetCatalog} items={itemObject.items} channelSettings={mapObject.channelSettings} />
+          <OpenLayersMap datasetCatalog={datasetCatalog} items={itemObject.items} comparisonItems={comparisonItemObject.items} channelSettings={mapObject.channelSettings} />
         </div>
         <div className={classes.menuContainer}>
           <div className={classes.dropDown} style={{width: '35%'}}>
