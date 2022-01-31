@@ -63,7 +63,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const inspectionDate = useSelector((state: RootState): string => state.dataReducer.data.global.inspectionDate)
   const center = useSelector((state: RootState) : number[] => state.dataReducer.data.global.mapExtent.center)
   const resolution = useSelector((state: RootState) : number => state.dataReducer.data.global.mapExtent.resolution)
-  const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].comparisonDate)
+  const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.global.comparisonDate)
   const selectedDataset = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].selectedDataset)
   const graphIsOpen = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].graphIsOpen)
   const graphTimeSpan = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].graphTimeSpan)
@@ -73,7 +73,6 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const [itemObject, setItemObject] = React.useState({ items: [] } as { items: any });
   const [comparisonItemObject, setComparisonItemObject] = React.useState({ items: [] } as { items: any });
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
-
   const [graphData, setGraphData] = React.useState<any>([]);
 
 
@@ -226,16 +225,13 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             {graphIsOpen && 
             ((graphData.length === 0 ) ? Loading() : 
             <div className={classes.graphContainer}>
-              <GraphedView graphData={graphData} mapComponentIndex={mapComponentIndex} 
+              <GraphedView graphData={graphData}
               >
                 <div style={{marginTop: '1rem'}}>
                   <button 
                     onClick={
                       () => {
                       dispatch(setGraphTimeSpan({graphTimeSpan: 2, index: mapComponentIndex}))
-                      /* setActiveFour(false)
-                      setActiveSix(false)
-                      setActiveTwo(true) */
                       }} 
                     style={{
                       marginRight: '4px',
@@ -249,9 +245,6 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
                     onClick={
                       () => {
                       dispatch(setGraphTimeSpan({graphTimeSpan: 4, index: mapComponentIndex}))
-                      /* setActiveTwo(false)
-                      setActiveSix(false)
-                      setActiveFour(true) */
                       }
                     } 
                     style={{
@@ -267,9 +260,6 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
                     onClick={
                       () => {
                         dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))
-                       /*  setActiveTwo(false)
-                        setActiveFour(false)
-                        setActiveSix(true) */
                       }
                     } 
                     style={{

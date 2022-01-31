@@ -23,7 +23,6 @@ export interface Global {
   comparisonDate: string
   fullScreen: string
   mapSize: string
-  //graphTimeSpan: number
 }
 
 export interface MapExtent {
@@ -57,7 +56,6 @@ export interface Map {
   panelBarSettings: PanelBarSettings
   derivedData: DerivedData
   graphIsOpen: boolean
-  comparisonDate: string
   graphTimeSpan: number
 }
 

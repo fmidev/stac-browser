@@ -125,8 +125,7 @@ const dataReducer = createReducer(initialState, {
   SET_COMPARISON_DATE: (state, action) => {
     debug('Reducer: Setting comparison date in reducer')
     debug('Reducer: Action payload: ', action.payload)
-    // state.data.global.comparisonDate = action.payload.comparisonDate
-    state.data.maps[action.payload.index].comparisonDate = action.payload.comparisonDate
+    state.data.global.comparisonDate = action.payload.comparisonDate
   },
   SET_GRAPH_STATE: (state, action) => {
     debug('Reducer: Setting sidebar state in Reducer')

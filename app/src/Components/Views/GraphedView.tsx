@@ -12,7 +12,6 @@ interface Props {
     labels: string[],
     colors: string[]
   },
-  mapComponentIndex: number,
   children: JSX.Element,
   twoMonths?:  React.MouseEventHandler,
   fourMonths?: React.MouseEventHandler,
@@ -20,10 +19,9 @@ interface Props {
 }
 
 //GraphView component start
-const Dygraphed: React.FC<Props> = ({graphData, mapComponentIndex, twoMonths, fourMonths, sixMonths, children}: Props) => {
+const Dygraphed: React.FC<Props> = ({graphData, children}: Props) => {
   const inspectionDate = useSelector((state: RootState) => state.dataReducer.data.global.inspectionDate)
-  const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].comparisonDate)
-  const graphTimeSpan = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].graphTimeSpan)
+  const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.global.comparisonDate)
   const sidebarIsOpen = useSelector((state: any) => state.dataReducer.data.global.sidebarIsOpen)
   const graphRef = React.useRef<HTMLDivElement>(null)
 
@@ -56,11 +54,10 @@ const Dygraphed: React.FC<Props> = ({graphData, mapComponentIndex, twoMonths, fo
   }
 
   function pointClicked(e: any, point: any){
-    dispatch(setComparisonDate({comparisonDate: point.xval, index: mapComponentIndex}))
+    dispatch(setComparisonDate({comparisonDate: point.xval}))
   }
 
   const graphInit = () => {
-
     const annotation: any = [{
       series: '',
       x: new Date(inspectionDate).getTime(),
@@ -76,7 +73,7 @@ const Dygraphed: React.FC<Props> = ({graphData, mapComponentIndex, twoMonths, fo
     const graph = new Dygraph(graphRef.current,
       graphData.data, 
     {
-    width: 600,
+    width: 500,
     legend: "follow",
     highlightCircleSize: 5,
     colors: [...graphData.colors, '#000111'],
@@ -85,8 +82,8 @@ const Dygraphed: React.FC<Props> = ({graphData, mapComponentIndex, twoMonths, fo
     labels: ['Date', ...graphData.labels, ''],
     series: graphData.labels.reduce((memo : any, label) => { memo[label] = { axis: 'y1'}; return memo; }, { '': { axis: 'y2' }}),
     clickCallback: function(e: any, x: any, points: any){
-      console.log(points[0].xval, points[0].yval, x)
-      dispatch(setComparisonDate({comparisonDate: x, index: mapComponentIndex}))
+      console.log(points[0].xval)
+      dispatch(setComparisonDate({comparisonDate: x}))
     },
     // pointClickCallback: pointClicked,
     legendFormatter: legendFormatter,
@@ -116,18 +113,18 @@ const Dygraphed: React.FC<Props> = ({graphData, mapComponentIndex, twoMonths, fo
     })
     return graph;
   }
-  React.useEffect(() => {
-  console.log('UseEffect 1')
-  if (!graphData.data || graphData.data.length === 0) return;
-  console.log(graphData.data[0])
-  const entryAfterInspectionData = graphData.data.find((arr) => arr[0].getTime() > new Date(inspectionDate).getTime())
-  //console.log('entryAfterInspectionData', entryAfterInspectionData, inspectionDate)
-  const insertIndex = entryAfterInspectionData ? graphData.data.indexOf(new Date(entryAfterInspectionData)) : graphData.data.length
-  //console.log(insertIndex)
-  graphData.data.splice(insertIndex,0, [new Date(inspectionDate), null, null, null, 1])
 
-  graphInit()
-  
+  React.useEffect(() => {
+    console.log('UseEffect 1')
+    if (!graphData.data || graphData.data.length === 0) return;
+    //console.log(graphData.data[0])
+    const entryAfterInspectionData = graphData.data.find((arr) => arr[0].getTime() > new Date(inspectionDate).getTime())
+    //console.log('entryAfterInspectionData', entryAfterInspectionData, inspectionDate)
+    const insertIndex = entryAfterInspectionData ? graphData.data.indexOf(new Date(entryAfterInspectionData)) : graphData.data.length
+    //console.log(insertIndex)
+    graphData.data.splice(insertIndex,0, [new Date(inspectionDate), null, null, null, 1])
+    const g = graphInit()
+   
  }, [
    inspectionDate,
    graphData,
@@ -149,11 +146,11 @@ const Dygraphed: React.FC<Props> = ({graphData, mapComponentIndex, twoMonths, fo
     }
 
   graph.setAnnotations(ann)
-  console.log(graph.annotations())
+  //console.log(graph.annotations())
  }, [
    comparisonDate, 
-   graphTimeSpan, 
-   graphData])
+   graphData,
+  ])
 
    // This function should resize map when sidebar is opened or closed
   React.useEffect(() => {
@@ -161,7 +158,7 @@ const Dygraphed: React.FC<Props> = ({graphData, mapComponentIndex, twoMonths, fo
       graphInit().resize(500, 280)
     }
     if(!sidebarIsOpen){
-      graphInit().resize(600, 300)
+      graphInit().resize(550, 300)
     }
   }, [sidebarIsOpen])
 
@@ -179,11 +176,10 @@ const useStyles = makeStyles((theme) =>
     container: {
       height: '100%',
       width: '100%',
-      margin: '1rem auto 1rem 1rem'
+      margin: '1rem auto 1rem 0rem'
     },
   }),
 )
-
 
 export default Dygraphed
 
