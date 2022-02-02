@@ -13,6 +13,7 @@ import { getAllDatasets, getItemsForDatasetAndTime, getTimeseries } from '../../
 import VisualizationAccordion from './VisualizationAccordion'
 import GraphedView from '../../Views/GraphedView'
 import GraphAccordion from './GraphAccordion'
+import Graph from '../../Views/Graph'
 
 interface Props {
   mapObject: Map,
@@ -75,7 +76,6 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
   const [graphData, setGraphData] = React.useState<any>([]);
 
-
   const showGraph = () => {
     dispatch(setGraphState({graphIsOpen: !graphIsOpen, index: mapComponentIndex}))
   }
@@ -135,9 +135,8 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     }
     getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
-      const d = data.map((d: any) => [...d, null])
+      const d = data.map((d: any) => [...d])
       const bandIds = bands.map((b,i) => b+'-'+['R','G','B'][i])
-      console.log('bands', bandIds, 'data', data[0])
       setGraphData({data: d, labels: bandIds, colors: ["#DC143C","#32CD32","#0000FF"]})
     })
   }
@@ -145,11 +144,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     graphIsOpen, 
     graphTimeSpan, 
     selectedDataset, 
-    inspectionDate,
     center, 
     resolution, 
     mapObject.channelSettings,
-    comparisonDate
   ])
 
   const itemsTemporalInterval = calculateItemsTemporalInterval(itemObject)
@@ -225,8 +222,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             {graphIsOpen && 
             ((graphData.length === 0 ) ? Loading() : 
             <div className={classes.graphContainer}>
-              <GraphedView graphData={graphData}
-              >
+             {<Graph graphData={graphData} 
+             /* comparisons={new Date(comparisonDate).getTime()} */
+             mapComponentIndex={mapComponentIndex}>
                 <div style={{marginTop: '1rem'}}>
                   <button 
                     onClick={
@@ -270,10 +268,10 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
                       className={graphTimeSpan === 6 ? classes.buttonBg : undefined}>6 kk
                   </button>
                 </div> 
-              </GraphedView>
+              </Graph>}
             </div>)
             }
-        </div>
+        </div>        
     </div>
   )
 }

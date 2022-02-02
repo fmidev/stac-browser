@@ -16,7 +16,6 @@ const initialState: ReduxState = {
       comparisonDate: "",
       fullScreen: "",
       mapSize: "",
-      //graphTimeSpan: 0,
     },
     maps: []
   },

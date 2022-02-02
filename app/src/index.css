@@ -57,7 +57,7 @@ code {
 }
 
 .dygraph-default-annotation {
-  border: 1px solid black;
+  border: 0.3px solid black;
   background-color: white;
   text-align: center;
 }

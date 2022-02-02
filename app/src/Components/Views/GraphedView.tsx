@@ -15,18 +15,16 @@ interface Props {
   children: JSX.Element,
   twoMonths?:  React.MouseEventHandler,
   fourMonths?: React.MouseEventHandler,
-  sixMonths?: React.MouseEventHandler
+  sixMonths?: React.MouseEventHandler,
+  comparisons: number,
 }
 
 //GraphView component start
-const Dygraphed: React.FC<Props> = ({graphData, children}: Props) => {
+const Dygraphed: React.FC<Props> = ({graphData, children, comparisons}: Props) => {
   const inspectionDate = useSelector((state: RootState) => state.dataReducer.data.global.inspectionDate)
-  const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.global.comparisonDate)
   const sidebarIsOpen = useSelector((state: any) => state.dataReducer.data.global.sidebarIsOpen)
   const graphRef = React.useRef<HTMLDivElement>(null)
-
-  //const bands = useSelector((state: RootState) => state.dataReducer.data.maps[mapComponentIndex].derivedData.bands)
-  //const [bands, setBands] = React.useState([] as [])
+  const [graphSetup, setGraphState] = React.useState<any>();
 
   const dispatch = useDispatch()
   const classes = useStyles()
@@ -53,8 +51,13 @@ const Dygraphed: React.FC<Props> = ({graphData, children}: Props) => {
     return html;
   }
 
-  function pointClicked(e: any, point: any){
+ /*  function pointClicked(e: any, point: any){
     dispatch(setComparisonDate({comparisonDate: point.xval}))
+  }
+ */
+
+  function clickedCallBack(e: any, x: any, points: any){
+    dispatch(setComparisonDate({comparisonDate: x}))
   }
 
   const graphInit = () => {
@@ -81,10 +84,7 @@ const Dygraphed: React.FC<Props> = ({graphData, children}: Props) => {
     visibility: [true, true, true, true],
     labels: ['Date', ...graphData.labels, ''],
     series: graphData.labels.reduce((memo : any, label) => { memo[label] = { axis: 'y1'}; return memo; }, { '': { axis: 'y2' }}),
-    clickCallback: function(e: any, x: any, points: any){
-      console.log(points[0].xval)
-      dispatch(setComparisonDate({comparisonDate: x}))
-    },
+    clickCallback: clickedCallBack,
     // pointClickCallback: pointClicked,
     legendFormatter: legendFormatter,
     axes: {
@@ -111,46 +111,68 @@ const Dygraphed: React.FC<Props> = ({graphData, children}: Props) => {
       }
       }
     })
+    setGraphState(graph)
     return graph;
   }
 
   React.useEffect(() => {
     console.log('UseEffect 1')
     if (!graphData.data || graphData.data.length === 0) return;
-    //console.log(graphData.data[0])
     const entryAfterInspectionData = graphData.data.find((arr) => arr[0].getTime() > new Date(inspectionDate).getTime())
-    //console.log('entryAfterInspectionData', entryAfterInspectionData, inspectionDate)
     const insertIndex = entryAfterInspectionData ? graphData.data.indexOf(new Date(entryAfterInspectionData)) : graphData.data.length
-    //console.log(insertIndex)
     graphData.data.splice(insertIndex,0, [new Date(inspectionDate), null, null, null, 1])
-    const g = graphInit()
-   
+    const initializeGraph = graphInit()
+    return () => {
+      if(initializeGraph){
+        initializeGraph.destroy()
+      }
+    }
  }, [
-   inspectionDate,
-   graphData,
  ])
 
  React.useEffect(() => {
-  const graph = graphInit()
-  const ann = graph.annotations()
-    if(comparisonDate ){
-      ann.push({
-        series: graphData.labels[0],
-        x: new Date(comparisonDate).getTime(),
-        shortText: 'C',
-        text: 'Valkoinen',
-        cssClass: 'annotation',
-        tickHeight: 150,
-        attachAtBottom: true,
-      })
-    }
 
-  graph.setAnnotations(ann)
-  //console.log(graph.annotations())
+  /*console.log(comparisons, 'date compare')
+  const ann = graphInit()
+  if(!comparisons) return;
+    if(comparisons){
+      const comparisonDateAnnotation = graphData.data.find((arr) => arr[0].getTime() ===  new Date(comparisonDate).getTime())
+      const insertedIndex = comparisonDateAnnotation ? graphData.data.indexOf(new Date(comparisonDateAnnotation)) : graphData.data.length
+      console.log(insertedIndex)
+      console.log(comparisonDateAnnotation, mapComponentIndex) 
+        
+        graphData.data.splice(insertedIndex,0, [new Date(comparisonDate), 1, null, null, null])
+        console.log(graphData) 
+        ann.push({
+          series: graphData.labels[0],
+          x: new Date(comparisons).getTime(),
+          shortText: 'C',
+          text: 'Valkoinen',
+          cssClass: 'annotation',
+          tickHeight: 150,
+          attachAtBottom: true,
+        })
+      }  
+  graphSetup.setAnnotations(ann)
+  console.log(graphSetup.annotations())*/
+  if(!comparisons) return;
+  const g = graphInit()
+  const ann = g.annotations();
+  ann.push({
+    series: graphData.labels[0],
+    x: new Date(comparisons).getTime(),
+    shortText: 'C',
+    text: 'Valkoinen',
+    cssClass: 'annotation',
+    tickHeight: 150,
+    attachAtBottom: true,
+  })
+
+  g.setAnnotations(ann)
  }, [
-   comparisonDate, 
-   graphData,
-  ])
+    graphData.data,
+    comparisons,
+  ]) 
 
    // This function should resize map when sidebar is opened or closed
   React.useEffect(() => {

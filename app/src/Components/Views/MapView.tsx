@@ -19,8 +19,10 @@ const MapView: React.FC = () => {
   const mapData = useSelector((state: RootState) => state.dataReducer.data.maps)
 
   const payload = {
+   
     "mapObject": {
       "id": createMapId(),
+      "graphTimeSpan": 6,
       "selectedDataset": null,
       "channelSettings": {
         "R": null,
@@ -65,8 +67,7 @@ const MapView: React.FC = () => {
             <Grid key={mapObject.id} container direction='column' item xs={12} md={12} lg={6} xl={4} alignItems='center' >
               <MapComponent
                 mapObject={mapObject}
-                mapComponentIndex={index}/>
-                
+                mapComponentIndex={index}/>        
             </Grid>)
         })}
       </Grid>

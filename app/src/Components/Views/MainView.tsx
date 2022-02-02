@@ -195,7 +195,6 @@ const MainView: React.FC = (props: any) => {
               </ThemeProvider>
             </div>
           </ListItem>
-
         </List>
       </Drawer>
       <div className={clsx(classes.mapContent, {
