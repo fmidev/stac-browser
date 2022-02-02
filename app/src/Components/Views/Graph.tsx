@@ -6,12 +6,14 @@ import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Grid } from '@material-ui/core';
 import { setComparisonDate } from '../../Store/Actions/data'
 
+interface GraphData {
+  data: any[],
+  labels: string[],
+  colors: string[]
+}
+
 interface Props {
-  graphData: {
-    data: any[],
-    labels: string[],
-    colors: string[]
-  },
+  graphData: GraphData,
   children: JSX.Element,
   twoMonths?:  React.MouseEventHandler,
   fourMonths?: React.MouseEventHandler,
@@ -34,7 +36,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
   }
 
   function ensureAnnotationDate (graphArray: any [], time: any) { 
-    const graphDataTime = graphArray.find((arr: any) => arr[0] === new Date(time).getTime())
+    const graphDataTime = graphArray.find((arr: any) => arr[0].getTime() === new Date(time).getTime())
     if(graphDataTime) return;
     
     const entryData= graphArray.find((arr: any) => arr[0].getTime() > new Date(time).getTime())
@@ -47,9 +49,10 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
       graphArray.splice(insertIndex,0, [new Date(time), null, null, null, 1]) */
   }
 
-  const graphInit = () => {
+  const graphInit = (graphData : GraphData) => {
     
     if (!graphRef.current) throw Error("graphRef is not assigned");
+    console.log('new g')
     const g = new Dygraph(graphRef.current,
       graphData.data, 
     {
@@ -89,9 +92,9 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
       ensureAnnotationDate(graphData.data, comparisonDate)
     }
 
-    const g = graphInit()
+    const g = graphInit(graphData)
     const annotationInit = [{
-      series: '',
+      series: graphData.labels[0],
       x: new Date(inspectionDate).getTime(),
       shortText: 'I',
       text: 'Valkoinen',
@@ -117,19 +120,20 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
    g.setAnnotations(annotationInit)
 
    return () => {
+     console.log('destroy',g)
     if(g){
       g.destroy()
     }
   } 
 
-  },
-  [
+},[
     graphData,
     inspectionDate,
     comparisonDate,
 ])
 
   // This function should resize map when sidebar is opened or closed
+  /*
   React.useEffect(() => {
     if(sidebarIsOpen){
       graphInit().resize(500, 280)
@@ -138,7 +142,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
       graphInit().resize(550, 300)
     }
   }, [sidebarIsOpen])
-
+*/
 
  return (
   <div style={{width: '100%', margin: '0rem auto', paddingTop: '0rem', height: '330px'}}>
