@@ -77,6 +77,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     const g = new Dygraph(graphRef.current,
       graphData.data, 
     {
+    width: 490,
     legend: "always",
     highlightCircleSize: 5,
     colors: [...graphData.colors],
@@ -128,13 +129,14 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     if(comparisonDate){
       annotationInit.push(
         { 
-          series: graphData.labels[0],
-          x: new Date(comparisonDate).getTime(),
-          shortText: 'C',
-          text: 'Valkoinen',
-          cssClass: 'annotation',
-          tickHeight: 120,
-          attachAtBottom: true,} 
+        series: graphData.labels[0],
+        x: new Date(comparisonDate).getTime(),
+        shortText: 'C',
+        text: 'Valkoinen',
+        cssClass: 'annotation',
+        tickHeight: 120,
+        attachAtBottom: true,
+        } 
       )
     }
     console.log('comparisonDate -:', annotationInit)
@@ -144,7 +146,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     g.resize(400, 200)
   }
   if(!sidebarIsOpen){
-    g.resize(550, 300)
+    g.resize()
   }
 
    return () => {
@@ -161,19 +163,50 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
 ])
 
  return (
-  <div style={{width: '100%', margin: '0rem auto', paddingTop: '0rem'}}>
+  <div className={classes.container}>
     <div>{children}</div>
-      <Grid ref={graphRef} className={classes.container}></Grid>
+      <div ref={graphRef} className={classes.graphContainer}></div>
   </div>
   )
 }
 const useStyles = makeStyles((theme) =>
   createStyles({
-    container: {
-      height: '100%',
-      width: '100%',
-      margin: '1rem auto 1rem 0rem'
-    },
+      container: {
+        width: '100%', 
+        margin: '0rem auto', 
+        paddingTop: '0rem',
+        ['@media screen and (maxwidth: 599px)']:{
+          maxWidth: '400px',
+          margin: 'auto', 
+        },
+        ['@media screen and (min-width: 600px)']:{
+          maxWidth: '400px',
+          margin: 'auto', 
+        },
+        ['@media screen and (min-width: 900px)']:{
+          maxWidth: '500px',
+          margin: 'auto'
+        },
+        ['@media screen and (min-width: 1200px)']:{
+          maxWidth: '675px',
+        },
+      },
+      graphContainer: {
+        margin: '0rem auto auto -1rem',
+        width: '100%',
+        ['@media screen and (min-width: 600px)']:{
+          maxWidth: '400px',
+          margin: 'auto'
+        },
+        ['@media screen and (min-width: 900px)']:{
+          maxWidth: '500px',
+          margin: 'auto'
+        },
+        ['@media screen and (min-width: 1200px)']:{
+          width: '500px',
+        },
+      },
+ 
   }),
 )
 
