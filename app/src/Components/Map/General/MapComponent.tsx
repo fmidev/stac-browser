@@ -13,7 +13,8 @@ import { getAllDatasets, getItemsForDatasetAndTime, getTimeseries } from '../../
 import VisualizationAccordion from './VisualizationAccordion'
 import GraphedView from '../../Views/GraphedView'
 import GraphAccordion from './GraphAccordion'
-import Graph from '../../Views/Graph'
+//import Graph from '../../Views/Graph'
+const GraphComponent = React.lazy(() => import('../../Views/Graph'));
 
 interface Props {
   mapObject: Map,
@@ -75,6 +76,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   const [comparisonItemObject, setComparisonItemObject] = React.useState({ items: [] } as { items: any });
   const [allDatasets, setAllDatasets] = React.useState([] as any[]);
   const [graphData, setGraphData] = React.useState<any>([]);
+  const [isLoading, setIsLoading] = React.useState(false)
 
   const showGraph = () => {
     dispatch(setGraphState({graphIsOpen: !graphIsOpen, index: mapComponentIndex}))
@@ -133,13 +135,16 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
         endDate.setMonth(new Date(comparisonDate).getMonth() + 1 )
       }
     }
-    getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
+    setIsLoading(true)
+   getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
       //console.log('Got timeseries for',selectedDataset, data)
-      const d = data.map((d: any) => [...d])
+        setIsLoading(false)
+      const d =  data.map((d: any) => [...d])
       const bandIds = bands.map((b,i) => b+'-'+['R','G','B'][i])
       setGraphData({data: d, labels: bandIds, colors: ["#DC143C","#32CD32","#0000FF"]})
     })
-  }
+  
+   }
   }, [
     graphIsOpen, 
     graphTimeSpan, 
@@ -154,13 +159,16 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
 
   const visibleTemporalInterval = itemsTemporalInterval + ' (spy: '+(comparisonItemsTemporalInterval === itemsTemporalInterval ? 'same' : comparisonItemsTemporalInterval)+')'
   
-
   let catalogTemporalInterval = '';
   if (datasetCatalog?.extent?.temporal?.interval) {
     const interval = datasetCatalog?.extent?.temporal?.interval
     catalogTemporalInterval = `(${interval[0].substring(0, 10)} - ${interval[1].substring(0, 10)})`
   }
-
+/* 
+  console.log(graphData.data)
+  if(graphData.data === undefined) {
+    console.log('No graph data')
+  } */
   return (
       <div className={classes.mapContainer} id='MapContainer'>
         <div className={classes.mapBox} style={{border: '1px solid grey',}}>
@@ -220,56 +228,70 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             top: '10', 
             }}>
             {graphIsOpen && 
-            ((graphData.length === 0 ) ? Loading() : 
+            ((graphData.length === 0 )  ? Loading() : 
+            <React.Suspense fallback={<span></span>}>
             <div className={classes.graphContainer}>
-             {<Graph graphData={graphData} 
-             /* comparisons={new Date(comparisonDate).getTime()} */
-             mapComponentIndex={mapComponentIndex}>
-                <div style={{marginTop: '1rem'}}>
-                  <button 
-                    onClick={
-                      () => {
-                      dispatch(setGraphTimeSpan({graphTimeSpan: 2, index: mapComponentIndex}))
-                      }} 
-                    style={{
-                      marginRight: '4px',
-                      border: 'solid 	rgb(211,211,211) 1px',
-                      padding: '4px 8px',
-                      fontWeight: 600,
-                      }}
-                      className={graphTimeSpan === 2 ? classes.buttonBg : undefined}>2 kk
-                  </button>
-                  <button 
-                    onClick={
-                      () => {
-                      dispatch(setGraphTimeSpan({graphTimeSpan: 4, index: mapComponentIndex}))
-                      }
-                    } 
-                    style={{
-                      marginRight: '4px',
-                      border: 'solid rgb(211,211,211) 1px', 
-                      padding: '4px 8px',
-                      fontWeight: 600,
-                    }}
-                      className={graphTimeSpan === 4 ? classes.buttonBg : undefined}
-                      >4 kk
-                  </button>
-                  <button 
-                    onClick={
-                      () => {
-                        dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))
-                      }
-                    } 
-                    style={{
-                      border: 'solid rgb(211,211,211) 1px',
-                      padding: '4px 8px',
-                      fontWeight: 600,
-                    }}
-                      className={graphTimeSpan === 6 ? classes.buttonBg : undefined}>6 kk
-                  </button>
+               <GraphComponent graphData={graphData} mapComponentIndex={mapComponentIndex}>
+                <div style={{
+                  marginTop: '1.2rem', 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  textAlign: 'center',
+                  width: '100%',
+                  justifyContent: 'center'
+                  }}>
+                    <div>
+                      <button 
+                        onClick={
+                          () => {
+                          dispatch(setGraphTimeSpan({graphTimeSpan: 2, index: mapComponentIndex}))
+                          }} 
+                        style={{
+                          marginRight: '4px',
+                          border: 'solid 	rgb(211,211,211) 1px',
+                          padding: '4px 8px',
+                          fontWeight: 600,
+                          }}
+                          className={graphTimeSpan === 2 ? classes.buttonBg : undefined}>2 kk
+                      </button>
+                      <button 
+                        onClick={
+                          () => {
+                          dispatch(setGraphTimeSpan({graphTimeSpan: 4, index: mapComponentIndex}))
+                          }
+                        } 
+                        style={{
+                          marginRight: '4px',
+                          border: 'solid rgb(211,211,211) 1px', 
+                          padding: '4px 8px',
+                          fontWeight: 600,
+                        }}
+                          className={graphTimeSpan === 4 ? classes.buttonBg : undefined}
+                          >4 kk
+                      </button>
+                      <button 
+                        onClick={
+                          () => {
+                            dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))
+                          }
+                        } 
+                        style={{
+                          border: 'solid rgb(211,211,211) 1px',
+                          padding: '4px 8px',
+                          fontWeight: 600,
+                          marginRight: '12px',
+                        }}
+                          className={graphTimeSpan === 6 ? classes.buttonBg : undefined}>6 kk
+                      </button>
+                    </div>
+                    <div style={{minHeight: '15%'}}>
+                      {isLoading ? <span>Ladataan</span> : <span>{''}</span>}
+                    </div>
                 </div> 
-              </Graph>}
-            </div>)
+              </GraphComponent>
+            </div>
+            </React.Suspense>
+            )
             }
         </div>        
     </div>
@@ -316,7 +338,6 @@ const useStyles = makeStyles(() =>
       borderRight: 'solid black 1px'
     },
     dropDown: {
-      // width: '33.333%',
       height: '100%',
       zIndex: 1000,
       margin: 0,
@@ -326,15 +347,15 @@ const useStyles = makeStyles(() =>
     graphContainer: {
       position: 'relative',
       top: 0,
-      marginTop: 0,
+      marginTop: '0.4rem',
       zIndex: 100, 
       backgroundColor: 'white',
       marginBottom: '4rem',
       border: 'solid 	rgb(211,211,211) 1px',
       width: '100%',
-      webkitBoxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
-      mozBoxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
-      boxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
+      //webkitBoxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
+      //mozBoxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
+      //boxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
     },
     buttonBg: {
       backgroundColor: '#558F6E',

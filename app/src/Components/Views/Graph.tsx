@@ -26,6 +26,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
   const sidebarIsOpen = useSelector((state: any) => state.dataReducer.data.global.sidebarIsOpen)
   const graphRef = React.useRef<HTMLDivElement>(null);
   const dispatch = useDispatch()
+  const classes = useStyles()
 
   function clickedCallBack(e: any, x: any, points: any){
     dispatch(setComparisonDate({comparisonDate: x}))
@@ -44,9 +45,29 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
 
     graphArray.splice(insertIndex,0, [new Date(time), null, null, null])
     console.log('Insert time: ', time, 'At index: ', insertIndex)
-    /* console.log(insertIndex, entryData)
-      if(insertIndex < 0) return;
-      graphArray.splice(insertIndex,0, [new Date(time), null, null, null, 1]) */
+  }
+
+  function legendFormatter(this: any, data: any) {
+    if (data.x == null) {
+      return '<br>' + data.series.map(function(series: { dashHTML: string; labelHTML: string; }) { 
+        return series.dashHTML + ' ' + series.labelHTML }).join();
+    }
+    let html = "<b>" + data.xHTML + "</b>"      
+    data.series.forEach(function(series: any) {
+    if (!series.isVisible) return;
+    let labeledData = series.labelHTML + `: <b>` + series.yHTML + "</b>";
+    //console.log(labeledData)
+    if (series.isHighlighted) {
+      labeledData = "<b>" +  labeledData + "</b>";
+    }
+    html +=
+    "<div class='dygraph-legend-row'>" +
+    series.dashHTML + 
+    "<div>" + 
+    labeledData + 
+    "</div></div>";
+  });
+    return html;
   }
 
   const graphInit = (graphData : GraphData) => {
@@ -66,7 +87,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     connectSeparatedPoints: true,
     clickCallback: clickedCallBack,
     pointClickCallback: pointClicked,
-    //legendFormatter: legendFormatter,
+    legendFormatter: legendFormatter,
     axes: {
       x:{
         axisLabelFormatter: (ms) => new Date(ms).toISOString().substr(0,7),
@@ -109,7 +130,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
         { 
           series: graphData.labels[0],
           x: new Date(comparisonDate).getTime(),
-          shortText: '',
+          shortText: 'C',
           text: 'Valkoinen',
           cssClass: 'annotation',
           tickHeight: 120,
@@ -119,44 +140,42 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     console.log('comparisonDate -:', annotationInit)
    g.setAnnotations(annotationInit)
 
+   if(sidebarIsOpen){
+    g.resize(400, 200)
+  }
+  if(!sidebarIsOpen){
+    g.resize(550, 300)
+  }
+
    return () => {
-     console.log('destroy',g)
+     //console.log('destroy',g)
     if(g){
       g.destroy()
     }
-  } 
-
+  }
 },[
-    graphData,
-    inspectionDate,
-    comparisonDate,
+  graphData,
+  inspectionDate,
+  comparisonDate,
+  sidebarIsOpen
 ])
 
-  // This function should resize map when sidebar is opened or closed
-  /*
-  React.useEffect(() => {
-    if(sidebarIsOpen){
-      graphInit().resize(500, 280)
-    }
-    if(!sidebarIsOpen){
-      graphInit().resize(550, 300)
-    }
-  }, [sidebarIsOpen])
-*/
-
  return (
-  <div style={{width: '100%', margin: '0rem auto', paddingTop: '0rem', height: '330px'}}>
-     <div>{children}</div>
-    <Grid ref={graphRef} style={{
-      marginTop: '10px',
-      height: '90%',
-      width: '100%',
-      margin: 'auto'}}>
-      Graph
-    </Grid>
+  <div style={{width: '100%', margin: '0rem auto', paddingTop: '0rem'}}>
+    <div>{children}</div>
+      <Grid ref={graphRef} className={classes.container}></Grid>
   </div>
   )
 }
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    container: {
+      height: '100%',
+      width: '100%',
+      margin: '1rem auto 1rem 0rem'
+    },
+  }),
+)
 
 export default Graph;
 
