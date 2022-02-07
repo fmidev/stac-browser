@@ -143,10 +143,10 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
    g.setAnnotations(annotationInit)
 
    if(sidebarIsOpen){
-    g.resize(400, 200)
+    g.resize(350, 200)
   }
   if(!sidebarIsOpen){
-    g.resize()
+    g.resize(490, 300)
   }
 
    return () => {
@@ -165,45 +165,44 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
  return (
   <div className={classes.container}>
     <div>{children}</div>
-      <div ref={graphRef} className={classes.graphContainer}></div>
+      <Grid ref={graphRef} className={classes.graphContainer}></Grid>
   </div>
   )
 }
 const useStyles = makeStyles((theme) =>
   createStyles({
+
       container: {
-        width: '100%', 
-        margin: '0rem auto', 
-        paddingTop: '0rem',
-        ['@media screen and (maxwidth: 599px)']:{
-          maxWidth: '400px',
-          margin: 'auto', 
-        },
-        ['@media screen and (min-width: 600px)']:{
-          maxWidth: '400px',
-          margin: 'auto', 
+        zIndex: 100,
+        ['@media screen and (min-width: 500px)']:{
+          maxWidth: '390px',
+          marginLeft: '0rem', 
         },
         ['@media screen and (min-width: 900px)']:{
-          maxWidth: '500px',
-          margin: 'auto'
+          width: '500px',
+          margin: 'auto',
         },
-        ['@media screen and (min-width: 1200px)']:{
-          maxWidth: '675px',
+        ['@media screen and (min-width: 1280px)']:{
+          width: '500px',
+          marginLeft: '0rem',
         },
       },
       graphContainer: {
-        margin: '0rem auto auto -1rem',
-        width: '100%',
-        ['@media screen and (min-width: 600px)']:{
-          maxWidth: '400px',
-          margin: 'auto'
+        zIndex: 50,
+        ['@media screen and (min-width: 500px)']:{
+          maxWidth: '390px',
+          marginLeft: '0rem',
+          boxSizing: 'border-box',
         },
         ['@media screen and (min-width: 900px)']:{
-          maxWidth: '500px',
-          margin: 'auto'
+          width: '450px',
+          marginLeft: '0rem', 
+          marginRight: 'auto',
         },
-        ['@media screen and (min-width: 1200px)']:{
-          width: '500px',
+        ['@media screen and (min-width: 1279px)']:{
+          width: '450px',
+          marginLeft: '-1rem',
+          borderLeft: '1px solid white'
         },
       },
  

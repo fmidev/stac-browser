@@ -230,17 +230,22 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             {graphIsOpen && 
             ((graphData.length === 0 )  ? Loading() : 
             <React.Suspense fallback={<span></span>}>
-            <div className={classes.graphContainer}>
+            <div className={classes.graph}>
                <GraphComponent graphData={graphData} mapComponentIndex={mapComponentIndex}>
                 <div style={{
-                  marginTop: '1.2rem', 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  textAlign: 'center',
+                  marginTop: '1.2rem',
                   width: '100%',
-                  justifyContent: 'center'
+                  display: 'flex', 
+                  flexFlow: 'column nowrap',
+                  justifyContent: 'center',
                   }}>
-                    <div>
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'flex-end',
+                      width: '80%',
+
+                    }}>
                       <button 
                         onClick={
                           () => {
@@ -284,7 +289,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
                           className={graphTimeSpan === 6 ? classes.buttonBg : undefined}>6 kk
                       </button>
                     </div>
-                    <div style={{minHeight: '15%'}}>
+                    <div style={{minHeight: '15%', display: 'flex', flexDirection: 'row',
+                      justifyContent: 'flex-end',
+                      width: '70%',}}>
                       {isLoading ? <span>Ladataan</span> : <span>{''}</span>}
                     </div>
                 </div> 
@@ -344,18 +351,16 @@ const useStyles = makeStyles(() =>
       padding: 0,
       boxSizing: 'border-box',
     },
-    graphContainer: {
+    graph: {
       position: 'relative',
-      top: 0,
+      top: 10,
       marginTop: '0.4rem',
       zIndex: 100, 
       backgroundColor: 'white',
       marginBottom: '4rem',
-      border: 'solid 	rgb(211,211,211) 1px',
+      border: 'solid 	#Fdfcfa 1px',
       width: '100%',
-      //webkitBoxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
-      //mozBoxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
-      //boxShadow: 'inset -2px  8px 0px -2px rgba(50, 50, 50, 0.4)',
+      boxShadow: '1px 1px 4px red',
     },
     buttonBg: {
       backgroundColor: '#558F6E',
