@@ -11,10 +11,8 @@ import DatasetList from '../ListComponents/Lists/DatasetList'
 // import NormalVisualization from '../Visualization/NormalVisualization'
 import { getAllDatasets, getItemsForDatasetAndTime, getTimeseries } from '../../../API/Api'
 import VisualizationAccordion from './VisualizationAccordion'
-import GraphedView from '../../Views/GraphedView'
 import GraphAccordion from './GraphAccordion'
-//import Graph from '../../Views/Graph'
-const GraphComponent = React.lazy(() => import('../../Views/Graph'));
+import GraphComponent from '../../Views/GraphView';
 
 interface Props {
   mapObject: Map,
@@ -122,9 +120,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
 
     startDate.setMonth(startDate.getMonth() - graphTimeSpan / 2)
     endDate.setMonth(endDate.getMonth() + graphTimeSpan / 2)
-    
-    // console.log(new Date(comparisonDate).getTime(), startDate))
-   
+       
     if(comparisonDate){
       console.log(startDate > new Date(comparisonDate))
       if(startDate > new Date(comparisonDate) ){
@@ -137,7 +133,6 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     }
     setIsLoading(true)
    getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
-      //console.log('Got timeseries for',selectedDataset, data)
         setIsLoading(false)
       const d =  data.map((d: any) => [...d])
       const bandIds = bands.map((b,i) => b+'-'+['R','G','B'][i])
@@ -164,11 +159,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
     const interval = datasetCatalog?.extent?.temporal?.interval
     catalogTemporalInterval = `(${interval[0].substring(0, 10)} - ${interval[1].substring(0, 10)})`
   }
-/* 
-  console.log(graphData.data)
-  if(graphData.data === undefined) {
-    console.log('No graph data')
-  } */
+
   return (
       <div className={classes.mapContainer} id='MapContainer'>
         <div className={classes.mapBox} style={{border: '1px solid grey',}}>
@@ -242,8 +233,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
                     <div style={{
                       display: 'flex',
                       flexDirection: 'row',
-                      justifyContent: 'flex-end',
+                      justifyContent: 'center',
                       width: '80%',
+                      margin: 'auto'
 
                     }}>
                       <button 
@@ -289,9 +281,14 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
                           className={graphTimeSpan === 6 ? classes.buttonBg : undefined}>6 kk
                       </button>
                     </div>
-                    <div style={{minHeight: '15%', display: 'flex', flexDirection: 'row',
-                      justifyContent: 'flex-end',
-                      width: '70%',}}>
+                    <div style={{
+                      minHeight: '15%', 
+                      display: 'flex', 
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      width: '70%',
+                      margin: 'auto'
+                      }}>
                       {isLoading ? <span>Ladataan</span> : <span>{''}</span>}
                     </div>
                 </div> 
@@ -360,7 +357,7 @@ const useStyles = makeStyles(() =>
       marginBottom: '4rem',
       border: 'solid 	#Fdfcfa 1px',
       width: '100%',
-      boxShadow: '1px 1px 4px red',
+      boxShadow: '1px 1px 4px #808080',
     },
     buttonBg: {
       backgroundColor: '#558F6E',

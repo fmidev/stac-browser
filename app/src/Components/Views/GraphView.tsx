@@ -142,7 +142,6 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
    g.setAnnotations(annotationInit)
 
    return () => {
-     //console.log('destroy',g)
     if(g){
       g.destroy()
     }
@@ -164,7 +163,7 @@ React.useEffect(() => {
  return (
   <div>
     <div>{children}</div>
-      <div ref={graphRef} className={classes.graphContainer} style={{width: '100%', height: '320px'}}></div>
+      <div ref={graphRef} className={classes.graphContainer} style={{width: '100%', height: '320px', margin: 'auto'}}></div>
   </div>
   )
 }
