@@ -3,7 +3,6 @@ import Dygraph from 'dygraphs';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../App';
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { Grid } from '@material-ui/core';
 import { setComparisonDate } from '../../Store/Actions/data'
 
 interface GraphData {
@@ -77,7 +76,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     const g = new Dygraph(graphRef.current,
       graphData.data, 
     {
-    width: 490,
+    width: -1,
     legend: "always",
     highlightCircleSize: 5,
     colors: [...graphData.colors],
@@ -142,13 +141,6 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     console.log('comparisonDate -:', annotationInit)
    g.setAnnotations(annotationInit)
 
-   if(sidebarIsOpen){
-    g.resize(350, 200)
-  }
-  if(!sidebarIsOpen){
-    g.resize(490, 300)
-  }
-
    return () => {
      //console.log('destroy',g)
     if(g){
@@ -159,53 +151,28 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
   graphData,
   inspectionDate,
   comparisonDate,
+])
+
+React.useEffect(() => {
+  console.log('resize')
+  setTimeout(function () { graphInit(graphData).resize(); }, 300);
+
+}, [
   sidebarIsOpen
 ])
 
  return (
-  <div className={classes.container}>
+  <div>
     <div>{children}</div>
-      <Grid ref={graphRef} className={classes.graphContainer}></Grid>
+      <div ref={graphRef} className={classes.graphContainer} style={{width: '100%', height: '320px'}}></div>
   </div>
   )
 }
 const useStyles = makeStyles((theme) =>
   createStyles({
-
-      container: {
-        zIndex: 100,
-        ['@media screen and (min-width: 500px)']:{
-          maxWidth: '390px',
-          marginLeft: '0rem', 
-        },
-        ['@media screen and (min-width: 900px)']:{
-          width: '500px',
-          margin: 'auto',
-        },
-        ['@media screen and (min-width: 1280px)']:{
-          width: '500px',
-          marginLeft: '0rem',
-        },
-      },
       graphContainer: {
         zIndex: 50,
-        ['@media screen and (min-width: 500px)']:{
-          maxWidth: '390px',
-          marginLeft: '0rem',
-          boxSizing: 'border-box',
-        },
-        ['@media screen and (min-width: 900px)']:{
-          width: '450px',
-          marginLeft: '0rem', 
-          marginRight: 'auto',
-        },
-        ['@media screen and (min-width: 1279px)']:{
-          width: '450px',
-          marginLeft: '-1rem',
-          borderLeft: '1px solid white'
-        },
       },
- 
   }),
 )
 
