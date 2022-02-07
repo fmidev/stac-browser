@@ -141,6 +141,8 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     console.log('comparisonDate -:', annotationInit)
    g.setAnnotations(annotationInit)
 
+   setTimeout(function () { g.resize(); }, 300);
+
    return () => {
     if(g){
       g.destroy()
@@ -150,13 +152,6 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
   graphData,
   inspectionDate,
   comparisonDate,
-])
-
-React.useEffect(() => {
-  console.log('resize')
-  setTimeout(function () { graphInit(graphData).resize(); }, 300);
-
-}, [
   sidebarIsOpen
 ])
 
