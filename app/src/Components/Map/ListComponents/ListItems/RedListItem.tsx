@@ -36,7 +36,6 @@ const RedListItem: React.FC<ListChildComponentProps> = ({ data, index, style }) 
         });
         if (links !== undefined) {linksList[i] = links.href}
       }
-      console.debug(linksList)
       if (linksList.length > 0) {
         const linkArray = [
           <div>{name}</div>,
