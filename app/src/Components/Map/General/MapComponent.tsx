@@ -252,7 +252,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
                           padding: '4px 8px',
                           fontWeight: 600,
                           }}
-                          className={graphTimeSpan === 2 ? classes.buttonBg : undefined} key={'month-'+month}>{month} kk
+                          className={graphTimeSpan === month ? classes.buttonBg : undefined} key={'month-'+month}>{month} kk
                       </button>
                       )}
                     </div>
