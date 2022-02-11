@@ -9,14 +9,31 @@ const SpyGlassBorderCanvas: React.FC<Props> = ({ children, borderRect }) => {
 
     const canvasRef = React.useRef<HTMLCanvasElement>()
 
-    const lineWidth = 2.5
+    const lineWidth = 1.5
     const borderColor = '#993333'
+
+    function resizeCanvasToDisplaySize(canvas : HTMLCanvasElement) {
+        // look up the size the canvas is being displayed
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+     
+        // If it's resolution does not match change it
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+          return true;
+        }
+     
+        return false;
+    }
 
     React.useEffect(() => {
         if (!canvasRef || !canvasRef.current) return;
 
         const ctx = canvasRef.current.getContext("2d");
         if (!ctx) return;
+
+        resizeCanvasToDisplaySize(canvasRef.current);
 
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         if( borderRect === null) return;

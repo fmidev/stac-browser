@@ -31,6 +31,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
   const comparisonDate = useSelector((state: RootState) => state.dataReducer.data.global.comparisonDate)
   const sidebarIsOpen = useSelector((state: any) => state.dataReducer.data.global.sidebarIsOpen)
   const graphRef = React.useRef<HTMLDivElement>(null);
+  const [ graph, setGraph] = React.useState<Dygraph | null>(null);
   const dispatch = useDispatch()
   const classes = useStyles()
 
@@ -147,11 +148,12 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     // console.log('comparisonDate -:', annotationInit)
    g.setAnnotations(annotationInit)
 
-   setTimeout(function () { g.resize(); }, 300);
+   setGraph(g);
 
    return () => {
-    if(g){
-      g.destroy()
+    if(graph){
+      graph.destroy()
+      setGraph(null);
     }
   }
 },[
@@ -160,6 +162,14 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
   comparisonDate,
   sidebarIsOpen
 ])
+
+React.useEffect(() => {
+  setTimeout(function () {
+    if (graph) {
+      graph.resize();
+    }
+  }, 300);
+}, [sidebarIsOpen])
 
  return (
   <div style={{padding: '0rem'}}>
