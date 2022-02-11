@@ -25,6 +25,8 @@ const Loading = () =>{
   )
 }
 
+const timeSpanMonthChoices = [2,4,6,12]
+
 function calculateItemsTemporalInterval(itemObject : any) {
   let dateStr
 
@@ -239,10 +241,10 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
                       margin: '2rem auto'
 
                     }}>
-                      <button 
+                      { timeSpanMonthChoices.map((month) => <button 
                         onClick={
                           () => {
-                          dispatch(setGraphTimeSpan({graphTimeSpan: 2, index: mapComponentIndex}))
+                          dispatch(setGraphTimeSpan({graphTimeSpan: month, index: mapComponentIndex}))
                           }} 
                         style={{
                           marginRight: '4px',
@@ -250,43 +252,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
                           padding: '4px 8px',
                           fontWeight: 600,
                           }}
-                          className={graphTimeSpan === 2 ? classes.buttonBg : undefined}>2 kk
+                          className={graphTimeSpan === 2 ? classes.buttonBg : undefined} key={'month-'+month}>{month} kk
                       </button>
-                      <button 
-                        onClick={
-                          () => {
-                          dispatch(setGraphTimeSpan({graphTimeSpan: 4, index: mapComponentIndex}))
-                          }
-                        } 
-                        style={{
-                          marginRight: '4px',
-                          border: 'solid rgb(211,211,211) 1px', 
-                          padding: '4px 8px',
-                          fontWeight: 600,
-                        }}
-                          className={graphTimeSpan === 4 ? classes.buttonBg : undefined}
-                          >4 kk
-                      </button>
-                      <button 
-                        onClick={() => dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))} 
-                        style={{
-                          border: 'solid rgb(211,211,211) 1px',
-                          padding: '4px 8px',
-                          fontWeight: 600,
-                          marginRight: '4px',
-                          }}
-                        className={graphTimeSpan === 6 ? classes.buttonBg : undefined}>6 kk
-                      </button>
-                      <button 
-                        onClick={() => dispatch(setGraphTimeSpan({graphTimeSpan: 12, index: mapComponentIndex}))} 
-                        style={{
-                          border: 'solid rgb(211,211,211) 1px',
-                          padding: '4px 8px',
-                          fontWeight: 600,
-                          marginRight: '12px',
-                          }}
-                        className={graphTimeSpan === 12 ? classes.buttonBg : undefined}>12 kk
-                      </button>
+                      )}
                     </div>
                     <div style={{
                       minHeight: '15%', 
