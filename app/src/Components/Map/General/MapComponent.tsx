@@ -120,7 +120,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
 
     startDate.setMonth(startDate.getMonth() - graphTimeSpan / 2)
     endDate.setMonth(endDate.getMonth() + graphTimeSpan / 2)
-       
+       /*   
+
+       */
     if(comparisonDate){
       console.log(startDate > new Date(comparisonDate))
       if(startDate > new Date(comparisonDate) ){
@@ -132,7 +134,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
       }
     }
     setIsLoading(true)
-   getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
+    getTimeseries(selectedDataset, center, resolution, bands, startDate, endDate).then((data) => {
         setIsLoading(false)
       const d =  data.map((d: any) => [...d])
       const bandIds = bands.map((b,i) => b+'-'+['R','G','B'][i])
@@ -161,8 +163,8 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   }
 
   return (
-      <div className={classes.mapContainer} id='MapContainer'>
-        <div className={classes.mapBox} style={{border: '1px solid grey',}}>
+    <div className={classes.mapContainer} id='MapContainer'>
+        <div className={classes.mapBox}>
           <Button
             style={{ 
               position: 'absolute', 
@@ -221,10 +223,9 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             {graphIsOpen && 
             ((graphData.length === 0 )  ? Loading() : 
             <React.Suspense fallback={<span></span>}>
-            <div className={classes.graph}>
+            <div className={classes.graph} style={{width: '', padding: '0rem'}}>
                <GraphComponent graphData={graphData} mapComponentIndex={mapComponentIndex}>
                 <div style={{
-                  marginTop: '1.2rem',
                   width: '100%',
                   display: 'flex', 
                   flexFlow: 'column nowrap',
@@ -235,7 +236,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
                       flexDirection: 'row',
                       justifyContent: 'center',
                       width: '80%',
-                      margin: 'auto'
+                      margin: '2rem auto'
 
                     }}>
                       <button 
@@ -267,18 +268,24 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
                           >4 kk
                       </button>
                       <button 
-                        onClick={
-                          () => {
-                            dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))
-                          }
-                        } 
+                        onClick={() => dispatch(setGraphTimeSpan({graphTimeSpan: 6, index: mapComponentIndex}))} 
+                        style={{
+                          border: 'solid rgb(211,211,211) 1px',
+                          padding: '4px 8px',
+                          fontWeight: 600,
+                          marginRight: '4px',
+                          }}
+                        className={graphTimeSpan === 6 ? classes.buttonBg : undefined}>6 kk
+                      </button>
+                      <button 
+                        onClick={() => dispatch(setGraphTimeSpan({graphTimeSpan: 12, index: mapComponentIndex}))} 
                         style={{
                           border: 'solid rgb(211,211,211) 1px',
                           padding: '4px 8px',
                           fontWeight: 600,
                           marginRight: '12px',
-                        }}
-                          className={graphTimeSpan === 6 ? classes.buttonBg : undefined}>6 kk
+                          }}
+                        className={graphTimeSpan === 12 ? classes.buttonBg : undefined}>12 kk
                       </button>
                     </div>
                     <div style={{
@@ -313,7 +320,7 @@ const useStyles = makeStyles(() =>
       minHeight: '300px',
       flexGrow: 1,
       margin: '0.5rem 0rem',
-      padding: '1rem',
+      paddingRight: '1rem',
       aspectRatio: '11/10',
     },
     mapBox: {
@@ -350,13 +357,11 @@ const useStyles = makeStyles(() =>
     },
     graph: {
       position: 'relative',
-      top: 10,
-      marginTop: '0.4rem',
+      top: 6,
+      margin: '0.4rem auto 4rem auto',
       zIndex: 100, 
       backgroundColor: 'white',
-      marginBottom: '4rem',
-      border: 'solid 	#Fdfcfa 1px',
-      width: '100%',
+      width: '99.8%',
       boxShadow: '1px 1px 4px #808080',
     },
     buttonBg: {

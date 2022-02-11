@@ -22,7 +22,7 @@ const MapView: React.FC = () => {
    
     "mapObject": {
       "id": createMapId(),
-      "graphTimeSpan": 6,
+      "graphTimeSpan": 12,
       "selectedDataset": null,
       "channelSettings": {
         "R": null,
@@ -61,17 +61,17 @@ const MapView: React.FC = () => {
           </Button>
         </ThemeProvider>
       </div>
-      <Grid container justify='flex-start' spacing={6} >
+      <Grid container justify='flex-start' spacing={7} >
         {mapData.map((mapObject, index) => {
           return (
-            <Grid key={mapObject.id} container direction='column' item xs={12} md={12} lg={6} xl={4} alignItems='center' >
+            <Grid key={mapObject.id} container direction='column' item xs={12} md={12} lg={6} xl={6} alignItems='center' 
+              style={{margin: 'auto', padding: '0rem'}}>
               <MapComponent
                 mapObject={mapObject}
                 mapComponentIndex={index}/>        
             </Grid>)
         })}
       </Grid>
-      <div style={{ width: '55px' }} />
     </div>
   )
 }
@@ -80,7 +80,7 @@ const useStyles = makeStyles(() =>
   createStyles({
     container: {
       display: 'flex',
-      padding: '50px',
+      padding: '12px 20px 10px 54px',
     },
     buttonContainer: {
       position: 'fixed',

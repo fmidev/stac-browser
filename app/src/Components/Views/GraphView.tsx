@@ -11,6 +11,13 @@ interface GraphData {
   colors: string[]
 }
 
+type modifiedDataType = {
+  date: Date
+  seriesDataOne: number | null 
+  seriesDataTwo: number | null
+  seriesDataThree: number | null
+}
+
 interface Props {
   graphData: GraphData,
   children: JSX.Element,
@@ -35,7 +42,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     dispatch(setComparisonDate({comparisonDate: point.xval}))
   }
 
-  function ensureAnnotationDate (graphArray: any [], time: any) { 
+  function ensureAnnotationDate (graphArray: any[], time: string) { 
     const graphDataTime = graphArray.find((arr: any) => arr[0].getTime() === new Date(time).getTime())
     if(graphDataTime) return;
     
@@ -43,7 +50,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     const insertIndex = entryData ? graphArray.indexOf(entryData) : graphArray.length;
 
     graphArray.splice(insertIndex,0, [new Date(time), null, null, null])
-    console.log('Insert time: ', time, 'At index: ', insertIndex)
+    // console.log('Insert time: ', time, 'At index: ', insertIndex)
   }
 
   function legendFormatter(this: any, data: any) {
@@ -72,11 +79,10 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
   const graphInit = (graphData : GraphData) => {
     
     if (!graphRef.current) throw Error("graphRef is not assigned");
-    console.log('new g')
+    //console.log('new g')
     const g = new Dygraph(graphRef.current,
       graphData.data, 
     {
-    width: -1,
     legend: "always",
     highlightCircleSize: 5,
     colors: [...graphData.colors],
@@ -124,7 +130,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
       attachAtBottom: true,
     }
     ]
-    console.log('InspectionDate -:', annotationInit)
+    // console.log('InspectionDate -:', annotationInit)
     if(comparisonDate){
       annotationInit.push(
         { 
@@ -138,7 +144,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
         } 
       )
     }
-    console.log('comparisonDate -:', annotationInit)
+    // console.log('comparisonDate -:', annotationInit)
    g.setAnnotations(annotationInit)
 
    setTimeout(function () { g.resize(); }, 300);
@@ -156,9 +162,11 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
 ])
 
  return (
-  <div>
+  <div style={{padding: '0rem'}}>
     <div>{children}</div>
-      <div ref={graphRef} className={classes.graphContainer} style={{width: '100%', height: '320px', margin: 'auto'}}></div>
+      <div ref={graphRef} 
+      className={classes.graphContainer} 
+      style={{width: '102%', height: '340px', marginLeft: '-2rem', padding: '0rem'}}></div>
   </div>
   )
 }

@@ -176,7 +176,6 @@ const MainView: React.FC = (props: any) => {
                   () => dispatch(setSiderbarState({ sidebarIsOpen: true }))}>
                 <LinkIcon fontSize='large' />
               </Button>
-
             </div>
             <div className={clsx(classes.graphContent, {
               [classes.linkShift]: sidebarIsOpen
@@ -191,7 +190,6 @@ const MainView: React.FC = (props: any) => {
                   }}>
                   Jaettava linkki
                 </Button>
-
               </ThemeProvider>
             </div>
           </ListItem>
@@ -199,7 +197,8 @@ const MainView: React.FC = (props: any) => {
       </Drawer>
       <div className={clsx(classes.mapContent, {
         [classes.mapContentShift]: sidebarIsOpen,
-      })}>
+      })}
+     >
         <div className={classes.toolbar} />
         <MapView />
       </div>
@@ -210,11 +209,11 @@ const MainView: React.FC = (props: any) => {
 const useStyles = makeStyles((theme) =>
   createStyles({
     container: {
-      height: '100%'
+      height: '100%',
     },
     root: {
       display: 'flex',
-      justifyContent: 'center'
+      justifyContent: 'center',
     },
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
@@ -269,7 +268,9 @@ const useStyles = makeStyles((theme) =>
       ...theme.mixins.toolbar,
     },
     mapContent: {
-      marginLeft: 150,
+      marginLeft: 100,
+      marginTop: 20,
+      marginRight: 8,
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
@@ -299,7 +300,7 @@ const useStyles = makeStyles((theme) =>
       marginLeft: 0,
     },
     linkShift: {
-      marginLeft: 50,
+      //marginLeft: 50,
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
@@ -315,7 +316,6 @@ const useStyles = makeStyles((theme) =>
     },
     iconButton: {
       padding: '30px',
-      // left: 0,
     },
   }),
 )

@@ -25,7 +25,7 @@ const projection = new Projection({
 
 const mouseWheelZoomAnimationTime = 75;
 
-const spyGlassSize = 50;
+const spyGlassSize = 100;
 
 interface Props {
   items: any[],

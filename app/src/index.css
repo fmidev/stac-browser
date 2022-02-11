@@ -61,3 +61,8 @@ code {
   background-color: white;
   text-align: center;
 }
+
+.dygraph-axis-label.dygraph-axis-label-x, .dygraph-axis-label.dygraph-axis-label-y  {
+  font-size: 10px;
+  color: black;
+}
