@@ -25,7 +25,7 @@ const Loading = () =>{
   )
 }
 
-const timeSpanMonthChoices = [2,4,6,12]
+const timeSpanMonthChoices = [2,4,6,14]
 
 function calculateItemsTemporalInterval(itemObject : any) {
   let dateStr
