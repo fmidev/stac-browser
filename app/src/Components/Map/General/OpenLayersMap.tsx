@@ -127,7 +127,8 @@ const OpenLayersMap: React.FC<Props> = ({ items, comparisonItems, datasetCatalog
     return function cleanup() {
       console.log('Removing a map')
       map.dispose()
-
+      setMap(null);
+      
       current.removeEventListener('mousemove', onMouseMove)
       current.removeEventListener('mouseout', onMouseOut)
     }
