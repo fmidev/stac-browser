@@ -126,7 +126,6 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
 
        */
     if(comparisonDate){
-      console.log(startDate > new Date(comparisonDate))
       if(startDate > new Date(comparisonDate) ){
         startDate.setMonth(new Date(comparisonDate).getMonth() - 1 )
         endDate.setMonth(new Date(inspectionDate).getMonth() + 1)
