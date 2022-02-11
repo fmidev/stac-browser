@@ -25,7 +25,7 @@ const Loading = () =>{
   )
 }
 
-const timeSpanMonthChoices = [2,4,6,12]
+const timeSpanMonthChoices = [2,4,6,14]
 
 function calculateItemsTemporalInterval(itemObject : any) {
   let dateStr
@@ -227,45 +227,26 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             <React.Suspense fallback={<span></span>}>
             <div className={classes.graph} style={{width: '', padding: '0rem'}}>
                <GraphComponent graphData={graphData} mapComponentIndex={mapComponentIndex}>
-                <div style={{
-                  width: '100%',
-                  display: 'flex', 
-                  flexFlow: 'column nowrap',
-                  justifyContent: 'center',
-                  }}>
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      width: '80%',
-                      margin: '2rem auto'
-
-                    }}>
-                      { timeSpanMonthChoices.map((month) => <button 
-                        onClick={
-                          () => {
-                          dispatch(setGraphTimeSpan({graphTimeSpan: month, index: mapComponentIndex}))
-                          }} 
-                        style={{
-                          marginRight: '4px',
-                          border: 'solid 	rgb(211,211,211) 1px',
-                          padding: '4px 8px',
-                          fontWeight: 600,
-                          }}
-                          className={graphTimeSpan === month ? classes.buttonBg : undefined} key={'month-'+month}>{month} kk
-                      </button>
-                      )}
-                    </div>
-                    <div style={{
-                      minHeight: '15%', 
-                      display: 'flex', 
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      width: '70%',
-                      margin: 'auto'
-                      }}>
-                      {isLoading ? <span>Ladataan</span> : <span>{''}</span>}
-                    </div>
+                <div className={classes.timeSpanButtonsContainer}>
+                  <div className={classes.timeSpanButtonsWrapper}>
+                    { timeSpanMonthChoices.map((month) => <button 
+                      onClick={
+                        () => {
+                        dispatch(setGraphTimeSpan({graphTimeSpan: month, index: mapComponentIndex}))
+                        }} 
+                      style={{
+                        marginRight: '4px',
+                        border: 'solid 	rgb(211,211,211) 1px',
+                        padding: '4px 8px',
+                        fontWeight: 600,
+                        }}
+                        className={graphTimeSpan === month ? classes.buttonBg : undefined} key={'month-'+month}>{month} kk
+                    </button>
+                    )}
+                  </div>
+                  <div className={classes.loading}>
+                    {isLoading ? <span>Ladataan</span> : <span>{''}</span>}
+                  </div>
                 </div> 
               </GraphComponent>
             </div>
@@ -336,6 +317,27 @@ const useStyles = makeStyles(() =>
       backgroundColor: '#558F6E',
       color: 'white', 
       border: '1px solid #558F6E',
+    },
+    loading: {
+      minHeight: '15%', 
+      display: 'flex', 
+      flexDirection: 'row',
+      justifyContent: 'center',
+      width: '70%',
+      margin: 'auto'
+    },
+    timeSpanButtonsContainer: {
+      width: '100%',
+      display: 'flex', 
+      flexFlow: 'column nowrap',
+      justifyContent: 'center',
+    },
+    timeSpanButtonsWrapper: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      width: '80%',
+      margin: '2rem auto'
     }
   }))
 

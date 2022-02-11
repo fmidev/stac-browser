@@ -166,7 +166,7 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     <div>{children}</div>
       <div ref={graphRef} 
       className={classes.graphContainer} 
-      style={{width: '102%', height: '340px', marginLeft: '-2rem', padding: '0rem'}}></div>
+      style={{width: '102%', minHeight: '100%', marginLeft: '-2rem', padding: '0rem'}}></div>
   </div>
   )
 }
