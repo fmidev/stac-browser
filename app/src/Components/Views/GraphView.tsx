@@ -81,8 +81,15 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
     
     if (!graphRef.current) throw Error("graphRef is not assigned");
     //console.log('new g')
+
+    for (let i = 0; i < graphData.data.length; i++) {
+      for (let k = 0; k < graphData.data[i].length; k++) {
+        if (graphData.data[i][k] === 0) graphData.data[i][k] = NaN;
+      }
+    }
+
     const g = new Dygraph(graphRef.current,
-      graphData.data, 
+      graphData.data,
     {
     legend: "always",
     highlightCircleSize: 5,
