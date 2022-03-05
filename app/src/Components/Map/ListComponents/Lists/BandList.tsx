@@ -46,7 +46,8 @@ const BandList: React.FC<Props> = ({ items, bands, color, mapComponentIndex }) =
   window.addEventListener('resize', handleResize)
   function handleResize() {
     const MapContainerWidth = document.getElementById('MapContainer')?.parentElement?.clientWidth as number
-    const CalculatedWidth = MapContainerWidth * 0.45
+    // const CalculatedWidth = MapContainerWidth * 0.45
+    const CalculatedWidth = MapContainerWidth * 0.34
     setListWidth(CalculatedWidth)
   }
 

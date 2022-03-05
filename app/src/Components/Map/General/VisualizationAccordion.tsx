@@ -207,7 +207,8 @@ const AccordionSummary = withStyles({
 
 const AccordionDetails = withStyles((theme) => ({
   root: {
-    width: '186%',
+    // width: '186%',
+    width: '100%',
     border: '1px solid rgba(0, 0, 0, .125)',
     padding: theme.spacing(0),
   },

@@ -48,7 +48,7 @@ const MapView: React.FC = () => {
 
   return (
     <div className={classes.container}>
-      <div className={classes.buttonContainer} style={{ zIndex: 1000 }}>
+      <div className={classes.buttonContainer} style={{ zIndex: 2000 }}>
         <ThemeProvider theme={greenTheme}>
           <Button
             variant="contained"

@@ -180,7 +180,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
             color="secondary"
             onClick={() => dispatch(removeMap({ id: mapObject.id }))}
           >
-            -
+            X
           </Button>
           <div
             style={{ 

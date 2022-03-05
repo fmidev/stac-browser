@@ -84,8 +84,9 @@ const AccordionSummary = withStyles({
 
 const AccordionDetails = withStyles((theme) => ({
   root: {
-   width: '190%',
-   border: '1px solid rgba(0, 0, 0, .125)',
+  //  width: '190%',
+  width: '100%',
+  border: '1px solid rgba(0, 0, 0, .125)',
   padding: theme.spacing(0),
   },
 }))(MuiAccordionDetails);
