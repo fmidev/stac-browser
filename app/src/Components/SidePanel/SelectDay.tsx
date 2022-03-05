@@ -43,7 +43,8 @@ const DayWidget: React.FC<DayProps> = ({isSelected, isToday, day, damagesPerEpoc
   return (
     <Paper className={isSelected ? classes.selectedDayPaper : isToday ? classes.todayPaper : classes.normalDayPaper}>
       <Grid item style={{ zoom: '66%' }}><ErrorOutlineIcon style={{ color: showDamages ? 'red' : 'transparent', fontSize: 'medium' }} /></Grid>
-      <Grid item justify='center' alignItems='center'>
+      {/* <Grid item justify='center' alignItems='center'> */}
+      <Grid item>
         {day.getDate()}
       </Grid>
     </Paper>)

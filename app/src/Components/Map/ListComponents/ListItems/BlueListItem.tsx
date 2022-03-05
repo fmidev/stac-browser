@@ -39,13 +39,13 @@ const BlueListItem: React.FC<ListChildComponentProps> = ({ data, index, style })
       }
       if (linksList.length > 0) {
         const linkArray = [
-          <div>{name}</div>,
-          <div style={{marginLeft: 'auto', marginRight: 0}}>Download</div>,
+          <div key={name}>{name}</div>,
+          <div style={{marginLeft: 'auto', marginRight: 0}} key={name+"D"}>Download</div>,
         ]
         for (let i=1; i<linksList.length; i++) {
-          linkArray.push(<a href={linksList[linksList.length-i]} style={{ marginLeft: '5px' }}>{i}</a>);
+          linkArray.push(<a href={linksList[linksList.length-i]} style={{ marginLeft: '5px' }} key={name+i}>{i}</a>);
         }
-        linkArray.push(<a href={linksList[0]} style={{ marginLeft: '5px', marginRight: '20px' }}>{linksList.length}</a>);
+        linkArray.push(<a href={linksList[0]} style={{ marginLeft: '5px', marginRight: '20px' }} key={name+linksList.length}>{linksList.length}</a>);
         return linkArray
       }
       else { return name }

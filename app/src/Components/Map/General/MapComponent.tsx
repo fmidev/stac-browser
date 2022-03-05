@@ -21,7 +21,7 @@ interface Props {
 
 const Loading = () =>{
   return(
-    <div style={{marginTop: '3rem'}}>...Latautuu</div>
+    <div style={{marginTop: '3rem'}}>Latautuu...</div>
   )
 }
 
