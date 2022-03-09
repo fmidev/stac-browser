@@ -300,8 +300,8 @@ const OpenLayersMap: React.FC<Props> = ({ items, comparisonItems, datasetCatalog
         <div className={classes.flexTwo}>
           <div className={classes.flexTwoInner}></div>
           <div className={classes.flexTwoInner} style={{
-            borderTop: '1px solid white',
-            borderLeft: '1px solid white',
+            // borderTop: '1px solid white',
+            // borderLeft: '1px solid white',
           }}></div>
         </div>
       </div>
