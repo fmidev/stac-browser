@@ -157,12 +157,13 @@ const Graph: React.FC<Props> = ({graphData, children, mapComponentIndex}: Props)
 
    setGraph(g);
 
-   return () => {
-    if(graph){
-      graph.destroy()
-      setGraph(null);
-    }
-  }
+  // // Seems to crash the page when graph.resize() is called?
+  //  return () => {
+  //   if(graph){
+  //     graph.destroy()
+  //     setGraph(null);
+  //   }
+  // }
 },[
   graphData,
   inspectionDate,
@@ -176,7 +177,10 @@ React.useEffect(() => {
       graph.resize();
     }
   }, 300);
-}, [sidebarIsOpen])
+})
+// // The following don't seem to resize the graph properly when sidebar is opened and closed:
+// }, [])
+// }, [sidebarIsOpen])
 
  return (
   <div style={{padding: '0rem'}}>
