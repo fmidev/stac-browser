@@ -160,7 +160,7 @@ const MapComponent: React.FC<Props> = ({ mapObject, mapComponentIndex }) => {
   let catalogTemporalInterval = '';
   if (datasetCatalog?.extent?.temporal?.interval) {
     const interval = datasetCatalog?.extent?.temporal?.interval
-    catalogTemporalInterval = `(${interval[0].substring(0, 10)} - ${interval[1].substring(0, 10)})`
+    catalogTemporalInterval = `(${interval[0][0].substring(0, 10)} - ${interval[0][1].substring(0, 10)})`
   }
 
   return (
