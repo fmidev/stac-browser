@@ -38,8 +38,10 @@ export function getTuulituhotDaily(time_start : Date, time_end : Date) : Promise
                 resolve({
                     data : data.features.map((f : any) => ({ time : simplifyTime(f.attributes.mki_saapumispvm), count : f.attributes.stats }))
                 })
-            }).catch(reject)
-        }).catch(reject)
+        //     }).catch(reject)
+        // }).catch(reject)
+            }).catch(reject => undefined)
+        }).catch(reject => undefined)
     })
 }
 
