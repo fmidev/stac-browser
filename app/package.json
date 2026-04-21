@@ -29,7 +29,7 @@
     "@types/react-window": "^1.8.4",
     "@types/redux": "^3.6.0",
     "@types/redux-saga": "^0.10.5",
-    "axios": "^0.21.1",
+    "axios": "^0.31.0",
     "chart.js": "^3.5.0",
     "date-fns": "^2.23.0",
     "dygraphs": "^2.1.0",
